@@ -1,0 +1,1212 @@
+.contents > .quiz {
+  transform-origin: 0 0;
+  position: relative;
+  color: #000;
+  background: url(/resource/common/kube_video/image/quiz/background.png) no-repeat;
+  font-family: KoPubDotumBold;
+  background-size: 100% 100%;
+  width: 1014px;
+  height: 638px;
+  z-index: 99;
+  display: none;
+}
+
+.contents > .quiz.pretest {
+  background: url(/resource/common/kube_video/image/pretest/background.png) no-repeat;
+}
+.contents > .quiz.sudden {
+  background: url(/resource/common/kube_video/image/sudden/background.png) no-repeat;
+}
+
+.contents > .quiz.module {
+  background: url(/resource/common/kube_video/image/module/background.png) no-repeat;
+}
+
+/* 
+.leftTitle_01 {
+  background: url(/resource/common/kube_video/image/title/leftTitle_01.png) no-repeat;
+  width: 1012px;
+  height: 39px;
+  position: absolute;
+  top: 0px;
+}
+.leftTitle_02 {
+  background: url(/resource/common/kube_video/image/title/leftTitle_02.png) no-repeat;
+  width: 1012px;
+  height: 39px;
+  position: absolute;
+  top: 0px;
+}
+.leftTitle_03 {
+  background: url(/resource/common/kube_video/image/title/leftTitle_03.png) no-repeat;
+  width: 1012px;
+  height: 39px;
+  position: absolute;
+  top: 0px;
+}
+.leftTitle_04 {
+  background: url(/resource/common/kube_video/image/title/leftTitle_04.png) no-repeat;
+  width: 1012px;
+  height: 39px;
+  position: absolute;
+  top: 0px;
+}
+.leftTitle_05 {
+  background: url(/resource/common/kube_video/image/title/leftTitle_05.png) no-repeat;
+  width: 1012px;
+  height: 39px;
+  position: absolute;
+  top: 0px;
+}
+.leftTitle_06 {
+  background: url(/resource/common/kube_video/image/title/leftTitle_06.png) no-repeat;
+  width: 1012px;
+  height: 39px;
+  position: absolute;
+  top: 0px;
+}
+.leftTitle_07 {
+  background: url(/resource/common/kube_video/image/title/leftTitle_07.png) no-repeat;
+  width: 1012px;
+  height: 39px;
+  position: absolute;
+  top: 0px;
+}
+.leftTitle_08 {
+  background: url(/resource/common/kube_video/image/title/leftTitle_08.png) no-repeat;
+  width: 1012px;
+  height: 39px;
+  position: absolute;
+  top: 0px;
+}
+.leftTitle_09 {
+  background: url(/resource/common/kube_video/image/title/leftTitle_09.png) no-repeat;
+  width: 1012px;
+  height: 39px;
+  position: absolute;
+  top: 0px;
+} */
+
+
+.contents > .quiz > .leftSymbol {
+  background: url(/resource/common/kube_video/image/quiz/leftSymbol.png) no-repeat;
+  background-size: 100% 100%;
+  width: 206px;
+  height: 33px;
+  position: absolute;
+  left : 1%;
+  top : 2%;
+}
+
+.contents > .quiz > .wrong_answer {
+  background: url(/resource/common/kube_video/image/quiz/wrong_answer.png) no-repeat;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  z-index: 300;
+  display: none;
+  position: absolute;
+}
+
+.contents > .quiz > .none_check {
+  background: url(/resource/common/kube_video/image/quiz/none_check.png) no-repeat;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  z-index: 300;
+  display: none;
+  position: absolute;
+}
+
+.contents > .quiz > .relativeWrap {
+  background: hsla(0, 0%, 10%, 0.7);
+  width: 100%;
+  height: 100%;
+  z-index: 300;
+  position: absolute;
+  display: none;
+}
+
+.contents > .quiz > .relativeWrap > .pop_close {
+  background: url(/resource/common/kube_video/image/quiz/pop_close.png) no-repeat;
+  background-size: 100% 100%;
+  width: 50px;
+  height: 50px;
+  z-index: 300;
+  right: 81px;
+  top: 35px;
+  cursor: pointer;
+  position: absolute;
+  border: solid #11768f
+}
+
+.contents > .quiz > .relativeWrap > .relative_pop {
+  position: relative;
+  margin: 0 auto;
+  width: 877px;
+  height: 530px;
+  overflow: hidden;
+  left: 50px;
+  top: 21px;
+  border: 0px;
+}
+
+
+
+.contents > .quiz > .page {
+  width: 100%;
+}
+
+.contents > .quiz > .page > .question {
+  top: 71px;
+  left: 80px;
+  position: absolute;
+  width: 83%;
+  color: #000;
+}
+
+.contents > .quiz > .page.module > .question {
+  top: 180px;
+}
+
+.contents > .quiz > .page > .question.pretest {
+  top: 88px;
+  left: 82px;
+  position: absolute;
+  width: 82%;
+  color: #000;
+}
+
+.contents > .quiz > .page > .question.sudden {
+  top: 64px;
+  left: 148px;
+  position: absolute;
+  width: 76%;
+  color: #000;
+}
+
+.contents > .quiz > .page > .question > .text {
+  line-height: 120%;
+  position: relative;
+  left: 91px;
+  font-size: 25px;
+  letter-spacing: -2px;
+  height: 47px;
+  padding: 3px 20px 3px 10px;
+  display: table-cell;
+  vertical-align: middle;
+  top: 37px;
+  width: 810px;
+  color: #fff;
+  background: #70A900;
+  box-shadow: 13px 7px 5px 0px grey;
+}
+
+.contents > .quiz > .page.module > .question > .text {
+  line-height: 120%;
+  position: relative;
+  left: 108px;
+  font-size: 25px;
+  letter-spacing: -2px;
+  height: 100px;
+  display: table-cell;
+  vertical-align: middle;
+  color: #000;
+  background: none;
+  box-shadow: none;
+
+}
+.contents > .quiz > .page > .question > .text.pretest {
+  font-size: 24px;
+  vertical-align: middle;
+}
+.contents > .quiz > .page > .question > .text.sudden {
+  bottom: -42px;
+  left: 128px;
+  font-size: 28px;
+}
+
+.contents > .quiz > .page.module > .question > .text {
+  left: 20px;
+  top: 10px;
+  vertical-align: top;
+}
+.contents > .quiz > .page > .direction{
+  background: url(/resource/common/kube_video/image/quiz/direction.png) no-repeat;
+  top: 174px;
+  left: 171px;
+  position: absolute;
+  width: 691px;
+  height: 97px;
+  color: #444;
+  display: none;
+}
+.contents > .quiz > .page > .direction > .text {
+  line-height: 120%;
+  position: relative;
+  left: 17px;
+  width: 668px;
+  height: 99px;
+  font-size: 27px;
+  letter-spacing: -1px;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.contents > .quiz > .page > .question > .symbol {
+  font-family: sans-serif;
+  position: relative;
+  font-size: 40px;
+}
+
+.contents > .quiz > .page > .question > .symbol > .symbol_1 {
+  background: url(/resource/common/kube_video/image/quiz/q1.png) no-repeat;
+  width: 170px;
+  height: 82px;
+  top: 38px;
+  left: -41px;
+  position: absolute;
+}
+
+.contents > .quiz > .page > .question > .symbol > .symbol_2 {
+  background: url(/resource/common/kube_video/image/quiz/q2.png) no-repeat;
+  width: 170px;
+  height: 82px;
+  top: 38px;
+  left: -41px;
+  position: absolute;
+}
+
+.contents > .quiz > .page > .question > .symbol > .symbol_3 {
+  background: url(/resource/common/kube_video/image/quiz/q3.png) no-repeat;
+  width: 170px;
+  height: 82px;
+  top: 38px;
+  left: -41px;
+  position: absolute;
+}
+
+.contents > .quiz > .page > .question > .symbol > .symbol_1.pretest {
+  background: url(/resource/common/kube_video/image/pretest/q1.png) no-repeat;
+  width: 245px;
+  height: 108px;
+  left: -93px;
+}
+.contents > .quiz > .page > .question > .symbol > .symbol_2.pretest {
+  background: url(/resource/common/kube_video/image/pretest/q2.png) no-repeat;
+  width: 245px;
+  height: 108px;
+  left: -93px;
+}
+.contents > .quiz > .page > .question > .symbol > .symbol_3.pretest {
+  background: url(/resource/common/kube_video/image/pretest/q3.png) no-repeat;
+  width: 245px;
+  height: 108px;
+  left: -93px;
+}
+
+.contents > .quiz > .page > .question > .symbol.sudden {
+  display: none;
+}
+
+
+.contents > .quiz > .page.module > .question > .symbol {
+  float: left;
+  font-family: NanumBarunGothicBold;
+  font-size: 60px;
+}
+
+
+.contents > .quiz > .page > .question > .symbol > .o_symbol {
+  position: absolute;
+  background: url(/resource/common/kube_video/image/quiz/o_mark.png) no-repeat;
+  background-size: 100% 100%;
+  width: 102px;
+  height: 101px;
+  left: 0px;
+  top: 0px;
+  display: none;
+  z-index: 1;
+}
+.contents > .quiz > .page > .question > .symbol > .x_symbol {
+  position: absolute;
+  background: url(/resource/common/kube_video/image/quiz/x_mark.png) no-repeat;
+  background-size: 100% 100%;
+  width: 102px;
+  height: 101px;
+  left: 0px;
+  top: 0px;
+  display: none;
+  z-index: 1;
+}
+.contents > .quiz > .page.module > .question > .symbol > .o_symbol,
+.contents > .quiz > .page.module > .question > .symbol > .x_symbol {
+  left: -10px;
+  top: -20px;
+}
+
+
+.contents > .quiz > .page > .question > .symbol > .o_symbol.pretest {
+  background: url(/resource/common/kube_video/image/pretest/o_mark.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page > .question > .symbol > .x_symbol.pretest {
+  background: url(/resource/common/kube_video/image/pretest/x_mark.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.contents > .quiz > .page > .question > .symbol > .o_symbol.sudden {
+  background: url(/resource/common/kube_video/image/sudden/o_mark.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page > .question > .symbol > .x_symbol.sudden {
+  background: url(/resource/common/kube_video/image/sudden/x_mark.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+
+.contents > .quiz > .page > .example {
+  top: 195px;
+  left: 179px;
+  position: absolute;
+  width: 79%;
+  cursor: Pointer;
+}
+.contents > .quiz > .page > .example.half {
+  top: 221px;
+}
+
+
+
+.contents > .quiz > .page > .example.pretest {
+  top: 205px;
+  left: 310px;
+}
+
+.contents > .quiz > .page > .example.sudden {
+  top: 245px;
+  left: 285px;
+}
+
+.contents > .quiz > .page.module > .example {
+  top: 275px;
+}
+
+
+.contents > .quiz > .page > .example > .multiple {
+  list-style-type: none;
+  left: 5px;
+  font-size: 21px;
+  width: 92%;
+  font-weight: 300;
+  margin-bottom: 9px;
+}
+.contents > .quiz > .page > .example > .multiple:hover {
+  color:#e39f4f;
+}
+
+.contents > .quiz > .page > .example > .multiple > div {
+  position: absolute;
+  border: 0px;
+  width: 29px;
+  height: 35px;
+  margin-bottom: 100px;
+}
+.contents > .quiz > .page > .example > .multiple > .text {
+  font-family: KoPubDotumMedium;
+  left: 35px;
+  top: 3px;
+  height: 35px;
+  position: relative;
+  line-height: 155%;
+  font-size: 21px;
+  letter-spacing: -2px;
+}
+
+.contents > .quiz > .page > .example > .multiple > .btn1{
+  background: url(/resource/common/kube_video/image/quiz/btn1.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page > .example > .multiple > .btn2{
+  background: url(/resource/common/kube_video/image/quiz/btn2.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page > .example > .multiple > .btn3{
+  background: url(/resource/common/kube_video/image/quiz/btn3.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page > .example > .multiple > .btn4{
+  background: url(/resource/common/kube_video/image/quiz/btn4.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.contents > .quiz > .page > .example > .multiple > .btn1.toggle{
+  background: url(/resource/common/kube_video/image/quiz/check_btn1.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page > .example > .multiple > .btn2.toggle{
+  background: url(/resource/common/kube_video/image/quiz/check_btn2.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page > .example > .multiple > .btn3.toggle{
+  background: url(/resource/common/kube_video/image/quiz/check_btn3.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page > .example > .multiple > .btn4.toggle{
+  background: url(/resource/common/kube_video/image/quiz/check_btn4.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page > .example > .multiple > .btn1.correct{
+  background: url(/resource/common/kube_video/image/quiz/correct_btn1.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page > .example > .multiple > .btn2.correct{
+  background: url(/resource/common/kube_video/image/quiz/correct_btn2.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page > .example > .multiple > .btn3.correct{
+  background: url(/resource/common/kube_video/image/quiz/correct_btn3.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page > .example > .multiple > .btn4.correct{
+  background: url(/resource/common/kube_video/image/quiz/correct_btn4.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+
+
+
+.contents > .quiz > .page.module > .example > .multiple > .btn1{
+  background: url(/resource/common/kube_video/image/module/btn1.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page.module > .example > .multiple > .btn2{
+  background: url(/resource/common/kube_video/image/module/btn2.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page.module > .example > .multiple > .btn3{
+  background: url(/resource/common/kube_video/image/module/btn3.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page.module > .example > .multiple > .btn4{
+  background: url(/resource/common/kube_video/image/module/btn4.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.contents > .quiz > .page.module > .example > .multiple > .btn1.toggle{
+  background: url(/resource/common/kube_video/image/module/check_btn1.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page.module > .example > .multiple > .btn2.toggle{
+  background: url(/resource/common/kube_video/image/module/check_btn2.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page.module > .example > .multiple > .btn3.toggle{
+  background: url(/resource/common/kube_video/image/module/check_btn3.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page.module > .example > .multiple > .btn4.toggle{
+  background: url(/resource/common/kube_video/image/module/check_btn4.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page.module > .example > .multiple > .btn1.correct{
+  background: url(/resource/common/kube_video/image/module/correct_btn1.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page.module > .example > .multiple > .btn2.correct{
+  background: url(/resource/common/kube_video/image/module/correct_btn2.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page.module > .example > .multiple > .btn3.correct{
+  background: url(/resource/common/kube_video/image/module/correct_btn3.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page.module > .example > .multiple > .btn4.correct{
+  background: url(/resource/common/kube_video/image/module/correct_btn4.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+
+
+
+
+
+.contents > .quiz > .page > .example > .half {
+  list-style-type: none;
+  width: 134px;
+  height: 134px;
+  border: 0px;
+  margin: 90px;
+  cursor: pointer;
+  position: relative;
+}
+
+.contents > .quiz > .page > .example > .half.pretest {
+  width: 221px;
+  height: 221px;
+  margin: 25px;
+}
+.contents > .quiz > .page > .example > .half.sudden {
+  width: 220px;
+  height: 218px;
+  margin: 15px 33px;
+}
+
+.contents > .quiz > .page > .example > .half > .symbol {
+  font-family: KoPubDotumBold;
+  font-style: italic;
+  left: 58px;
+  top: 39px;
+  height: 35px;
+  position: absolute;
+  font-size: 36px;
+  color: red;
+  transition-duration: 0.5s;
+  display: none;
+}
+
+.contents > .quiz > .page > .example > .half > .symbol.pretest {
+  background: url(/resource/common/kube_video/image/pretest/check_symbol.png) no-repeat;
+  background-size: 100% 100%;
+  left: 97px;
+  top: 28px;
+  width: 56px;
+  height: 54px;
+  font-size: 146px;
+  color: #f67313;
+}
+
+.contents > .quiz > .page > .example > .half > .symbol.sudden {
+  background: url(/resource/common/kube_video/image/sudden/check_symbol.png) no-repeat;
+  background-size: 100% 100%;
+  left: 88px;
+  top: 16px;
+  width: 85px;
+  height: 90px;
+  font-size: 146px;
+  color: #f67313;
+}
+
+.contents > .quiz > .page > .example > .half_1{
+  background: url(/resource/common/kube_video/image/quiz/ox_o.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.contents > .quiz > .page > .example > .half_2{
+  background: url(/resource/common/kube_video/image/quiz/ox_x.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.contents > .quiz > .page > .example > .half_1.pretest{
+  background: url(/resource/common/kube_video/image/pretest/ox_o.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.contents > .quiz > .page > .example > .half_2.pretest{
+  background: url(/resource/common/kube_video/image/pretest/ox_x.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.contents > .quiz > .page > .example > .half_1.pretest.toggle{
+  background: url(/resource/common/kube_video/image/pretest/ox_o_toggle.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.contents > .quiz > .page > .example > .half_2.pretest.toggle{
+  background: url(/resource/common/kube_video/image/pretest/ox_x_toggle.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.contents > .quiz > .page > .example > .half_1 > .symbol.toggle{
+  display: block;
+}
+.contents > .quiz > .page > .example > .half_2 > .symbol.toggle{
+  display: block;
+}
+
+.contents > .quiz > .page > .example > .half_1.sudden{
+  background: url(/resource/common/kube_video/image/sudden/ox_o.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.contents > .quiz > .page > .example > .half_2.sudden{
+  background: url(/resource/common/kube_video/image/sudden/ox_x.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.contents > .quiz > .page > .example > .half_1.sudden.toggle{
+  background: url(/resource/common/kube_video/image/sudden/ox_o_toggle.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.contents > .quiz > .page > .example > .half_2.sudden.toggle{
+  background: url(/resource/common/kube_video/image/sudden/ox_x_toggle.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.contents > .quiz > .page > .example > .half > .btn1.toggle{
+  background: url(/resource/common/kube_video/image/quiz/check_btn1.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page > .example > .half > .btn2.toggle{
+  background: url(/resource/common/kube_video/image/quiz/check_btn2.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page > .example > .half > .btn1.correct{
+  background: url(/resource/common/kube_video/image/quiz/correct_btn1.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page > .example > .half > .btn2.correct{
+  background: url(/resource/common/kube_video/image/quiz/correct_btn2.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+
+.contents > .quiz > .page > .confirm {
+  top: 410px;
+  right: 130px;
+  position: absolute;
+  width: 129px;
+  height: 35px;
+  border: 0px;
+  background: url(/resource/common/kube_video/image/quiz/confirm.png) no-repeat;
+  background-size: 100% 100%;
+  cursor: pointer;
+}
+
+.contents > .quiz > .page.module > .confirm{
+  top: 510px;
+  right: 450px;
+  position: absolute;
+  width: 122px;
+  height: 33px;
+  border: 0px;
+  background: url(/resource/common/kube_video/image/quiz/confirm.png) no-repeat;
+  background-size: 100% 100%;
+  cursor: pointer;
+}
+
+.contents > .quiz > .page >.confirm:hover {
+  background: url(/resource/common/kube_video/image/quiz/confirm_over.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+
+
+.contents > .quiz > .page > .confirm.pretest {
+  top: 478px;
+  left: 484px;
+  width: 178px;
+  height: 44px;
+  background: url(/resource/common/kube_video/image/pretest/confirm.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page >.confirm.pretest:hover {
+  background: url(/resource/common/kube_video/image/pretest/confirm.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page > .confirm.sudden {
+  top: 478px;
+  left: 490px;
+  width: 169px;
+  height: 47px;
+  background: url(/resource/common/kube_video/image/sudden/confirm.png) no-repeat;
+  background-size: 100% 100%;
+}
+.contents > .quiz > .page >.confirm.sudden:hover {
+  background: url(/resource/common/kube_video/image/sudden/confirm.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.contents > .quiz > .page > .feedback {
+  background: url(/resource/common/kube_video/image/quiz/feedback.png) no-repeat;
+  background-size: 100% 100%;
+  width: 861px;
+  height: 91px;
+  bottom: 70px;
+  left: 100px;
+  position: absolute;
+}
+
+.contents > .quiz > .page.module > .feedback {
+  background: url(/resource/common/kube_video/image/quiz/feedback.png) no-repeat;
+  background-size: 100% 100%;
+  width: 693px;
+  height: 83px;
+  bottom: 60px;
+  left: 150px;
+  position: absolute;
+}
+
+.contents > .quiz > .page > .feedback.pretest {
+  background: url(/resource/common/kube_video/image/pretest/feedback.png) no-repeat;
+  background-size: 100% 100%;
+  width: 771px;
+  height: 112px;
+  bottom: 70px;
+  left: 190px;
+}
+.contents > .quiz > .page > .feedback.sudden {
+  background: url(/resource/common/kube_video/image/sudden/feedback.png) no-repeat;
+  background-size: 100% 100%;
+  width: 916px;
+  height: 108px;
+  bottom: 90px;
+  left: 120px;
+}
+
+.contents > .quiz > .page > .feedback > .answer > .symbol {
+  font-size: 40px;
+  left: 0px;
+  top: -39%;
+  position: absolute;
+}
+.contents > .quiz > .page > .feedback > .answer > .text {
+  position: absolute;
+  width: 164px;
+  height: 106px;
+  left: 60px;
+  top: 27px;
+}
+
+.contents > .quiz > .page.module > .feedback > .answer > .text {
+  position: absolute;
+  width: 36px;
+  height: 29px;
+  left: 44px;
+  top: 28px;
+}
+
+.contents > .quiz > .page > .feedback > .answer > .text.pretest {
+  position: absolute;
+  width: 155px;
+  height: 90px;
+  left: -152px;
+  top: 10px;
+}
+.contents > .quiz > .page > .feedback > .answer > .text.sudden {
+  position: absolute;
+  width: 185px;
+  height: 67px;
+  left: 18px;
+  top: 29px;
+}
+
+.contents > .quiz > .page > .feedback > .answer > .text_1 {
+  background: url(/resource/common/kube_video/image/quiz/dab1.png) no-repeat;
+}
+.contents > .quiz > .page > .feedback > .answer > .text_2 {
+  background: url(/resource/common/kube_video/image/quiz/dab2.png) no-repeat;
+}
+.contents > .quiz > .page > .feedback > .answer > .text_3 {
+  background: url(/resource/common/kube_video/image/quiz/dab3.png) no-repeat;
+}
+.contents > .quiz > .page > .feedback > .answer > .text_4 {
+  background: url(/resource/common/kube_video/image/quiz/dab4.png) no-repeat;
+}
+
+
+.contents > .quiz > .page.module > .feedback > .answer > .text_1 {
+  background: url(/resource/common/kube_video/image/module/dab1.png) no-repeat;
+}
+.contents > .quiz > .page.module > .feedback > .answer > .text_2 {
+  background: url(/resource/common/kube_video/image/module/dab2.png) no-repeat;
+}
+.contents > .quiz > .page.module > .feedback > .answer > .text_3 {
+  background: url(/resource/common/kube_video/image/module/dab3.png) no-repeat;
+}
+.contents > .quiz > .page.module > .feedback > .answer > .text_4 {
+  background: url(/resource/common/kube_video/image/module/dab4.png) no-repeat;
+}
+
+.contents > .quiz > .page > .feedback > .answer > .text_O {
+  background: url(/resource/common/kube_video/image/quiz/dab_o.png) no-repeat;
+}
+
+.contents > .quiz > .page > .feedback > .answer > .text_X {
+  background: url(/resource/common/kube_video/image/quiz/dab_x.png) no-repeat;
+}
+
+.contents > .quiz > .page > .feedback > .answer > .text_1.pretest {
+  background: url(/resource/common/kube_video/image/pretest/dab_o.png) no-repeat;
+}
+
+.contents > .quiz > .page > .feedback > .answer > .text_2.pretest {
+  background: url(/resource/common/kube_video/image/pretest/dab_x.png) no-repeat;
+}
+
+.contents > .quiz > .page > .feedback > .answer > .text_1.sudden {
+  background: url(/resource/common/kube_video/image/sudden/dab_o.png) no-repeat;
+}
+
+.contents > .quiz > .page > .feedback > .answer > .text_2.sudden {
+  background: url(/resource/common/kube_video/image/sudden/dab_x.png) no-repeat;
+}
+
+
+.contents > .quiz > .page > .feedback > .explain {
+  font-family: KoPubDotumMedium;
+  font-size: 21px;
+  line-height: 130%;
+  color: #000;
+  left: 97px;
+  top: 8px;
+  width: 695px;
+  height: 76px;
+  position: relative;
+  vertical-align: middle;
+  display: table-cell;
+  /* overflow: auto; */
+  letter-spacing: -2px;
+}
+
+.contents > .quiz > .page.module > .feedback > .explain{
+  font-family: KoPubDotumMedium;
+  font-size: 21px;
+  line-height: 130%;
+  color: #000;
+  left: 80px;
+  top: 0px;
+  width: 593px;
+  height: 80px;
+  position: relative;
+  vertical-align: middle;
+  display: table-cell;
+  /* overflow: auto; */
+  letter-spacing: -2px;
+}
+
+.contents > .quiz > .page > .feedback > .explain.pretest {
+  font-size: 21px;
+  color: #fff;
+  left: 20px;
+  top: 3px;
+  width: 731px;
+  height: 105px;
+  vertical-align: middle;
+}
+.contents > .quiz > .page > .feedback > .explain.sudden {
+  font-size: 26px;
+  color: #000;
+  left: 222px;
+  top: 14px;
+  width: 647px;
+  height: 100px;
+  vertical-align: middle;
+}
+.contents > .quiz > .page > .feedback > .next_btn {
+  background: url(/resource/common/kube_video/image/quiz/next_btn.png) no-repeat;
+  width: 69px;
+  height: 88px;
+  top: 0px;
+  right: -8px;
+  position: absolute;
+  border: 0px;
+  cursor: pointer;
+}
+.contents > .quiz > .page > .feedback > .next_btn:hover {
+  background: url(/resource/common/kube_video/image/quiz/next_btn_over.png) no-repeat;
+}
+
+.contents > .quiz > .page.module > .feedback > .next_btn{
+  background: url(/resource/common/kube_video/image/module/next_btn.png) no-repeat;
+  width: 97px;
+  height: 42px;
+  top: 26px;
+  right: -118px;
+  position: absolute;
+  border: 0px;
+  cursor: pointer;
+}
+.contents > .quiz > .page.module > .feedback > .next_btn:hover {
+  background: url(/resource/common/kube_video/image/module/next_btn_over.png) no-repeat;
+}
+
+.contents > .quiz > .page > .feedback > .prev_btn{
+  
+  background: url(/resource/common/kube_video/image/module/prev_btn.png) no-repeat;
+  width: 97px;
+  height: 42px;
+  top: 26px;
+  left: -90px;
+  position: absolute;
+  border: 0px;
+  cursor: pointer;
+  display: none;
+}
+
+.contents > .quiz > .page.module > .feedback > .prev_btn:hover {
+  background: url(/resource/common/kube_video/image/module/prev_btn_over.png) no-repeat;
+}
+
+.contents > .quiz > .page > .feedback > .next_btn.pretest {
+  background: url(/resource/common/kube_video/image/pretest/next_btn.png) no-repeat;
+  width: 97px;
+  height: 86px;
+  top: 8px;
+  right: -129px;
+  position: absolute;
+  border: 0px;
+  cursor: pointer;
+}
+.contents > .quiz > .page > .feedback > .result_btn {
+  background: url(/resource/common/kube_video/image/quiz/result_btn.png) no-repeat;
+  width: 69px;
+  height: 88px;
+  top: 0px;
+  right: -8px;
+  position: absolute;
+  border: 0px;
+  cursor: pointer;
+}
+.contents > .quiz > .page > .feedback > .result_btn:hover {
+  background: url(/resource/common/kube_video/image/quiz/result_btn_over.png) no-repeat;
+}
+
+.contents > .quiz > .page.module > .feedback > .result_btn {
+  background: url(/resource/common/kube_video/image/module/next_btn.png) no-repeat;
+  width: 97px;
+  height: 42px;
+  top: 26px;
+  right: -118px;
+  position: absolute;
+  border: 0px;
+  cursor: pointer;
+}
+.contents > .quiz > .page.module > .feedback > .result_btn {
+  background: url(/resource/common/kube_video/image/module/next_btn_over.png) no-repeat;
+}
+
+.contents > .quiz > .page > .feedback > .relative_btn {
+  background: url(/resource/common/kube_video/image/quiz/relative_btn.png) no-repeat;
+  width: 155px;
+  height: 40px;
+  top: -39px;
+  right: 262px;
+  position: absolute;
+  border: 0px;
+  cursor: pointer;
+}
+.contents > .quiz > .page > .feedback > .relative_btn:hover {
+  background: url(/resource/common/kube_video/image/quiz/relative_btn_over.png) no-repeat;
+}
+.contents > .quiz > .board {
+  width: 100%;
+}
+.contents > .quiz > .board > .top {
+  color: #000;
+}
+.contents > .quiz > .board > .top > .symbol{
+  position: absolute;
+  left: 10%;
+  top: 15%;
+  font-size: 40px;
+
+}
+.contents > .quiz > .board > .top > .totPage{
+  position: absolute;
+  left: 276px;
+  top: 132px;
+  font-size: 45px;
+  color: #000;
+  width: 21px;
+  height: 33px;
+  display: none;
+}
+.contents > .quiz > .board > .top > .explain{
+  position: absolute;
+  left: 49%;
+  top: 144px;
+  font-size: 64px;
+  color: #dfac23;
+  width: 21px;
+  height: 33px;
+}
+/* .contents > .quiz > .board > .top > .explain_0{
+  background: url(/resource/common/kube_video/image/quiz/0.png) no-repeat;
+}
+
+.contents > .quiz > .board > .top > .explain_1{
+  background: url(/resource/common/kube_video/image/quiz/1.png) no-repeat;
+}
+
+.contents > .quiz > .board > .top > .explain_2{
+  background: url(/resource/common/kube_video/image/quiz/2.png) no-repeat;
+}
+
+.contents > .quiz > .board > .top > .explain_3{
+  background: url(/resource/common/kube_video/image/quiz/3.png) no-repeat;
+} */
+
+.contents > .quiz > .board > .middle{
+  position: absolute;
+  top: 269px;
+  left: 246px;
+  width: 130%;
+  height: 50%;
+}
+.contents > .quiz > .board > .middle > .line{
+  border: dashed;
+  border-color: #aaaaaa;
+  border-width: 1px 3px 3px 1px;
+  height: 50%;
+  float: left;
+  top: 10%;
+  position: relative;
+}
+
+.contents > .quiz > .board > .middle > .result{
+  position: relative;
+  float: left;
+  width: 19%;
+  height: 30%;
+  margin: -15px;
+}
+.contents > .quiz > .board > .middle > .result > .symbol {
+  font-size: 50px;
+  text-align: center;
+  font-family: sans-serif;
+  color: #000;
+  bottom: 15%;
+  position: relative;
+}
+.contents > .quiz > .board > .middle > .result > .checkSymbol {
+  width: 121px;
+  height: 121px;
+}
+.contents > .quiz > .board > .middle > .result > .o_symbol {
+  background: url(/resource/common/kube_video/image/quiz/o_symbol.png);
+  background-size: 100% 100%;
+}
+.contents > .quiz > .board > .middle > .result > .x_symbol {
+  background: url(/resource/common/kube_video/image/quiz/x_symbol.png);
+  background-size: 100% 100%;
+
+}
+
+
+.contents > .quiz > .board > .explanation_btn  {
+  background: url(/resource/common/kube_video/image/quiz/explanation_btn.png) no-repeat;
+  background-size: 100% 100%;
+  width: 249px;
+  height: 47px;
+  border: 0px;
+  top: 78%;
+  left: 53%;
+  position: absolute;
+  cursor: pointer;
+}
+
+.contents > .quiz > .board > .explanation_btn:hover  {
+  background: url(/resource/common/kube_video/image/quiz/explanation_btn_over.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.contents > .quiz > .board > .wrong_retry  {
+  background: url(/resource/common/kube_video/image/quiz/wrong_retry.png) no-repeat;
+  background-size: 100% 100%;
+  width: 249px;
+  height: 47px;
+  border: 0px;
+  top: 78%;
+  left: 26%;
+  position: absolute;
+  cursor: pointer;
+}
+
+.contents > .quiz > .board > .wrong_retry:hover  {
+  background: url(/resource/common/kube_video/image/quiz/wrong_retry_over.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.contents > .quiz > .board > .retry  {
+  background: url(/resource/common/kube_video/image/quiz/retry.png) no-repeat;
+  background-size: 100% 100%;
+  width: 136px;
+  height: 35px;
+  border: 0px;
+  top: 73%;
+  left: 43%;
+  position: absolute;
+  cursor: pointer;
+}
+
+.contents > .quiz > .board > .retry:hover  {
+  background: url(/resource/common/kube_video/image/quiz/retry_over.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.videoJump{
+  background: url(/resource/common/kube_video/image/quiz/videoJump.png) no-repeat;
+  background-size: 100% 100%;
+  width: 129px;
+  height: 38px;
+  position: absolute;
+  z-index: 51;
+  bottom: 83px;
+  left: 421px;
+  cursor: pointer;
+  display: none;
+  border: 0px;
+}
+/* 
+.contents > .quiz > .quizTitle {
+  background: url(../../title/quizTitle.png) no-repeat;
+  width: 1012px;
+  height: 98px;
+  position: absolute;
+  top: 84%;
+  left: 0px;
+} */
+
+
+
+.totalQuizpage{
+  top: 107px;
+  position: absolute;
+  left: 192px;
+  font-size: 30px;
+  color: yellow;
+}
+
+
+.board.module{
+  position: absolute;
+  top: 290px;
+  font-size: 30px;
+  left: 0px;
+  text-align: center;
+}
+
+.score_middle{
+  font-size: 80px;
+  vertical-align: middle;
+  color: #8bc23b;
+  margin-bottom: 50px;
+}
+
+
+
+.contents > .quiz > .board.module > .retry  {
+  background: url(/resource/common/kube_video/image/quiz/retry.png) no-repeat;
+  background-size: 100% 100%;
+  width: 122px;
+  height: 33px;
+  border: 0px;
+  top: 113%;
+  left: 51%;
+  position: absolute;
+  cursor: pointer;
+}
+
+.contents > .quiz > .board.module > .explanation  {
+  background: url(/resource/common/kube_video/image/quiz/explanation.png) no-repeat;
+  background-size: 100% 100%;
+  width: 122px;
+  height: 33px;
+  border: 0px;
+  top: 113%;
+  left: 35%;
+  position: absolute;
+  cursor: pointer;
+}

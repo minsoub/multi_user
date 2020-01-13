@@ -1,0 +1,798 @@
+.controller {
+  position: absolute;
+  background-color: #1e1e1e;
+  margin: 0px;
+  padding: 0px;
+  height: 35px;
+  width: 100%;
+  bottom: 0px;
+  left: 0px;
+  cursor: default;
+  z-index: 200;
+}
+
+.button {
+  position: relative;
+  width: 38px;
+  height: 35px;
+  border: 0px;
+  cursor: pointer;
+  border-left: 0.5px solid #000; 
+  border-right: 0.5px solid #000;
+  margin: 0 -0.5px;
+}
+
+.left{
+  float: left;
+}
+.right{
+  float: right;
+}
+
+/* .button:hover{
+  background-position: -38px 0px;
+} */
+
+/* .button.toggle{
+  background-position: -38px 0px;
+} */
+
+/*.button.toggle:hover{
+    background-position: -40px -40px;
+}*/
+
+.menu{
+  background: url(/resource/common/kube_video/image/control/menu.png) no-repeat;
+  width: 70px;
+  height: 16px;
+  margin: 11px 10px 10px 10px;
+}
+.menu:hover,
+.menu.toggle{
+  background-position: -70px 0px;
+}
+.additional{
+  background: url(/resource/common/kube_video/image/control/support.png) no-repeat;
+}
+.bookMark {
+  background: url(/resource/common/kube_video/image/control/scrap.png) no-repeat;
+  display: none;
+}
+.scriptSearch {
+  background: url(/resource/common/kube_video/image/control/search.png) no-repeat;
+}
+.search {
+  background: url(/resource/common/kube_video/image/control/search_e.png) no-repeat;
+}
+.note {
+  background: url(/resource/common/kube_video/image/control/dic.png) no-repeat;
+}
+.play {
+  background: url(/resource/common/kube_video/image/control/play.png) no-repeat;
+}
+.pause  {
+  background: url(/resource/common/kube_video/image/control/pause.png) no-repeat;
+}
+.replay {
+  background: url(/resource/common/kube_video/image/control/replay.png) no-repeat;
+}
+.script {
+  background: url(/resource/common/kube_video/image/control/script.png) no-repeat;
+}
+.script.toggle{
+  background-position: -38px 0px;
+}
+.mobile_down {
+  background: url(/resource/common/kube_video/image/control/mobile_down.png) no-repeat;
+  display: none;
+}
+.setUp {
+  background: url(/resource/common/kube_video/image/control/setUp.png) no-repeat;
+}
+.quality {
+  display: none;
+  background: url(/resource/common/kube_video/image/control/quality.png) no-repeat;
+}
+.sound {
+  background: url(/resource/common/kube_video/image/control/sound.png) no-repeat;
+  border-right: 0px;
+}
+.fullscreen {
+	background: url(/resource/common/kube_video/image/control/fullscreen.png) no-repeat;
+  position: relative;
+  width: 38px;
+  height: 35px;
+  border: 0px;
+  cursor: pointer;
+}
+
+/* .fullscreen:hover{
+  background-position: -38px 0px;
+}
+.fullscreen.toggle{
+  background-position: 0px -35px;
+}
+.fullscreen.toggle:hover{
+  background-position: -38px -35px;
+} */
+
+.prevPage {
+  background: url(/resource/common/kube_video/image/control/prev.png) no-repeat;
+}
+.nextPage {
+  background: url(/resource/common/kube_video/image/control/next.png) no-repeat;
+}
+
+.close {
+  position: relative;
+  border: 0px;
+  background: url(/resource/common/kube_video/image/control/close.png) no-repeat;
+  width: 65px;
+  height: 27px;
+  margin: 6px 13px 5px 5px;
+  cursor: pointer;
+}
+.close:hover {
+  background-position: -65px 0px;
+}
+
+.supportWrap {
+  position: absolute;
+  background: url(/resource/common/kube_video/image/control/supportWrap.png) no-repeat;
+  width: 251px;
+  height: 63px;
+  top: -63px;
+  left: 18px;
+  display: none;
+}
+
+.supportWrap > button {
+  width: 70px;
+  height: 63px;
+  position: absolute;
+  border:0px;
+}
+.supportWrap > button:hover {
+  background-position: -70px 0px;
+}
+
+.supportWrap > .help{
+  background: url(/resource/common/kube_video/image/control/help.png) no-repeat;
+  left:9px;
+}
+.supportWrap > .map{
+  background: url(/resource/common/kube_video/image/control/map.png) no-repeat;
+  left: 91px;
+}
+.supportWrap > .down{
+  top:2px;
+  background: url(/resource/common/kube_video/image/control/down.png) no-repeat;
+  left: 176px;
+}
+.supportWrap > .ebook{
+  background: url(/resource/common/kube_video/image/control/ebook.png) no-repeat;
+  left: 257px;
+}
+.supportWrap > .searchBtn{
+  background: url(/resource/common/kube_video/image/control/searchBtn.png) no-repeat;
+  left: 343px;
+}
+
+
+
+
+.searchScriptWrap {
+  position: absolute;
+  background: hsla(0, 10%, 10%, 0.9);
+  font-family: NanumBarunGothicLight;
+  font-size: 15px;
+  width: 100%;
+  top: -207px;
+  height: 207px;
+  z-index: 105;
+  color: #ffffff;
+  left:0px;
+  line-height : 135%;
+  display: none;
+  letter-spacing:-1px;
+  z-index: 201;
+}
+
+.searchScript_top{
+  position: relative;
+  height: 30px;
+  margin-left: 280px;
+}
+
+.searchInput{
+  position: relative;
+  border-radius: 10px;
+  border: 1px;
+  margin-left: 28px;
+  margin-top: 5px;
+  padding : 3px;
+  width: 450px;
+  text-indent : 0.7em;
+}
+
+.searchBtn{
+  background: url(/resource/common/kube_video/image/control/search.png) no-repeat;
+  width: 30px;
+  height: 24px;
+  position: absolute;
+  background-size: 58px 31px;
+  cursor: pointer;
+}
+
+
+
+.scriptScroll{
+  margin-top: 10px;
+  width:10px;
+  height:155px;
+  margin-left:930px;
+  background-color:#252525;
+  border-radius: 3px;
+  display: none;
+}
+.scriptScroll > .bar{
+  position: relative;
+  border-radius: 3px;
+  width:10px;
+  height:20px;
+  background:#fae100;
+}
+
+.searchListWrap {
+  position: relative;
+  overflow: hidden;
+  /*overflow-x:hidden;
+  overflow-y:auto;*/
+  width: 85%;
+  height: 160px;
+  margin-top: 7px;
+  left: 4%;
+  float: left;
+}
+
+.searchList {
+  position: relative;
+  width: 900px;
+  top:0px;
+  height: auto;
+  float: left;
+}
+
+
+/*-----------------화면이동 전용 CSS--------------------*/
+/*.part {
+  padding: 3px 2px 1px 20px;
+}
+.searchLine {
+  color: #252525;
+  font-size: 1.4em;
+  border: 0.5px #333333 solid;
+  width: 95%;
+  margin-left: 3%;
+}
+.searchScript:hover{
+  background: #00a6d9;
+  color: #000;
+}*/
+/*-----------------화면이동 전용 CSS--------------------*/
+
+/*.scrapWrap{
+  position: absolute;
+  width: 100%;
+  height: 100px;
+  top: -100px;
+  color: #fff;
+  background-color: hsla(0, 0%, 20%, 0.9);
+  font-family: NanumBarunGothicLight;
+  font-size: 16px;
+  line-height: 21px;
+  letter-spacing: 0.7px;
+  display: none;
+}
+.scrapText{
+  position: absolute;
+  width: 180px;
+  height: 80px;
+  left: 70px;
+  top: 10px;
+}
+.scrapTitle{
+  font-size: 20px;
+  text-align: center;
+  margin-top: 5px;
+}
+.scrapInfo{
+  font-size: 16px;
+  text-align: center;
+  margin-top: 10px;
+}
+.ScrapList{
+  position: absolute;
+  width: 530px;
+  height: 90px;
+  top: 5px;
+  left: 250px;
+  background-color: hsla(0, 0%, 80%, 0.9);
+}
+.scrapBox{
+  padding: 8px;
+  position: relative;
+  top: 14px;
+  background: #fae100;
+  color: #000;
+  margin-left: 15px;
+  cursor: pointer;
+  display: none;
+}
+.scrapBtn{
+  position: absolute;
+  width: 126px;
+  height: 36px;
+  border: 0px;
+  left: 800px;
+}
+.scrapAdd {
+  background: url(/resource/common/kube_video/image/control/scrapAdd.png) no-repeat;
+  background-size: 100% 100%;
+  top: 12px;
+}
+.scrapEdit {
+  background: url(/resource/common/kube_video/image/control/scrapEdit.png) no-repeat;
+  background-size: 100% 100%;
+  top: 55px;
+}
+.scrapEdit.toggle {
+  background: url(/resource/common/kube_video/image/control/scrapRemove.png) no-repeat;
+  background-size: 100% 100%;
+}*/
+
+.speedWrap{
+  position: absolute;
+  width: 80px;
+  height: 200px;
+  top: -200px;
+  right: 0px;
+  background-color: hsla(0, 0%, 10%, 0.7);
+  font-family: NanumBarunGothicBold;
+  font-size: 14px;
+  text-align: center;
+  color: #fff;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  display: none;
+  z-index: 200;
+}
+.speedTitle{
+  margin-top: 10px;
+}
+.speedLine{
+  border: 0.3px #bbbbbb solid;
+  width: 80%;
+  top: 30px;
+  position: absolute;
+  margin-left: 7px;
+}
+.speedPart{
+  margin-top: 16px;
+  margin-bottom: 13px;
+  cursor: pointer;
+}
+.speedPart:hover,
+.speedPart.toggle{
+  color: #fae100;
+}
+
+
+.qualityWrap{
+  position: absolute;
+  width: 80px;
+  height: 100px;
+  top: -100px;
+  right: 0px;
+  background-color: hsla(0, 0%, 10%, 0.7);
+  font-family: NanumBarunGothicBold;
+  font-size: 14px;
+  text-align: center;
+  color: #fff;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  display: none;
+  z-index: 200;
+}
+.qualityTitle{
+  margin-top: 10px;
+}
+.qualityLine{
+  border: 0.3px #bbbbbb solid;
+  width: 80%;
+  top: 30px;
+  position: absolute;
+  margin-left: 7px;
+}
+.qualityPart{
+  margin-top: 16px;
+  margin-bottom: 13px;
+  cursor: pointer;
+}
+.qualityPart:hover,
+.qualityPart.toggle{
+  color: #fae100;
+}
+
+.line{
+  background: url(/resource/common/kube_video/image/control/line.png) no-repeat;
+  width: 6px;
+  height: 27px;
+  margin: 5px 3px 5px 3px;
+}
+
+.timeLineWrap {
+  position: absolute;
+  width: 100%;
+  height: 6px;
+  background: none;
+  cursor: pointer;
+  border-radius: 0px;
+  top: -6px;
+  z-index: 201;
+}
+
+.timeLine.ui-widget {
+  width: 100%;
+  height: 6px;
+  left: 0px;
+  background: #000;
+  font-size: 0.6em;
+  border: 0px;
+  border-radius: 0px;
+}
+.timeLine > .ui-slider-handle {
+  border: none;
+  width: 14px;
+  height: 14px;
+  z-index: 101;
+  top: -4px;
+  left: 3px;
+  margin-left: -10px;
+  background: #fae100;
+  border-radius: 0px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: none;
+}
+
+.timeLine > .ui-slider-handle.toggle{
+  display: block;
+}
+
+.timeLine > .ui-widget-header{
+  background: #fae100;
+  border-radius: 0px;
+  height: 6px;
+}
+.timeLine.ui-widget.toggle{
+  height: 10px;
+  top: 0px;
+}
+.timeLine > .ui-widget-header.toggle{
+  height: 10px;
+}
+
+
+.soundLineWrap {
+  position: relative;
+  width: 100px;
+  height: 5px;
+  background-color: hsla(0, 0%, 10%, 0.7);
+  margin-left: 10px;
+  float: left;
+  cursor: pointer;
+  top: 17px;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+}
+.soundLine.ui-widget {
+  width: 100%;
+  height: 5px;
+  background: #000;
+  border: 0px;
+  border-radius: 0px;
+}
+.soundLine > .ui-slider-handle {
+  border: none;
+  width: 11px;
+  height: 11px;
+  z-index: 101;
+  top: -3px;
+  margin-left: -2px;
+  left: 1px;
+  background: #fff;
+  border-radius: 10px;
+  /* display: none; */
+}
+.soundLine > .ui-widget-header{
+  background: #fae100;
+  border-radius: 0px;
+}
+
+
+.timeBox{
+  color: #fff;
+  font-family: NanumBarunGothicLight;
+  margin: 14px;
+  font-size: 12px;
+}
+.pageBox{
+  color: #fff;
+  font-family: NanumBarunGothicBold;
+  margin-top: 8px;
+  font-size: 16px;
+  margin-right: 5px;
+}
+.curPage{
+  color: #17b3b0;
+  font-size: 20px;
+}
+
+/* 2018.04.05 민종희D 추가 */
+.suddenBtn1{
+  position: absolute;
+  width: 284px;
+  height: 71px;
+  left: 700px;
+  bottom: 100px;
+  z-index: 51;
+  display: none;
+
+}
+.suddenBtn1 > button{
+	background: url(../img/btnDown1.png) no-repeat;
+	border: 0px;
+	width: 100%;
+	height: 100%;
+	cursor: pointer;
+}
+.suddenBtn1 > button:hover{
+	background: url(../img/btnDown1_over.png) no-repeat;
+}
+/* /////////////////// */
+
+
+
+/* .bookMarkBoard {
+    display: none;
+    position: absolute;
+    background-color: hsla(0, 0%, 20%, 0.9);
+    width: 24%;
+    height: 600%;
+    left: 12%;
+    top : -600%;
+}
+.bookMarkBoard > .list {
+}
+
+.bookMarkBoard > .list > .book {
+  margin: 3px 6px 3px 6px;
+}
+.bookMarkBoard > .list > .book > .subject {
+  width: 35%;
+  height: 10%;
+  background-color: hsla(0, 50%, 10%, 0.9);
+  text-align: center;
+  border: 0px;
+  margin-right: 5px;
+  margin-left: 10px;
+  color: #ffffff;
+  font-size: 15px;
+  position: relative;
+  background-color: hsla(0, 0%, 10%, 0.8);
+}
+.bookMarkBoard > .list > .book > .markTime {
+  width: 35%;
+  height: 10%;
+  font-size: 15px;
+  border: 0px;
+  text-align: center;
+  color: #ffffff;
+  position: relative;
+  background-color: hsla(0, 0%, 10%, 0.8);
+  padding-top : 3px;
+}
+.bookMarkBoard > .list > .book > .save {
+  background-color: #fae100;
+  border: 0px;
+  font-size: 0.9em;
+  color: #ffffff;
+  position: relative;
+  border-radius: 2px;
+  padding-top: 2px;
+  font-weight: 500;
+
+}
+.bookMarkBoard > .list > .book > .Bclose {
+  background-color: #fae100;
+  border: 0px;
+  background-color: hsla(0, 40%, 10%, 0);
+  color: #ffffff;
+  font-size: 25px;
+  position: relative;
+  font-weight: 800;
+}
+.bookMarkBoard > .boardTop {
+  background-color: #fae100;
+  text-align: center;
+  color: #ffffff;
+  height: 12%;
+  font-size: 16px;
+  padding-top: 5px
+}
+.bookMarkBoard > .list > .line {
+  border: 0.5px solid rgb(48, 48, 48);
+  width: 93%;
+  height: 0px;
+  position: relative;
+  left : 7px;
+} */
+
+
+.scrapWrap{
+  position: absolute;
+  width: 100%;
+  height: 100px;
+  top: -100px;
+  color: #fff;
+  background-color: hsla(0, 0%, 20%, 0.9);
+  font-family: NanumBarunGothicLight;
+  font-size: 16px;
+  line-height: 21px;
+  letter-spacing: 0.7px;
+  display: none;
+  z-index: 202;
+}
+.scrapText{
+  position: absolute;
+  width: 180px;
+  height: 80px;
+  left: 70px;
+  top: 10px;
+}
+.scrapTitle{
+  font-size: 20px;
+  text-align: center;
+  margin-top: 5px;
+}
+.scrapInfo{
+  font-size: 16px;
+  text-align: center;
+  margin-top: 10px;
+}
+.ScrapList{
+  position: absolute;
+  width: 530px;
+  height: 90px;
+  top: 5px;
+  left: 250px;
+  background-color: hsla(0, 0%, 80%, 0.9);
+}
+.scrapBox{
+  padding: 8px;
+  position: relative;
+  top: 14px;
+  background: #00a8ff;
+  color: #000;
+  margin-left: 15px;
+  cursor: pointer;
+  display: none;
+}
+.scrapBtn{
+  position: absolute;
+  width: 126px;
+  height: 36px;
+  border: 0px;
+  left: 800px;
+}
+.scrapAdd {
+  background: url(/resource/common/kube_video/image/control/scrapAdd.png) no-repeat;
+  background-size: 100% 100%;
+  top: 12px;
+  cursor: pointer;
+}
+.scrapEdit {
+  background: url(/resource/common/kube_video/image/control/scrapEdit.png) no-repeat;
+  background-size: 100% 100%;
+  top: 55px;
+  cursor: pointer;
+}
+.scrapEdit.toggle {
+  background: url(/resource/common/kube_video/image/control/scrapRemove.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.nextAlert {
+  position: absolute;
+  width: 85px;
+  height: 53px;
+  right: 50px;
+  bottom: 40px;
+  transition-duration: 1.0s;
+  background: url(/resource/common/kube_video/image/control/moveAlert.png) no-repeat;
+  display: none;
+  z-index: 201;
+}
+
+
+
+.tooltips {
+  -webkit-transition: bottom .3s ease-in-out, opacity .3s ease-in-out;
+  -moz-transition: bottom .3s ease-in-out, opacity .3s ease-in-out;
+  transition: bottom .3s ease-in-out, opacity .3s ease-in-out;
+  background-color: rgba(0, 0, 0, 0.8);
+  -webkit-box-shadow: 0px 0px 3px 1px rgba(50, 50, 50, 0.4);
+  -moz-box-shadow: 0px 0px 3px 1px rgba(50, 50, 50, 0.4);
+  box-shadow: 0px 0px 3px 1px rgba(50, 50, 50, 0.4);
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  color: #ffffff;
+  font-size: 12px;
+  margin-bottom: 10px;
+  padding: 7px 12px;
+  position: absolute;
+  width: auto;
+  min-width: 50px;
+  max-width: 300px;
+  word-wrap: break-word;
+  z-index: 9999;
+  width: 55px;
+  top: -33px;
+  margin-left: -25px;
+  text-align: center;
+  display: none;
+}
+
+
+
+.tooltips.fullTool {
+  margin-left: -35px;
+}
+
+
+.tooltips.playTool {
+  margin-left: 0px;
+}
+
+
+
+.titmeLineThumbnailWrap{
+  position: absolute;
+  width: 120px !important; 
+  height: 80px !important;
+  background: #000;
+  top: -92px;
+  padding: 3px;
+  overflow: hidden;
+  display: none;
+}
+.titmeLineThumbnail{
+  position: absolute;
+  /* background: url(../img/timeTum.jpg) no-repeat; */
+  width: 120px !important; 
+  height: 80px !important;
+}
+.ThumbnailTime{
+  color: #fff;
+  font-family: NanumBarunGothicLight;
+  margin: 14px;
+  font-size: 12px;
+  z-index: 100;
+  position: absolute;
+  left: 28px;
+  bottom: -7px;
+  background: #000;
+  padding: 3px;
+}

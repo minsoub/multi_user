@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Promote">
+	<typeAlias alias="PromoteDto" type="kr.co.neodreams.multi_user.dto.PromoteDto"/>
+
+	<insert id="Promote#insertPromote">
+		<selectKey keyProperty="p_seq" resultClass="int">
+		    select isnull(max(p_seq), 0) + 1 from tbSVC_PROMOTE 
+		</selectKey>
+		
+		insert into tbSVC_PROMOTE (p_seq, req_dept_code, req_empno, p_title, p_date, start_time, end_time, p_target_code, p_target_desc, energy_flag, p_status, reg_date, last_mod_date) 
+		values (#p_seq#, #req_dept_code#, #req_empno#, #p_title#, #p_date#, #start_time#, #end_time#, #p_target_code#, #p_target_desc#, #energy_flag#, #p_status#, (select convert(varchar(19), getdate(), 20)), (select convert(varchar(19), getdate(), 20)))
+	</insert>
+	
+	<select id="Promote#getPromoteList" resultClass="java.util.HashMap">
+		select *
+		  from (select a.*
+				       ,b.name
+				       ,c.dept_name
+				  from tbSVC_PROMOTE a
+				 inner join tbSVC_TDMSEMP b
+				    on a.req_empno = b.empno
+				 inner join tbSVC_TDMSDEPT c
+				    on a.req_dept_code = c.dept_code
+				) as list
+		<dynamic prepend="where">
+			<isNotEmpty property="srh_sel_status" prepend="and" removeFirstPrepend="true">
+		  		p_status = $srh_sel_status$
+			</isNotEmpty>
+			<isNotEmpty property="req_empno" prepend="and" removeFirstPrepend="true">
+			  req_empno = #req_empno#
+			</isNotEmpty>
+			<isEqual property="srh_gubun" compareValue="all" prepend="and" removeFirstPrepend="true">
+				(p_title like '%$srh_keyword$%' 
+					or name like '%$srh_keyword$%')
+			</isEqual>
+			<isEqual property="srh_gubun" compareValue="1" prepend="and" removeFirstPrepend="true">
+			  p_title like '%$srh_keyword$%'
+			</isEqual>
+			<isEqual property="srh_gubun" compareValue="2" prepend="and" removeFirstPrepend="true">
+			  name like '%$srh_keyword$%'
+			</isEqual>
+			<isNotEmpty property="start_date" prepend="and" removeFirstPrepend="true">
+				p_date between #start_date# and #end_date#
+			</isNotEmpty>
+		</dynamic>
+		order by reg_date desc
+		OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+        FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="Promote#getPromoteListCnt" resultClass="int">
+		select count(*) as totalCnt
+		  from tbSVC_PROMOTE a
+		 inner join tbSVC_TDMSEMP b
+		    on a.req_empno = b.empno
+		 inner join tbSVC_TDMSDEPT c
+		    on a.req_dept_code = c.dept_code
+		<dynamic prepend="where">
+			<isNotEmpty property="srh_sel_status" prepend="and" removeFirstPrepend="true">
+		  		p_status = $srh_sel_status$
+			</isNotEmpty>
+			<isNotEmpty property="req_empno" prepend="and" removeFirstPrepend="true">
+			  req_empno = #req_empno#
+			</isNotEmpty>
+			<isEqual property="srh_gubun" compareValue="all" prepend="and" removeFirstPrepend="true">
+				(p_title like '%$srh_keyword$%' 
+					or name like '%$srh_keyword$%')
+			</isEqual>
+			<isEqual property="srh_gubun" compareValue="1" prepend="and" removeFirstPrepend="true">
+			  p_title like '%$srh_keyword$%'
+			</isEqual>
+			<isEqual property="srh_gubun" compareValue="2" prepend="and" removeFirstPrepend="true">
+			  name like '%$srh_keyword$%'
+			</isEqual>
+			<isNotEmpty property="start_date" prepend="and" removeFirstPrepend="true">
+				p_date between #start_date# and #end_date#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="Promote#getPromoteDetail" resultClass="java.util.HashMap">
+		select a.*
+		       ,b.name
+		       ,b.mailno
+		       ,b.telno
+		       ,c.dept_name 
+		  from tbSVC_PROMOTE a
+		 inner join tbSVC_TDMSEMP b
+		    on a.req_empno = b.empno
+		 inner join tbSVC_TDMSDEPT c
+		    on a.req_dept_code = c.dept_code
+		 where p_seq = $p_seq$  
+	</select>
+	
+	<update id="Promote#updatePromote">
+		update tbSVC_PROMOTE
+		   set last_mod_date = (select convert(varchar(19), getdate(), 20))
+	           ,p_status = $p_status$
+	           <isEqual property="p_status" compareValue="3" prepend=",">
+	           	reject_desc = #reject_desc#
+	           </isEqual>
+	           <isEqual property="p_status" compareValue="4" prepend=",">
+	           	cancel_desc = #cancel_desc#
+	           </isEqual>
+		<![CDATA[
+		where p_seq = #p_seq#
+		]]>	           
+	</update>
+	
+	<select id="Promote#getSaList" resultClass="java.util.HashMap">
+		select a.*
+		       ,b.name
+		       ,b.levelnm
+		       ,c.dept_name
+		       ,b.mailno
+		       ,b.telno
+		       ,b.hp
+		  from multi_admin a
+		 inner join tbSVC_TDMSEMP b
+		    on a.empno = b.empno
+		 inner join tbSVC_TDMSDEPT c
+		    on b.deptno = c.dept_code
+         where adm_gubun = 1	
+	</select>
+	
+	<delete id="Promote#deleteSa">
+		delete multi_admin where empno = #empno# and adm_gubun = 1
+	</delete>
+	
+	<insert id="Promote#insertSa">
+		insert into multi_admin
+		values (#empno#, (select convert(varchar(8), getdate(), 112) + replace(convert(varchar(8), getdate(), 114), ':', '')), #reg_empno#, 1)
+	</insert>
+	
+	<select id="Promote#getUserList" resultClass="java.util.HashMap">
+		select * 
+		       ,dbo.Split_str(dbo.Fu_dept_info(deptno, '', ','), ',',2) as dept_name1
+			   ,dbo.Split_str(dbo.Fu_dept_info(deptno, '', ','), ',',3) as dept_name2 
+		  from (select tt.empno
+				       ,name
+				       ,jikyee
+				       ,telno
+				       ,deptno
+				       ,levelnm
+				  from tbSVC_TDMSEMP tt with (nolock)
+				 where empno not in (select empno from multi_admin with (nolock) where adm_gubun = 1)
+			   ) as list
+	  <isNotEmpty property="srh_keyword" prepend="where">
+	  		name like '%$srh_keyword$%'
+	  </isNotEmpty>		
+	  order by name asc
+	  OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+      FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="Promote#getUserListCnt" resultClass="int">
+		select count(*) as totCnt
+		  from (select empno
+				       ,name
+				       ,jikyee
+				       ,telno
+				  from tbSVC_TDMSEMP tt with (nolock)
+				 where empno not in (select empno from multi_admin with (nolock) where adm_gubun = 1)
+			   ) as list
+	  <isNotEmpty property="srh_keyword" prepend="where">
+	  		name like '%$srh_keyword$%'
+	  </isNotEmpty>			  
+	</select>
+</sqlMap>

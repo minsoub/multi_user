@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Broadcast">
+	<typeAlias alias="BroadcastDto" type="kr.co.neodreams.multi_user.dto.BroadcastDto"/>
+	
+	<select id="Broadcast#getNewsList" resultClass="BroadcastDto">
+  		SELECT num
+  		       ,re_form
+  		       ,pdsimg
+  		       ,subject
+  		       ,R_date
+  		       ,visited
+  		       ,Re_count
+  		       ,re_comment
+  		       ,Re_Step
+  		       ,pdsFile
+  		       ,convert(varchar,dateadd(ms,CAST(VC.duration AS int),0),114) AS durationTime
+  		       ,CAST(VC.duration AS int) AS duration
+  		       ,(select vst.img_url from vod_s1_thumb vst where vst.num = vc.cid) as thumb_log_path
+  		  FROM vod_s1 VS
+  		  LEFT JOIN TVM_CONTENTS VC ON VC.cid = cast(VS.Num AS char(20))
+  		 where Re_step = '$dir01$' 
+  		   AND Re_level = '$dir02$'
+  		   AND convert(varchar(10),getdate(),120) >= R_date
+  		 <isNotEmpty prepend="and" property="searchString">     
+  		       (Subject LIKE '%$searchString$%' 
+  		        or Content LIKE '%$searchString$%')
+  		 </isNotEmpty>
+  		 <isEqual property="dir02" compareValue="15">
+  		 	and substring(R_date,1,4) >= 2017
+  		 </isEqual>
+  		 <isNotEmpty prepend="and" property="searchStDate">
+  		 	<isNotEmpty property="searchEdDate">
+  		 		CONVERT(DATETIME, R_date, 120) BETWEEN CONVERT(DATETIME, #searchStDate#, 120) AND CONVERT(DATETIME, #searchEdDate#, 120)
+  		 	</isNotEmpty>
+  		 </isNotEmpty>
+  		 
+  		 <isEqual property="dir02" compareValue="5">
+  		 	and substring(R_date,1,4) >= 2018
+  		 </isEqual>
+  		 order by R_date DESC , num DESC
+         OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+ 	</select>
+	
+	<select id="Broadcast#getNewsListCnt" resultClass="int">
+  		SELECT count(*) as totalCnt 
+  		  FROM vod_s1 
+  		 where Re_step = '$dir01$' 
+  		   AND Re_level = '$dir02$'
+  		   AND convert(varchar(10),getdate(),120) >= R_date
+  		 <isNotEmpty prepend="and" property="searchString">     
+  		       (Subject LIKE '%$searchString$%' 
+  		        or Content LIKE '%$searchString$%')
+  		 </isNotEmpty>  
+  		 <isNotEmpty prepend="and" property="searchStDate">
+  		 	<isNotEmpty property="searchEdDate">
+  		 		CONVERT(DATETIME, R_date, 120) BETWEEN CONVERT(DATETIME, #searchStDate#, 120) AND CONVERT(DATETIME, #searchEdDate#, 120)
+  		 	</isNotEmpty>
+  		 </isNotEmpty>
+  		 <isEqual property="dir02" compareValue="15">
+  		 	and substring(R_date,1,4) >= 2017
+  		 </isEqual>     
+  		 <isEqual property="dir02" compareValue="5">
+  		 	and substring(R_date,1,4) >= 2018
+  		 </isEqual>
+ 	</select>
+	
+	<select id="Broadcast#getNewsList2" resultClass="BroadcastDto">
+		SELECT num,re_form,pdsimg,subject,R_date,visited,Re_count,re_comment,Re_Step,pdsFile 
+		  FROM vod_s1 
+		 where ((Re_step = '$dir01$' AND Re_level = '$dir02$') 
+		 		or (Re_step = '$dir01$' AND Re_level = '$dir02_1$') 
+		 		<![CDATA[
+		 		or (Re_step = '$dir01$' AND Re_level = '$dir02_2$' AND substring(R_date,1,4) <= 2016)
+		 		]]> 
+		 		or (Re_step = '$dir01$' AND Re_level = '$dir02_3$'))
+		   AND convert(varchar(10),getdate(),120) >= R_date
+           <isNotEmpty prepend="and" property="searchString">     
+  		   		(Subject LIKE '%$searchString$%' 
+  		        or Content LIKE '%$searchString$%')
+  		   </isNotEmpty>       
+  		   and num != 11470
+  		   order by R_date DESC , num DESC
+  		   OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+           FETCH NEXT #perPageCnt# ROWS ONLY	
+	</select>
+	
+	<select id="Broadcast#getNewsListCnt2" resultClass="int">
+  		SELECT count(*) as totalCnt 
+		  FROM vod_s1 
+		 where ((Re_step = '$dir01$' AND Re_level = '$dir02$') 
+		 		or (Re_step = '$dir01$' AND Re_level = '$dir02_1$') 
+		 		<![CDATA[
+		 		or (Re_step = '$dir01$' AND Re_level = '$dir02_2$' AND substring(R_date,1,4) <= 2016)
+		 		]]> 
+		 		or (Re_step = '$dir01$' AND Re_level = '$dir02_3$'))
+		   AND convert(varchar(10),getdate(),120) >= R_date
+           <isNotEmpty prepend="and" property="searchString">     
+  		   		(Subject LIKE '%$searchString$%' 
+  		        or Content LIKE '%$searchString$%')
+  		   </isNotEmpty>
+  		   and num != 11470
+	</select>
+</sqlMap>

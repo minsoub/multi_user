@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DisplayBoard">
+	<typeAlias alias="DisplayBoardDto" type="kr.co.neodreams.multi_user.dto.DisplayBoardDto"/>
+	
+	<select id="DisplayBoard#getMypageDisplayBoardList" resultClass="DisplayBoardDto">
+        SELECT
+          OM.SM_SEQ,
+          OM.SM_NO,
+          OM.SM_DATE,
+          OM.SM_SVC2,
+          OM.SM_MDNAME,
+          OM.SM_TITLE,
+          OM.SM_LSTATE,
+          SC.CD2_NAME,
+          OM.SM_FSTATE,
+          OM.SM_ISSIGN,
+          OM.SM_SIGNNO,
+          OM.SM_WDATE,
+          DP.SDP_SEQ,
+          DP.SDP_FDATE,
+          DP.SDP_TDATE
+        FROM
+          tbSVC_ORDMASTER AS OM
+          INNER JOIN tbSVC_DISPLAY AS DP
+            ON OM.SM_NO = DP.SM_NO
+          INNER JOIN tbSET_CD2 AS SC
+            ON OM.SM_LSTATE = SC.CD2_CODE
+		<![CDATA[
+        WHERE (
+    	    (OM.SM_SVC1 = '1002')
+    	    AND (OM.SM_MCCD = '1133')
+    	    AND (OM.SM_MEMPNO = '$SM_MEMPNO$')
+    	     )
+    	]]>
+        <isNotEmpty property="SM_WDATE_FROM" >
+        	AND convert(VARCHAR(10), OM.SM_WDATE, 23) >= '$SM_WDATE_FROM$'
+       	 </isNotEmpty>
+         <isNotEmpty property="SM_WDATE_TO">
+         <![CDATA[
+            AND convert(VARCHAR(10), OM.SM_WDATE, 23) <= '$SM_WDATE_TO$'
+             ]]>
+         </isNotEmpty>
+        ORDER BY OM.SM_SEQ DESC
+        <isNotEmpty property="pageNo">
+        	<![CDATA[
+        	OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+        	FETCH NEXT #perPageCnt# ROWS ONLY
+        	]]>
+        </isNotEmpty>
+ 	</select>
+ 	
+	<select id="DisplayBoard#getMypageDisplayBoardListCount" resultClass="int">
+		SELECT
+            count(*) as totalCnt 
+        FROM
+          tbSVC_ORDMASTER AS OM
+          INNER JOIN tbSVC_DISPLAY AS DP
+            ON OM.SM_NO = DP.SM_NO
+          INNER JOIN tbSET_CD2 AS SC
+            ON OM.SM_LSTATE = SC.CD2_CODE
+		<![CDATA[
+        WHERE (
+    	    (OM.SM_SVC1 = '1002')
+    	    AND (OM.SM_MCCD = '1133')
+    	    AND (OM.SM_MEMPNO = '$SM_MEMPNO$')
+    	     )
+    	]]>
+        <isNotEmpty property="SM_WDATE_FROM" >
+        	AND convert(VARCHAR(10), OM.SM_WDATE, 23) >= '$SM_WDATE_FROM$'
+       	 </isNotEmpty>
+         <isNotEmpty property="SM_WDATE_TO">
+         <![CDATA[
+            AND convert(VARCHAR(10), OM.SM_WDATE, 23) <= '$SM_WDATE_TO$'
+             ]]>
+         </isNotEmpty>
+ 	</select>
+ 	
+ 	<select id="DisplayBoard#select_categorey" resultClass="Tbsetcd2Dto">
+ 		SELECT CD2_CODE, CD2_NAME FROM tbSET_CD2
+		WHERE (CD2_CD1 = '1002') AND (CD2_STATE = '1')
+		ORDER BY CD2_SORT, CD2_NAME
+ 	</select>
+ 	
+ 	
+ 	<!-- 저장################################################################  -->
+ 	<select id="DisplayBoard#select_maxnum" resultClass="DisplayBoardDto">
+  		SELECT MAX(CONVERT(INT,SUBSTRING(SM_NO, 9, LEN(SM_NO)-8))) AS N_SM_NO FROM tbSVC_ORDMASTER
+ 	</select>
+ 	<select id="DisplayBoard#select_tbsetcd1" resultClass="DisplayBoardDto">
+  		SELECT CD1_NAME FROM tbSET_CD1 WHERE (CD1_MDIV = '118') AND (CD1_CODE = '$SM_MCCD$') 
+ 	</select>
+	<insert id="DisplayBoard#insert" parameterClass="DisplayBoardDto">
+	<![CDATA[
+	  INSERT INTO tbSVC_ORDMASTER
+	  		(SM_NO, SM_DATE, SM_SVC1, SM_SVC2, SM_MEMPNO, SM_MCCD, SM_MCNAME, 
+			SM_MC1CD, SM_MC1NAME, SM_MC2CD, SM_MC2NAME, SM_MDCD, SM_MDNAME, SM_MTCD, SM_MTNAME, 
+			SM_MNAME, SM_MTEL, SM_MCEL, SM_MEMAIL, SM_TITLE, SM_TEXT, SM_FDATE, 
+			SM_LSTATE, SM_FSTATE, SM_ISSIGN, SM_IPADDR, SM_WDATE,
+			SSTART, MULTIPAGE, MULTITIME, MULTITIMEOUT, SM_REGDATE,	AC_SEQ, AC_STATUS
+			) VALUES (
+			  #SM_NO#,
+			  #SM_DATE#,
+			  #SM_SVC1#,
+			  #SM_SVC2#,
+			  #SM_MEMPNO#,
+			  #SM_MCCD#,
+			  #SM_MCNAME#,
+			  #SM_MC1CD#,
+			  #SM_MC1NAME#,
+			  #SM_MC2CD#,
+			  #SM_MC2NAME#,
+			  #SM_MDCD#,
+			  #SM_MDNAME#,
+			  #SM_MTCD#,
+			  #SM_MTNAME#,
+			  #SM_MNAME#,
+			  #SM_MTEL#,
+			  #SM_MCEL#,
+			  #SM_MEMAIL#,
+			  #SM_TITLE#,
+			  #SM_TEXT#,
+			  #SM_FDATE#,
+			  #SM_LSTATE#,
+			  #SM_FSTATE#,
+			  #SM_ISSIGN#,
+			  #SM_IPADDR#,
+			  #SM_WDATE#,
+			  #SSTART#,
+			  #MULTIPAGE#,
+			  #MULTITIME#,
+			  #MULTITIMEOUT#,
+			  getdate(),
+			  #AC_SEQ#,
+			  #AC_STATUS#
+			 )
+		]]>
+	 </insert>
+
+	<insert id="DisplayBoard#insert_file" parameterClass="DisplayBoardDto">
+	<![CDATA[
+	  INSERT INTO tbSVC_DISPLAY
+		(SM_NO, SDP_UNIT, SDP_DIV1, SDP_DIV2, SDP_SMDATE,
+		SDP_FDATE,SDP_TDATE,CONT_CODE, CONT_NAME, FLAG_CODE, FLAG_NAME,
+		FGR_FDATE, FGR_TDATE, VIP_NAME,
+		SDP_TEXT, SDP_FNAME1, SDP_FNAME2,SDP_FNAME3
+		 ) VALUES (
+		#SM_NO#,
+		#SM_SVC2#,
+		#SDP_DIV1#,		
+		#SDP_DIV2#,			
+		#SDP_SMDATE#,
+		#SDP_FDATE#,
+		#SDP_TDATE#,
+		#CONT_CODE#,
+		#CONT_NAME#,
+		#FLAG_CODE#, 
+		#FLAG_NAME#, 
+		#FGR_FDATE#, 
+		#FGR_TDATE#,
+		#VIP_NAME#,
+		#SM_TEXT#,
+		#SDP_FNAME1#,
+		#SDP_FNAME2#,
+		#SDP_FNAME3#)
+		]]>
+	 </insert>
+	
+	<select id="DisplayBoard#getContentsList" resultClass="DisplayBoardDto">
+  		SELECT
+			OM.SM_SEQ,		OM.SM_NO,		OM.SM_DATE,		OM.SM_SVC2,		OM.SM_MEMPNO,	OM.SM_MCNAME,	OM.SM_MDNAME,
+			OM.SM_MNAME,	OM.SM_TITLE,	OM.SM_LSTATE,	OM.SM_FSTATE,	OM.SM_ISSIGN,	OM.SM_SIGNNO,	OM.SM_WDATE,
+			DP.SDP_SEQ,		DP.SDP_FDATE,	DP.SDP_TDATE,	DP.CONT_CODE,	DP.CONT_NAME,	DP.FLAG_CODE,	DP.FLAG_NAME,
+			DP.FGR_FDATE,	DP.FGR_TDATE,	OM.SM_MC1NAME,	OM.SM_MC2NAME,	DP.SDP_PLANDATE
+		FROM tbSVC_ORDMASTER AS OM
+			INNER JOIN tbSVC_DISPLAY AS DP ON OM.SM_NO = DP.SM_NO
+		WHERE (OM.SM_SVC1 = '1002')
+		AND (OM.SM_TITLE LIKE '%$s4$%'
+		     OR OM.SM_TEXT LIKE '%$s4$%'
+		     OR OM.SM_MNAME LIKE '%$s4$%'
+		     OR OM.SM_NO LIKE '%$s4$%')
+		<isNotEmpty property="s2">     
+			AND (OM.SM_SVC2 LIKE '$s2$')
+  		</isNotEmpty>
+  		<isNotEmpty property="lists3" prepend="AND">
+			OM.SM_LSTATE 
+			<iterate prepend="in" property="lists3" open="(" close=")" conjunction="," >
+				#lists3[]#
+			</iterate>
+		</isNotEmpty>
+  		 <isNotEmpty property="SM_WDATE_FROM" prepend="AND">
+			convert(date, SUBSTRING(DP.SDP_FDATE, 0,9)) = #SM_WDATE_FROM#
+		</isNotEmpty>
+		<isNotEmpty property="SM_WDATE_TO" prepend="AND">
+		<![CDATA[
+			convert(date, SUBSTRING(DP.SDP_TDATE, 0,9)) >= 	#SM_WDATE_TO#
+		]]>
+		</isNotEmpty>
+		ORDER BY OM.SM_SEQ DESC
+         <isNotEqual property="xmlGubun" compareValue="excelDown">
+		OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+        </isNotEqual>
+ 	</select>
+	
+	<select id="DisplayBoard#getContentsListCnt" resultClass="int">
+  		SELECT COUNT(*)
+		FROM tbSVC_ORDMASTER AS OM INNER JOIN
+		tbSVC_DISPLAY AS DP ON OM.SM_NO = DP.SM_NO
+		WHERE (OM.SM_SVC1 = '1002')
+		 AND (OM.SM_TITLE LIKE '%$s4$%'
+		     OR OM.SM_TEXT LIKE '%$s4$%'
+		     OR OM.SM_MNAME LIKE '%$s4$%'
+		     OR OM.SM_NO LIKE '%$s4$%')
+		<isNotEmpty property="s2">     
+		AND (OM.SM_SVC2 LIKE '$s2$')
+  		</isNotEmpty>
+  		<isNotEmpty property="lists3" prepend="AND">
+			OM.SM_LSTATE 
+			<iterate prepend="in" property="lists3" open="(" close=")" conjunction="," >
+				#lists3[]#
+			</iterate>
+		</isNotEmpty>
+  		<isNotEmpty property="SM_WDATE_FROM" prepend="AND">
+			convert(date, SUBSTRING(DP.SDP_FDATE, 0,9)) = #SM_WDATE_FROM#
+		</isNotEmpty>
+		<isNotEmpty property="SM_WDATE_TO" prepend="AND">
+		<![CDATA[
+			convert(date, SUBSTRING(DP.SDP_TDATE, 0,9)) >= 	#SM_WDATE_TO#
+		]]>
+		</isNotEmpty>
+	 	</select>
+ 	
+ 	
+	<select id="DisplayBoard#getContentsDetail" resultClass="DisplayBoardDto">
+		SELECT OM.SM_SEQ, OM.SM_NO, OM.SM_DATE, OM.SM_SVC2, OM.SM_MEMPNO, OM.SM_MCCD,
+		 	OM.SM_MCNAME, OM.SM_MC1CD, OM.SM_MC1NAME, OM.SM_MC2CD,
+			OM.SM_MC2NAME, OM.SM_MDCD, OM.SM_MDNAME, OM.SM_MTCD, OM.SM_MTNAME, 
+			OM.SM_MNAME, OM.SM_MTEL, OM.SM_MCEL,
+			OM.SM_MEMAIL, OM.SM_TITLE, OM.SM_TEXT, OM.SM_LSTATE, OM.SM_FSTATE, 
+			OM.SM_ISSIGN, OM.SM_WDATE, OM.SM_UDATE, DP.SDP_SEQ,
+			DP.SDP_DIV1, DP.SDP_FDATE, DP.SDP_TDATE, 
+			DP.SDP_FNAME1, DP.SDP_FNAME2, DP.SDP_FNAME3,
+			DP.CONT_CODE, DP.CONT_NAME, DP.FLAG_CODE, DP.FLAG_NAME,
+			DP.FGR_FDATE, DP.FGR_TDATE, 
+			DP.VIP_NAME,OM.SSTART,OM.MULTIPAGE,OM.MULTITIME,OM.MULTITIMEOUT
+			,DP.SDP_APPROVER_FST_DEPTCODE
+			,DP.SDP_APPROVER_FST_DEPTNAME
+			,DP.SDP_APPROVER_FST_EMPNO
+			,DP.SDP_APPROVER_FST_NAME
+			,DP.SDP_APPROVER_SND_DEPTCODE
+			,DP.SDP_APPROVER_SND_DEPTNAME
+			,DP.SDP_APPROVER_SND_EMPNO
+			,DP.SDP_APPROVER_SND_NAME
+			,DP.SDP_PLANDATE
+			,DP.SDP_APPROVER_FST_DATE
+			,DP.SDP_APPROVER_SND_DATE
+			,TA.AC_CONTENTS
+			,DP.SDP_worker
+			FROM tbSVC_ORDMASTER AS OM INNER JOIN
+			tbSVC_DISPLAY AS DP ON OM.SM_NO = DP.SM_NO
+			LEFT JOIN tbSVC_ACCEPT AS TA ON TA.AC_SEQ = OM.AC_SEQ
+			WHERE (OM.SM_SEQ = '$SHSEQNUM$')
+	</select>
+	
+	<update id="DisplayBoard#update" parameterClass="DisplayBoardDto">
+	UPDATE tbSVC_ORDMASTER
+	SET
+		<isNotNull property="SM_DATE">SM_DATE = #SM_DATE#,</isNotNull>
+	  	<isNotNull property="SM_SVC1">SM_SVC1 = #SM_SVC1#,</isNotNull>
+	  	<isNotNull property="SM_SVC2">SM_SVC2 = #SM_SVC2#,</isNotNull> 
+	  	<isNotNull property="SM_MCCD">SM_MCCD = #SM_MCCD#,</isNotNull>
+	  	<isNotNull property="SM_MCNAME">SM_MCNAME = #SM_MCNAME#,</isNotNull>
+		<isNotNull property="SM_MC1CD">SM_MC1CD = #SM_MC1CD#,</isNotNull>
+		<isNotNull property="SM_MC1NAME">SM_MC1NAME = #SM_MC1NAME#,</isNotNull>
+		<isNotNull property="SM_MC2CD">SM_MC2CD = #SM_MC2CD#,</isNotNull>
+		<isNotNull property="SM_MC2NAME">SM_MC2NAME = #SM_MC2NAME#,</isNotNull>
+		<isNotNull property="SM_MDCD">SM_MDCD = #SM_MDCD#,</isNotNull>
+		<isNotNull property="SM_MDNAME">SM_MDNAME = #SM_MDNAME#,</isNotNull>
+		<isNotNull property="SM_MTCD">SM_MTCD =  #SM_MTCD#,</isNotNull>
+		<isNotNull property="SM_MTNAME">SM_MTNAME = #SM_MTNAME#,</isNotNull>
+		<isNotNull property="SM_MNAME">SM_MNAME = #SM_MNAME#,</isNotNull>
+		<isNotNull property="SM_MTEL">SM_MTEL = #SM_MTEL#,</isNotNull>
+		<isNotNull property="SM_MCEL">SM_MCEL = #SM_MCEL#,</isNotNull>
+		<isNotNull property="SM_MEMAIL">SM_MEMAIL = #SM_MEMAIL#,</isNotNull>
+		<isNotNull property="SM_TITLE">SM_TITLE = #SM_TITLE#,</isNotNull>
+		<isNotNull property="SM_TEXT">SM_TEXT = #SM_TEXT#,</isNotNull>
+		<isNotNull property="SM_FDATE">SM_FDATE = #SM_FDATE#,</isNotNull>
+		<isNotNull property="SM_LSTATE">SM_LSTATE = #SM_LSTATE#,</isNotNull>
+		<isNotNull property="SM_FSTATE">SM_FSTATE = #SM_FSTATE#,</isNotNull>
+		<isNotNull property="SM_ISSIGN">SM_ISSIGN = #SM_ISSIGN#,</isNotNull>
+		<isNotNull property="SM_IPADDR">SM_IPADDR = #SM_IPADDR#,</isNotNull>
+		<isNotNull property="SM_WDATE">SM_WDATE #SM_WDATE#,</isNotNull>
+		<isNotNull property="SSTART">SSTART = #SSTART#,</isNotNull>
+		<isNotNull property="MULTIPAGE">MULTIPAGE = #MULTIPAGE#,</isNotNull>
+		<isNotNull property="MULTITIME">MULTITIME = #MULTITIME#,</isNotNull>
+		<isNotNull property="MULTITIMEOUT">MULTITIMEOUT = #MULTITIMEOUT#,</isNotNull>
+		SM_MEMPNO = #SM_MEMPNO#
+	WHERE SM_NO = #SM_NO#
+	</update>
+	
+	<update id="DisplayBoard#update_file" parameterClass="DisplayBoardDto">
+	UPDATE tbSVC_DISPLAY
+	SET
+		<isNotNull property="SDP_UNIT">SDP_UNIT = #SM_SVC2#,</isNotNull>
+		<isNotNull property="SDP_DIV1">SDP_DIV1 = #SDP_DIV1#,</isNotNull>		
+		<isNotNull property="SDP_DIV2">SDP_DIV2 = #SDP_DIV2#,</isNotNull>
+		<isNotNull property="SDP_SMDATE">SDP_SMDATE = #SDP_SMDATE#,</isNotNull>
+		<isNotNull property="SDP_FDATE">SDP_FDATE = #SDP_FDATE#,</isNotNull>
+		<isNotNull property="SDP_TDATE">SDP_TDATE = #SDP_TDATE#,</isNotNull>
+		<isNotNull property="CONT_CODE">CONT_CODE = #CONT_CODE#,</isNotNull>
+		<isNotNull property="CONT_NAME">CONT_NAME = #CONT_NAME#,</isNotNull>
+		<isNotNull property="FLAG_CODE">FLAG_CODE = #FLAG_CODE#,</isNotNull>
+		<isNotNull property="FLAG_NAME">FLAG_NAME = #FLAG_NAME#,</isNotNull>
+		<isNotNull property="FGR_FDATE">FGR_FDATE = #FGR_FDATE#,</isNotNull>
+		<isNotNull property="FGR_FDATE">FGR_TDATE = #FGR_TDATE#,</isNotNull>
+		<isNotNull property="VIP_NAME">VIP_NAME = #VIP_NAME#,</isNotNull>
+		<isNotNull property="SDP_FNAME1">SDP_FNAME1 = #SDP_FNAME1#,</isNotNull>
+		<isNotNull property="SDP_FNAME2">SDP_FNAME2 = #SDP_FNAME2#,</isNotNull>
+		<isNotNull property="SDP_FNAME3">SDP_FNAME3 = #SDP_FNAME3#,</isNotNull>
+		
+		<isNotNull property="SDP_APPROVER_FST_DEPTCODE">SDP_APPROVER_FST_DEPTCODE = #SDP_APPROVER_FST_DEPTCODE#,</isNotNull>
+		<isNotNull property="SDP_APPROVER_FST_DEPTNAME">SDP_APPROVER_FST_DEPTNAME = #SDP_APPROVER_FST_DEPTNAME#,</isNotNull>
+		<isNotNull property="SDP_APPROVER_FST_EMPNO">SDP_APPROVER_FST_EMPNO = #SDP_APPROVER_FST_EMPNO#,</isNotNull>
+		<isNotNull property="SDP_APPROVER_FST_NAME">SDP_APPROVER_FST_NAME = #SDP_APPROVER_FST_NAME#,</isNotNull>
+		<isNotNull property="SDP_APPROVER_SND_DEPTCODE">SDP_APPROVER_SND_DEPTCODE = #SDP_APPROVER_SND_DEPTCODE#,</isNotNull>
+		<isNotNull property="SDP_APPROVER_SND_DEPTNAME">SDP_APPROVER_SND_DEPTNAME = #SDP_APPROVER_SND_DEPTNAME#,</isNotNull>
+		<isNotNull property="SDP_APPROVER_SND_EMPNO">SDP_APPROVER_SND_EMPNO = #SDP_APPROVER_SND_EMPNO#,</isNotNull>
+		<isNotNull property="SDP_APPROVER_SND_NAME">SDP_APPROVER_SND_NAME = #SDP_APPROVER_SND_NAME#,</isNotNull>
+		<isNotNull property="SDP_worker">SDP_worker = #SDP_worker#,</isNotNull>
+		<isNotNull property="SDP_PLANDATE">SDP_PLANDATE = #SDP_PLANDATE#</isNotNull>
+		<isNull property="SDP_PLANDATE">SDP_TEXT = #SM_TEXT#</isNull>
+	WHERE SM_NO = #SM_NO#
+	</update>
+	
+	<update id="DisplayBoard#del" parameterClass="DisplayBoardDto">
+	UPDATE tbSVC_ORDMASTER
+	SET
+		SM_LSTATE = '3097'
+	WHERE SM_SEQ = '$SHSEQNUM$'
+	</update>
+	
+	<update id="DisplayBoard#display_Approve" parameterClass="DisplayBoardDto">
+	UPDATE tbSVC_DISPLAY
+	SET
+		<isEqual property="approveState" compareValue="FST">
+			SDP_APPROVER_FST_DATE = GETDATE()
+		</isEqual>
+		<isEqual property="approveState" compareValue="SND">
+			SDP_APPROVER_SND_DATE = GETDATE()
+		</isEqual>
+	WHERE SM_NO = '$SM_NO$';
+	
+	<isEqual property="approveState" compareValue="SND">
+		UPDATE tbSVC_ORDMASTER 
+		SET
+			SM_LSTATE = #SM_LSTATE#
+		WHERE
+			SM_NO = '$SM_NO$';
+	</isEqual>
+	</update>
+	
+	<update id="DisplayBoard#Display_fileUpdate" parameterClass="DisplayBoardDto">
+		update tbSVC_DISPLAY_FILE
+		SET SM_NO = #SM_NO#
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="fileSeq_1" prepend="OR">
+				SDP_SEQ = #fileSeq_1#
+			</isNotEmpty>
+			<isNotEmpty property="fileSeq_2" prepend="OR">
+				SDP_SEQ = #fileSeq_2#
+			</isNotEmpty>
+			<isNotEmpty property="fileSeq_3" prepend="OR">
+				SDP_SEQ = #fileSeq_3#
+			</isNotEmpty>
+			<isNotEmpty property="fileSeq_4" prepend="OR">
+				SDP_SEQ = #fileSeq_4#
+			</isNotEmpty>
+		</dynamic>
+	 </update>
+	 
+	 <select id="DisplayBoard#contentFileList" resultClass="DisplayBoardDto">
+		select 
+			TCF.SDP_SEQ, TCF.SDP_orgFileName, TCF.SDP_status, convert(date, TCF.regDate)AS regDate
+		from tbSVC_ORDMASTER AS OM
+		LEFT JOIN tbSVC_DISPLAY_FILE TCF ON TCF.SM_NO = OM.SM_NO
+		WHERE OM.SM_SEQ = #SHSEQNUM#
+		AND TCF.SDP_status = #searchStatus#
+	</select>
+	
+	<select id="DisplayBoard#removeDisplayFile" resultClass="DisplayBoardDto">
+		select 
+			SDP_SEQ, SM_NO, SDP_orgFileName, SDP_phycalPath
+		from tbSVC_DISPLAY_FILE
+		WHERE SDP_SEQ = #SDP_SEQ#
+	</select>
+	
+	<select id="DisplayBoard#delfileChk" resultClass="DisplayBoardDto">
+		<![CDATA[
+			SELECT
+		 		SDP_SEQ
+		 		,SDP_phycalPath
+		 		,SDP_orgFileName
+			from 
+				tbSVC_DISPLAY_FILE
+			WHERE (DATALENGTH(SM_NO) = '1' or SM_NO is null)
+			AND CONVERT(VARCHAR , regDate, 23) < CONVERT(date , GETDATE()-1, 23)
+			order by SDP_SEQ DESC
+		]]>
+	</select>
+	
+	<delete id="DisplayBoard#diplayFileAjax" parameterClass="int">
+		delete from tbSVC_DISPLAY_FILE WHERE SDP_SEQ = #SDP_SEQ#
+	</delete>
+	
+	<select id="DisplayBoard#TotalList" resultClass="DisplayBoardDto">
+		SELECT
+			SUM(CELL1) AS C1_TOT
+			,SUM(CELL2) AS C2_TOT
+			,SUM(CELL3) AS C3_TOT
+			,SUM(CELL4) AS C4_TOT
+		FROM (
+			SELECT
+				SM_SVC2
+				,CASE WHEN SM_SVC2 like '%3074%' then 1 else null end AS CELL1
+				,CASE WHEN SM_SVC2 like '%3075%' then 1 else null end AS CELL2
+				,CASE WHEN SM_SVC2 like '%3076%' then 1 else null end AS CELL3
+				,CASE WHEN SM_SVC2 like '%3272%' then 1 else null end AS CELL4
+			FROM tbSVC_ORDMASTER AS OM
+				INNER JOIN tbSVC_DISPLAY AS DP ON OM.SM_NO = DP.SM_NO
+			WHERE (OM.SM_SVC1 = '1002')
+		)ListTotal
+	</select>
+</sqlMap>

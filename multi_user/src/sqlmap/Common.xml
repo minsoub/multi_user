@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Common">
+    <typeAlias alias="CommonDto" type="kr.co.neodreams.multi_user.dto.CommonDto"/>
+
+    <select id="Common#getStatic_idx" resultClass="CommonDto">
+        SELECT static_idx
+        FROM [2006_static]
+            WHERE static_year= year(getdate())
+        and static_month=month(getdate()) and static_day = day(getdate()) and static_time = datepart(hh,getdate()) and flag=1
+    </select>
+
+    <insert id="Common#insertNewStatic_idx">
+        INSERT INTO [2006_static]  DEFAULT VALUES
+    </insert>
+
+    <update id="Common#updateStatic_count" parameterClass="java.lang.String">
+        UPDATE [2006_static]
+        SET static_count = static_count + 1
+        WHERE static_idx = #static_idx#
+    </update>
+
+    <update id="Common#updateVisitedCount" parameterClass="java.lang.String">
+        UPDATE [vod_s1] SET Visited = Visited + 1 WHERE Num = #Rs_num#
+    </update>
+
+    <insert id="Common#insertSpecialCount" parameterClass="java.lang.String">
+        insert into special_count(no_emp,view_value) values(#strEmpNo#, '1')
+    </insert>
+
+    <procedure id="Common#Proc_mileage_insert" parameterClass="java.util.HashMap">
+        {call Proc_mileage_insert(#USER_ID#, $NUMBER$, #M_Table#, #Flag#, $Point$, #DirName#)}
+    </procedure>
+
+    <select id="Common#getVod_s1_info" parameterClass="java.lang.String" resultClass="CommonDto">
+        SELECT a.num as num, subject, pdsFile,Re_Step,content, caption_desc, Re_level, name FROM vod_s1 a join dir_vod b on dir01=re_step and dir02=re_level WHERE a.Num = #Rs_num#  ORDER BY R_date DESC
+    </select>
+
+    <select id="Common#getKepcn_news_file" parameterClass="java.lang.String" resultClass="CommonDto">
+        SELECT j_pdsFile, j_mp3 FROM [kepcn_news] WHERE J_newsnum = #Rs_num#
+    </select>
+
+    <procedure id="Common#getWin_list_sp" parameterClass="java.lang.String" resultClass="CommonDto">
+        {call win_list_sp(#Rs_num#)}
+    </procedure>
+
+    <procedure id="Common#getKepcn_comment_sp" parameterClass="java.lang.String" resultClass="CommonDto">
+        {call kepcn_comment_sp(#Rs_num#)}
+    </procedure>
+
+    <insert id="Common#insertMedia_02_ok" parameterClass="CommonDto">
+        <selectKey keyProperty="k_num" resultClass="java.lang.String">
+                (SELECT MAX(k_num) + 1 FROM Kepcn_comment);
+        </selectKey>
+
+        insert into Kepcn_comment (k_id,k_title,k_newsnum,k_date,icon)
+        VALUES (#k_id#, #k_title#, #Rs_num#, #k_date#, #icon#);
+    </insert>
+
+    <delete id="Common#deleteKepcn_comment" parameterClass="java.lang.String">
+        delete from Kepcn_comment  where k_num = #k_num#
+    </delete>
+
+    <delete id="Common#deleteMileage" parameterClass="CommonDto">
+        DELETE FROM Mileage WHERE  User_id = #k_id# AND NUMBER = #Rs_num# AND M_Table = 'Kepcn_comment'
+    </delete>
+
+    <insert id="Common#insertMedia_02_write_ok" parameterClass="CommonDto">
+        INSERT INTO vod_s1_comment (co_num, co_id, co_icon, co_date, co_content)
+        VALUES (#Rs_num#, #k_id#, #icon#, #k_date#, #k_title#)
+    </insert>
+
+    <select id="Common#getNoticeList" parameterClass="CommonDto" resultClass="CommonDto">
+        <![CDATA[
+            SELECT num,subject,convert(nchar(10) , Reg_Date ,120 ) as Reg_Date ,pdsFile,Visited
+            FROM [notice]
+            WHERE
+        ]]>
+        <![CDATA[
+                YEAR ( Reg_Date) > 2014
+        ]]>
+        <isNotEmpty prepend="and" property="searchString">
+                (Subject LIKE '%$searchString$%'
+                or Content LIKE '%$searchString$%')
+        </isNotEmpty>
+        order by reg_date desc
+        OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+    </select>
+
+    <select id="Common#getNoticeListCnt" parameterClass="CommonDto" resultClass="int">
+        <![CDATA[
+            SELECT count(*) as totalCnt
+            FROM [notice]
+            WHERE
+        ]]>
+        <![CDATA[
+                YEAR ( Reg_Date) > 2014
+        ]]>
+        <isNotEmpty prepend="and" property="searchString">
+                (Subject LIKE '%$searchString$%'
+                or Content LIKE '%$searchString$%')
+        </isNotEmpty>
+    </select>
+
+    <select id="Common#getNoticeDetail" parameterClass="java.lang.String" resultClass="CommonDto">
+        SELECT Subject, Writer, Reg_Date, Content, pdsFile
+        FROM Notice
+        where num = #num#
+    </select>
+
+    <insert id="Common#insertPageLog" parameterClass="java.util.HashMap">
+        INSERT INTO page_log (depth_1,depth_2,depth_3,logical_url,ip_addr, empno)
+        values ((SELECT depth_1 FROM PAGE_INFO WHERE logical_url like '%$logical_url$%')
+                ,(SELECT depth_2 FROM PAGE_INFO WHERE logical_url like '%$logical_url$%')
+                ,(SELECT depth_3 FROM PAGE_INFO WHERE logical_url like '%$logical_url$%')
+                ,#logical_url# ,#ip_addr#, #empno#)
+    </insert>
+
+    <delete id="Common#deleteDeptTMP">
+        delete from tbSVC_TDMSDEPT_TMP
+    </delete>
+
+    <insert id="Common#insertDeptTMP" parameterClass="java.lang.String">
+        insert into tbSVC_TDMSDEPT_TMP (dept_code, up_code, dept_name, dept_order, manager, hostname, del_flag)
+        values $values$
+    </insert>
+
+    <delete id="Common#deleteUserTMP">
+        delete from tbSVC_TDMSEMP_TMP
+    </delete>
+
+    <insert id="Common#insertUserTMP" parameterClass="java.lang.String">
+        insert into tbSVC_TDMSEMP_TMP
+        values $values$
+    </insert>
+    
+    <delete id="Common#deleteUserNomuTMP">
+        delete from tbSVC_TDMSEMP_NOMU_TMP
+    </delete>
+
+    <insert id="Common#insertUserNomuTMP" parameterClass="java.lang.String">
+        insert into tbSVC_TDMSEMP_NOMU_TMP
+        values $values$
+    </insert>
+
+    <delete id="Common#deleteDetailTMP">
+        delete from tbSVC_TDMSDETAIL_TMP
+    </delete>
+
+    <insert id="Common#insertDetailTMP" parameterClass="java.lang.String">
+        insert into tbSVC_TDMSDETAIL_TMP
+        values $values$
+    </insert>
+
+    <insert id="Common#insertDataSetResult" parameterClass="java.util.HashMap">
+        insert into tbSVC_TDMS_SET_LOG (schedule_date,log_desc,result_value)
+        values (#schedule_date#,#log_desc#,#result_value#)
+    </insert>
+
+    <select id="Common#getDataSetLastLog" resultClass="java.lang.String">
+        select top 1
+               result_value
+          from tbSVC_TDMS_SET_LOG
+         order by schedule_date desc
+    </select>
+    
+    <insert id="Common#insertDataSetResultNomu" parameterClass="java.util.HashMap">
+        insert into tbSVC_TDMS_NOMU_SET_LOG (schedule_date,log_desc,result_value)
+        values (#schedule_date#,#log_desc#,#result_value#)
+    </insert>
+
+    <select id="Common#getDataSetLastLogNomu" resultClass="java.lang.String">
+        select top 1
+               result_value
+          from tbSVC_TDMS_NOMU_SET_LOG
+         order by schedule_date desc
+    </select>
+
+    <insert id="Common#insertAllDept_User_Data">
+        insert into rentalsendsms (empno, appno, pre_deptno, now_deptno, hp, regdate, senddate, send_status)
+        select ori_emp.empno
+		       ,tmp_emp.appno
+		       ,ori_emp.deptno as pre_deptno
+		       ,tmp_emp.deptno as now_deptno
+		       ,isnull(ori_emp.hp, tmp_emp.hp) as hp
+		       ,getdate()
+		       ,null
+		       ,'0000'      
+		  from tbSVC_TDMSEMP ori_emp
+		 inner join (
+				select ora.appeno empno
+				       ,ora.appno
+					   ,te.deptno as deptno
+					   ,te.hp
+				  from ONESTOP_RENT_APP ora
+		         inner join tbSVC_TDMSEMP_tmp te
+				    on ora.status = '4'
+				       and ora.appeno = te.empno
+		         where status = '4'
+		) as tmp_emp
+		on ori_emp.empno = tmp_emp.empno
+		   and ori_emp.deptno != tmp_emp.deptno
+		
+		union
+		
+		select ori_emp.empno
+		       ,tmp_emp.appno
+		       ,ori_emp.deptno as pre_deptno
+		       ,tmp_emp.deptno as now_deptno
+		       ,isnull(ori_emp.hp, tmp_emp.hp) as hp
+		       ,getdate()
+		       ,null
+		       ,'0000'   
+		  from tbSVC_TDMSEMP ori_emp
+		 inner join (
+				select oraeu.appueno empno
+				       ,ora.appno
+					   ,teu.deptno as deptno
+					   ,teu.hp 
+				  from ONESTOP_RENT_APP ora
+				 inner join onestop_rent_app_equip_user oraeu
+				    on ora.status = '4'
+					   and ora.appno = oraeu.appno
+		         inner join tbSVC_TDMSEMP_tmp teu
+				    on oraeu.appueno = teu.empno
+		         where status = '4'
+		) as tmp_emp
+		on ori_emp.empno = tmp_emp.empno
+		   and ori_emp.deptno != tmp_emp.deptno;
+
+        delete from tbSVC_TDMSDEPT; insert into tbSVC_TDMSDEPT select * from tbSVC_TDMSDEPT_TMP;
+        delete from tbSVC_TDMSEMP; insert into tbSVC_TDMSEMP select * from tbSVC_TDMSEMP_TMP;
+        delete from tbSVC_TDMSDETAIL; insert into tbSVC_TDMSDETAIL select * from tbSVC_TDMSDETAIL_TMP;
+
+        insert into tbSVC_TDMSEMP (empno, name, mailno, dept_name, deptno, telno) values ('test0001','테스터','rhfogud','ICT인프라처 ICT서비스부 OA설비/전자응용설비/멀티미디어','B579','061-1111');
+        insert into tbSVC_TDMSEMP (empno, name, mailno, dept_name, deptno, telno) values 
+                                          ('ex190119','양민지','ex190119','ICT인프라처 ICT서비스부 OA설비/전자응용설비/멀티미디어','B579','061-1111')
+                                        , ('ex190120','윤선희','ex190120','ICT인프라처 ICT서비스부 OA설비/전자응용설비/멀티미디어','B579','061-1111')
+                                        , ('ex190121','오기영','ex190121','ICT인프라처 ICT서비스부 OA설비/전자응용설비/멀티미디어','B579','061-1111')
+                                        , ('ex190122','김혜진','ex190122','ICT인프라처 ICT서비스부 OA설비/전자응용설비/멀티미디어','B579','061-1111')
+                                        , ('ex190123','김미소','ex190123','ICT인프라처 ICT서비스부 OA설비/전자응용설비/멀티미디어','B579','061-1111')
+                                        , ('ex190124','기은아','ex190124','ICT인프라처 ICT서비스부 OA설비/전자응용설비/멀티미디어','B579','061-1111')
+                                        , ('ex190125','허남준','ex190125','ICT인프라처 ICT서비스부 OA설비/전자응용설비/멀티미디어','B579','061-1111')
+                                        , ('ex190126','김종찬','ex190126','ICT인프라처 ICT서비스부 OA설비/전자응용설비/멀티미디어','B579','061-1111')
+
+                                        , ('ex099416','배혜림','ex099416','ICT인프라처 ICT서비스부 OA설비/전자응용설비/멀티미디어','B579','061-1111')
+                                        , ('ex099116','이소라','ex099116','ICT인프라처 ICT서비스부 OA설비/전자응용설비/멀티미디어','B579','061-6382')
+                                        , ('ex099117','멀티미디3','besang1','ICT인프라처 ICT서비스부 OA설비/전자응용설비/멀티미디어','B579','061-6383')
+                                        , ('ex190091','김준혁','ex190091','ICT인프라처 ICT서비스부 KEPCO-EP(전사통합포털)','I569','061-6373')
+                                        , ('ex190093','전경환','ex190093','ICT인프라처 ICT서비스부 KEPCO-EP(전사통합포털)','I569','061-6373')
+                                        , ('nojohq03','홍수정','nojohq03','노사협력처 노사업무실','0718','061-1111')
+                                        , ('ex099266','이덕근','ex099266','ICT인프라처 ICT서비스부 KEPCO-EP(전사통합포털)','I569','061-6373');
+
+    </insert>
+    
+    <insert id="Common#insertUser_NomuData">
+        delete from tbSVC_TDMSEMP_NOMU; insert into tbSVC_TDMSEMP_NOMU select * from tbSVC_TDMSEMP_NOMU_TMP;
+    </insert>
+
+    <update id="Common#updateDataSetLastLog">
+        update tbSVC_TDMS_SET_LOG
+            set result_value = 'S'
+         where schedule_date = (select top 1
+                                    schedule_date
+                                from tbSVC_TDMS_SET_LOG
+                                order by schedule_date desc)
+    </update>
+    
+    <update id="Common#updateDataSetLastLogNomu">
+        update tbSVC_TDMS_NOMU_SET_LOG
+            set result_value = 'S'
+         where schedule_date = (select top 1
+                                    schedule_date
+                                from tbSVC_TDMS_NOMU_SET_LOG
+                                order by schedule_date desc)
+    </update>
+
+    <select id="Common#getBasicUserInfo" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+    <!--
+        select * 
+        from tbSVC_TDMSEMP
+        where empno = '$empno$'
+          -->
+       select *
+              ,(select max(dept_code) as dept_code from tbSVC_TDMSDEPT where dept_name = first_dept_name and del_flag != 'Y') as first_dept_code
+			  ,(select max(dept_code) as dept_code from tbSVC_TDMSDEPT where dept_name = second_dept_name and del_flag != 'Y') as second_dept_code
+			  ,(select dept_name from tbSVC_TDMSDEPT where dept_code = deptno) as user_dept_name
+         from (select *
+		              ,dbo.SPLIT_STR(dbo.fu_dept_info(deptno, '', ','), ',',1) as first_dept_name
+					  ,dbo.SPLIT_STR(dbo.fu_dept_info(deptno, '', ','), ',',2) as second_dept_name
+					  ,dbo.SPLIT_STR(dbo.fu_dept_info(deptno, '', ','), ',',3) as third_dept_name
+		         from (SELECT emp.* 
+						      ,(select rtadm.emp_id from onestop_rent_admin rtadm where rtadm.emp_id = #empno#) as rentAdmin 
+							  ,(select kma.empno from kube_mgmt_admin kma where kma.empno = #empno#) as kubeAdmin
+							  ,(select kma.adm_gubun from kube_mgmt_admin kma where kma.empno = #empno#) as kubeAdminGubun
+					     FROM tbsvc_tdmsemp emp 
+						WHERE emp.empno = #empno# 
+					  ) as list 
+			  ) as list2
+        <!-- 
+        SELECT emp.*, rtadm.emp_id rentAdmin, kma.empno as kubeAdmin
+        FROM tbSVC_TDMSEMP emp
+        LEFT JOIN ONESTOP_RENT_ADMIN rtadm
+        ON emp.empno = rtadm.emp_id
+        LEFT JOIN kube_mgmt_admin kma
+        ON emp.empno = kma.empno
+        WHERE emp.empno = #empno#
+        -->
+    </select>
+    
+    <select id="Common#getAdmInfo" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+       select *
+         from multi_admin 
+		WHERE empno = #empno# 
+    </select>
+
+    <select id="Common#getServiceAdmInfo" parameterClass="java.lang.String" resultClass="Integer">
+       select COUNT(*)
+         from tbSET_ADMIN 
+		WHERE ADM_EMPNO = #empno# 
+		AND ADM_STATE = '1'
+    </select>
+    
+    <select id="Common#getRentalSendSMSTargetList" resultClass="kr.co.neodreams.multi_user.dto.RentDto">
+        select sms_seq
+            ,appno
+            ,hp
+        from rentalSendSMS
+        where send_status != 9999
+    </select>
+
+    <update id="Common#updateRentalSendSMS" parameterClass="java.lang.String">
+        update rentalSendSMS
+        set send_status = #retCode#
+                ,senddate = getdate()
+        where send_status != 9999
+    </update>
+    
+    <insert id="Common#insertMsHistory">
+        INSERT INTO ONESTOP_RENT_MS_HISTORY 
+       ( 
+           HISNO,
+           TYPE,
+           REFNO,
+           SENDDT,
+           SENDMS,
+           ETC 
+       ) 
+       VALUES 
+       ((SELECT ISNULL((MAX(HISNO) +1),0) AS MAXHISNO), 
+              #TYPE#, 
+              #APPNO#, 
+              convert(varchar(8), getdate(), 112) + replace(convert(varchar(8), getdate(), 108), ':', ''), 
+              #SENDMS#, 
+              #ETC#
+			FROM ONESTOP_RENT_MS_HISTORY
+       ) 
+    </insert>
+
+    <select id="Common#getMailApprovalTargetList" resultClass = "kr.co.neodreams.multi_user.dto.RentDto">
+		SELECT EUSEQ, 
+		       APPNO, 
+		       MDSEQ, 
+		       EQNO, 
+		       UHSEQ, 
+		       MODE, 
+		       INSUNO, 
+		       INSUNM, 
+		       INGAENO, 
+		       INGAENM, 
+		       REGENO, 
+		       REGENM, 
+		       REGDT, 
+		       MAILAPPROVAL, 
+		       LASTMODDT 
+		  FROM dbo.ONESTOP_RENT_APP_EQUIP_USER_HISTORY 
+		 WHERE MAILAPPROVAL = '0'  
+    </select>
+    
+    <select id="Common#getMailRemainDateTargetList" resultClass = "kr.co.neodreams.multi_user.dto.RentDto" >
+    	<![CDATA[
+    	SELECT APP.APPNO, 
+			   MAX(APP.APPNUM) AS APPNUM, 
+			   MAX(APP.APPENO) AS APPENO, 
+			   MAX(APP.APPENM) AS APPENM, 
+			   (SELECT EMPD.cellno
+			    FROM ONESTOP_RENT_APP ORAP
+			   INNER JOIN dbo.tbSVC_TDMSDETAIL EMPD
+			   ON EMPD.empno = ORAP.APPENO
+			   WHERE ORAP.APPNO = APP.APPNO) AS APPHP,
+			   MAX(APP.INSUNO) AS INSUNO, 
+			   MAX(APP.INSUNM) AS INSUNM, 
+			   (SELECT EMPD.cellno
+			    FROM ONESTOP_RENT_APP ORAP
+			   INNER JOIN dbo.tbSVC_TDMSDETAIL EMPD
+			   ON EMPD.empno = ORAP.INSUNO
+			   WHERE ORAP.APPNO = APP.APPNO) AS INSUHP,
+			   DATEDIFF(DD, GETDATE(), MAX(APP.ENDDT)) AS REMAINDT,
+			   (STUFF((SELECT
+				',' + EU.APPUENO
+				FROM ONESTOP_RENT_APP_EQUIP_USER EU
+				WHERE EU.APPNO = APP.APPNO
+				FOR XML PATH('')
+				) ,1,1,'')) APPUENO,
+				(STUFF((SELECT
+				',' + EU.APPUENM
+				FROM ONESTOP_RENT_APP_EQUIP_USER EU
+				WHERE EU.APPNO = APP.APPNO
+				FOR XML PATH('')
+				) ,1,1,'')) APPUENM,
+				(STUFF((SELECT
+				',' + CD.GBNM + '(' + EQ.EQALIAS + ')'
+				FROM ONESTOP_RENT_APP_EQUIP_USER EU
+				LEFT JOIN ONESTOP_RENT_EQUIP EQ
+				ON EU.MDSEQ = EQ.MDSEQ
+				AND EU.EQNO = EQ.EQNO
+				LEFT JOIN ONESTOP_RENT_CODE CD
+				ON EQ.GBCD = CD.GBCD
+				WHERE EU.APPNO = APP.APPNO
+				FOR XML PATH('')
+				) ,1,1,'')) EQALIAS,
+				(STUFF((SELECT
+				',' + ISNULL(EMPD.cellno,'none')
+				FROM ONESTOP_RENT_APP_EQUIP_USER EU
+				LEFT JOIN dbo.tbSVC_TDMSDETAIL EMPD
+				ON EU.APPUENO = EMPD.empno
+				WHERE EU.APPNO = APP.APPNO
+				FOR XML PATH('')
+				) ,1,1,'')) APPUEHP,
+				MAX(APP.ENDDT) ENDDT
+		  FROM ONESTOP_RENT_APP APP
+		  INNER JOIN ONESTOP_RENT_APP_EQUIP_USER EU
+		  ON APP.APPNO = EU.APPNO 
+		 WHERE STATUS = '4'
+         ]]> 
+         <isEqual compareValue="remain">
+         <![CDATA[
+               AND (DATEDIFF(DD, GETDATE(), APP.ENDDT) = 1
+				 OR DATEDIFF(DD, GETDATE(), APP.ENDDT) = 3
+				 OR DATEDIFF(DD, GETDATE(), APP.ENDDT) = 5
+				 OR DATEDIFF(DD, GETDATE(), APP.ENDDT) = 10
+				 OR DATEDIFF(DD, GETDATE(), APP.ENDDT) = 20
+				 OR DATEDIFF(DD, GETDATE(), APP.ENDDT) = 30)
+         ]]>
+         </isEqual>
+         <isEqual compareValue="noReturn">
+         <![CDATA[
+               AND DATEDIFF(DD, GETDATE(), APP.ENDDT) < 0
+         ]]>
+         </isEqual>
+         <![CDATA[
+		 GROUP BY APP.APPNO
+		 ]]>
+    </select>
+</sqlMap>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMapConfig
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+    <transactionManager type="jdbc">
+        <dataSource type="SIMPLE">
+            <property name="JDBC.Driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+            <property name="JDBC.ConnectionURL" value="jdbc:sqlserver://220.126.231.124:1433;databasename=NEWMEDIA"/>
+            <property name="JDBC.Username" value="sa"/>
+            <property name="JDBC.Password" value="spdh901()!"/>
+            
+            
+            <!-- 
+            <property name="JDBC.ConnectionURL" value="jdbc:sqlserver://100.1.48.50:23143;databasename=NEWMEDIA"/>
+            <property name="JDBC.Username" value="media"/>
+            <property name="JDBC.Password" value="mediahq"/>
+			-->
+            
+        </dataSource>
+    </transactionManager>
+
+	<sqlMap resource="/sqlmap/Common.xml"/>
+	<sqlMap resource="/sqlmap/Broadcast.xml"/>
+	<sqlMap resource="/sqlmap/Contents.xml"/>
+    <sqlMap resource="/sqlmap/Statistics.xml"/>
+    <sqlMap resource="/sqlmap/DisplayBoard.xml"/>
+	<sqlMap resource="/sqlmap/Home.xml"/>
+    <sqlMap resource="/sqlmap/EquipManage.xml"/>
+	<sqlMap resource="/sqlmap/UserDetailInformation.xml"/>
+	<sqlMap resource="/sqlmap/Powerstatus.xml"/>
+	<sqlMap resource="/sqlmap/Rent.xml"/>
+    <sqlMap resource="/sqlmap/UserRentScreen.xml"/>
+    <sqlMap resource="/sqlmap/Access.xml"/>
+    <sqlMap resource="/sqlmap/LongTermUser.xml"/>
+    <sqlMap resource="/sqlmap/Kube.xml"/>
+</sqlMapConfig>

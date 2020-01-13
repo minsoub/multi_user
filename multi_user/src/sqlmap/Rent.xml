@@ -1,0 +1,3607 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Rent">
+    <typeAlias alias="RentDto" type="kr.co.neodreams.multi_user.dto.RentDto"/>
+
+    <select id="Rent#appList" resultClass="RentDto">
+        <![CDATA[
+            SELECT
+                A.APPNO,
+                (STUFF((SELECT
+                    ',' + Z.GBNM
+                FROM ONESTOP_RENT_CODE Z
+                JOIN ONESTOP_RENT_MODEL RM
+                    ON Z.GBCD = RM.GBCD
+                JOIN ONESTOP_RENT_APP_MODEL OAM
+                    ON RM.MDSEQ = OAM.MDSEQ
+                WHERE OAM.APPNO = A.APPNO
+                FOR XML PATH('')
+                ) ,1,1,'')) GBNM,
+                MAX(A.STRDT) STRDT,
+                MAX(A.ENDDT) ENDDT,
+                MAX(A.REGDT) REGDT,
+                MAX(A.STATUS) STATUS,
+                MAX(APPNUM) APPNUM,
+                MAX(A.APPROVAL) APPROVAL,
+                MAX(A.APPENM) APPENM,
+                MAX(A.APPUENM) APPUENM
+            FROM ONESTOP_RENT_APP A
+            JOIN ONESTOP_RENT_APP_MODEL AM
+                ON A.APPNO = AM.APPNO
+            JOIN ONESTOP_RENT_MODEL M
+                ON M.MDSEQ = AM.MDSEQ
+            JOIN ONESTOP_RENT_CODE C
+                ON C.GBCD = M.GBCD
+            WHERE A.APPENO = #REGENO#
+        ]]>
+            <dynamic>
+                <isNotEmpty prepend="AND" property="sch_strdt">
+                    <![CDATA[
+                        CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.STRDT))) >= #sch_strdt#
+                    ]]>
+                </isNotEmpty>
+                <isNotEmpty prepend="AND" property="sch_enddt">
+                    <![CDATA[
+                        CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) <= #sch_enddt#
+                    ]]>
+                </isNotEmpty>
+                <isNotEmpty prepend="AND" property="sch_code1">
+                    <![CDATA[
+                        C.GBCD = #sch_code1#
+                    ]]>
+                </isNotEmpty>
+            </dynamic>
+        <![CDATA[
+            AND A.DELYN = 'N'
+            AND M.GBCD != '018'
+            GROUP BY A.APPNO
+            ORDER BY A.APPNO DESC
+            OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+            FETCH NEXT #perPageCnt# ROWS ONLY
+        ]]>
+    </select>
+
+    <select id="Rent#getAppListCnt" resultClass="int">
+        <![CDATA[
+            SELECT COUNT(*) AS TOTALCNT
+            FROM
+                (
+                SELECT A.APPNO
+                    FROM ONESTOP_RENT_APP A
+                    JOIN ONESTOP_RENT_APP_MODEL AM
+                        ON A.APPNO = AM.APPNO
+                    JOIN ONESTOP_RENT_MODEL M
+                        ON M.MDSEQ = AM.MDSEQ
+                    JOIN ONESTOP_RENT_CODE C
+                        ON C.GBCD = M.GBCD
+                    WHERE A.APPENO = #REGENO#
+        ]]>
+            <dynamic>
+                <isNotEmpty prepend="AND" property="sch_strdt">
+                    <![CDATA[
+                        CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.STRDT))) >= #sch_strdt#
+                    ]]>
+                </isNotEmpty>
+                <isNotEmpty prepend="AND" property="sch_enddt">
+                    <![CDATA[
+                        CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) <= #sch_enddt#
+                    ]]>
+                </isNotEmpty>
+                <isNotEmpty prepend="AND" property="sch_code1">
+                    <![CDATA[
+                        C.GBCD = #sch_code1#
+                    ]]>
+                </isNotEmpty>
+            </dynamic>
+        <![CDATA[
+            AND A.DELYN = 'N'
+            AND M.GBCD != '018'
+            GROUP BY A.APPNO
+                ) AS T
+        ]]>
+    </select>
+
+    <select id="Rent#codeList" resultClass="RentDto">
+        <![CDATA[
+        SELECT GBCD,
+            GBNM
+        FROM ONESTOP_RENT_CODE
+        WHERE GBLEV = '1'
+        AND DELYN = 'N'
+        ]]>
+        <!-- AND GBYN = 'Y' -->
+    </select>
+
+    <select id="Rent#loadAppModel" resultClass="RentDto">
+        <![CDATA[
+        SELECT APPNO,
+            MDSEQ,
+            AMOUNT
+        FROM ONESTOP_RENT_APP_MODEL
+        ]]>
+        <dynamic prepend="WHERE">
+        <isNotNull removeFirstPrepend="true">
+        <isNotNull property="APPNO" prepend="AND">
+        <![CDATA[
+        APPNO = #APPNO#
+        ]]>
+        </isNotNull>
+        <isNotNull property="MDSEQ" prepend="AND">
+        <![CDATA[
+        MDSEQ = #MDSEQ#
+        ]]>
+        </isNotNull>
+        </isNotNull>
+        </dynamic>
+    </select>
+
+    <select id="Rent#loadSign" resultClass="RentDto">
+        <![CDATA[
+        SELECT STATUS,
+            NAME,
+            REG_SIGN
+        FROM ONESTOP_RENT_SIGN
+        ]]>
+        <dynamic prepend="WHERE">
+        <isNotNull property="APPNO">
+        <![CDATA[
+        APPNO = #APPNO#
+        ]]>
+        </isNotNull>
+        </dynamic>
+    </select>
+
+    <select id="Rent#getModelInfo" resultClass="RentDto">
+        <![CDATA[
+        SELECT GBCD,
+            MDNO,
+            MDSEQ,
+            MDNM,
+            MDTXT,
+            MDBG
+        FROM ONESTOP_RENT_MODEL
+        WHERE DELYN = 'N'
+        ]]>
+        <dynamic>
+            <isNotEmpty property="MDSEQ" prepend="AND">
+            <![CDATA[
+                MDSEQ = #MDSEQ#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="MDSEQ_ARR" prepend="AND">
+                <![CDATA[
+                MDSEQ
+                ]]>
+                <iterate prepend="in" open="(" conjunction="," close=")" property="MDSEQ_ARR">
+                <![CDATA[
+                #MDSEQ_ARR[]#
+                ]]>
+                </iterate>
+            </isNotEmpty>
+        </dynamic>
+    </select>
+
+    <select id="Rent#getModelInfoByAppno" resultClass="RentDto">
+    SELECT   ORM.GBCD,
+            ORM.MDNO,
+            ORM.MDSEQ,
+            ORM.MDNM,
+            ORM.MDTXT,
+            ORM.MDBG
+        FROM ONESTOP_RENT_MODEL ORM
+        RIGHT OUTER JOIN ONESTOP_RENT_APP_MODEL ORAM
+        ON ORM.MDSEQ = ORAM.MDSEQ
+        WHERE ORM.DELYN = 'N'
+        AND ORAM.APPNO = #APPNO#
+    </select>
+
+    <select id="Rent#getCodeInfo" resultClass="RentDto">
+        <![CDATA[
+        SELECT GBCD,
+            GBNM,
+            GBLEV,
+            EQHNO
+        FROM ONESTOP_RENT_CODE
+        ]]>
+        <dynamic prepend="WHERE">
+        <isNotEmpty property="GBCD">
+        <![CDATA[
+            GBCD = #GBCD#
+        ]]>
+        </isNotEmpty>
+        </dynamic>
+    </select>
+
+    <select id="Rent#basketList" resultClass="RentDto">
+        <![CDATA[
+        SELECT BSKNO,
+            MDSEQ,
+            STRDT,
+            ENDDT,
+            AMOUNT,
+            REGENO,
+            REGDT
+        FROM ONESTOP_RENT_BASKET
+        WHERE REGENO = #REGENO#
+        ]]>
+        <isNotEmpty property="BSKNO">
+            AND BSKNO = #BSKNO#
+        </isNotEmpty>
+
+        <isNotEmpty property="BSKNO_ARR">
+            AND BSKNO
+        <iterate prepend="in" open="(" conjunction="," close=")" property="BSKNO_ARR">
+            <![CDATA[
+            #BSKNO_ARR[]#
+            ]]>
+        </iterate>
+        </isNotEmpty>
+        <![CDATA[
+        ORDER BY STRDT, ENDDT
+        ]]>
+    </select>
+
+    <select id="Rent#getAppStatusInfo" resultClass="RentDto">
+        <![CDATA[
+        SELECT STATUS,
+            APPROVAL,
+            APPNUM,
+            APPENO,
+            APPENM,
+            STRDT,
+            ENDDT
+        FROM ONESTOP_RENT_APP
+        WHERE appno = #APPNO#
+        ]]>
+    </select>
+
+    <update id="Rent#updAppCancel">
+        <![CDATA[
+        UPDATE ONESTOP_RENT_APP
+            SET
+            STATUS = '2',
+            CANCELENO = #USER_EMPNO#,
+            CANCELDT = convert(varchar(8), getdate(), 112) + replace(convert(varchar(8), getdate(), 108), ':', '')
+        WHERE APPNO = #APPNO#
+        ]]>
+    </update>
+
+    <select id="Rent#getSignInfo" resultClass="RentDto">
+        <![CDATA[
+        SELECT STATUS,
+            REG_SIGN
+        FROM ONESTOP_RENT_SIGN
+        WHERE APPNO = #APPNO#
+        ]]>
+    </select>
+
+    <delete id="Rent#delAppEquip">
+        <![CDATA[
+            DELETE
+            FROM ONESTOP_RENT_APP_EQUIP
+            WHERE APPNO = #APPNO#
+        ]]>
+        <isNotEmpty property="MDSEQ">
+            AND MDSEQ = #MDSEQ#
+        </isNotEmpty>
+        <isNotEmpty property="EQNO">
+            AND EQNO = #EQNO#
+        </isNotEmpty>
+        <isNotEmpty property="EUSEQ">
+            AND EUSEQ = #EUSEQ#
+        </isNotEmpty>
+    </delete>
+    
+    <delete id="Rent#delAppEquipUser">
+    	<![CDATA[
+            DELETE
+            FROM ONESTOP_RENT_APP_EQUIP_USER
+            WHERE APPNO = #APPNO#
+        ]]>
+        <isNotEmpty property="MDSEQ">
+            AND MDSEQ = #MDSEQ#
+        </isNotEmpty>
+        <isNotEmpty property="EQNO">
+            AND EQNO = #EQNO#
+        </isNotEmpty>
+        <isNotEmpty property="EUSEQ">
+            AND EUSEQ = #EUSEQ#
+        </isNotEmpty>
+    </delete>
+
+    <delete id="Rent#deleteBasket">
+        <![CDATA[
+        DELETE FROM ONESTOP_RENT_BASKET
+        ]]>
+        <dynamic prepend="WHERE">
+            <isNotEmpty property="BSKNO" prepend="AND">
+                <![CDATA[
+                BSKNO = #BSKNO#
+                ]]>
+            </isNotEmpty>
+            <isNotEmpty property="BSKNO_ARR" prepend="AND">
+                <![CDATA[
+                BSKNO
+                ]]>
+            <iterate prepend="in" open="(" conjunction="," close=")" property="BSKNO_ARR">
+                <![CDATA[
+                #BSKNO_ARR[]#
+                ]]>
+            </iterate>
+            </isNotEmpty>
+        </dynamic>
+    </delete>
+
+    <select id="Rent#code" resultClass="RentDto">
+        <![CDATA[
+        SELECT GBCD,
+            GBNM,
+            GBYN,
+            EQHNO
+        FROM ONESTOP_RENT_CODE
+        WHERE DELYN = 'N'
+        AND GBLEV = #GBLEV#
+        ]]>
+        <isNotEmpty property="UPCODE">
+        <![CDATA[
+        AND SUBSTRING(GBUP,0,$STRIDX$) = #UPCODE#
+        ]]>
+        </isNotEmpty>
+        <isNotEmpty property="GBUP">
+        <![CDATA[
+        AND GBUP = #GBUP#
+        ]]>
+        </isNotEmpty>
+        <isNotEmpty property="GBCD">
+        <![CDATA[
+        AND GBCD = #GBCD#
+        ]]>
+        </isNotEmpty>
+        <isNotEmpty property="ORDCOLUMN">
+        <![CDATA[
+        ORDER BY $ORDCOLUMN$ ]]><isNotEmpty property="ORDTYPE"><![CDATA[$ORDTYPE$]]></isNotEmpty><![CDATA[
+        ]]>
+        </isNotEmpty>
+        <isEqual property="PAGESET" compareValue="ON">
+        <![CDATA[
+        OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+          FETCH NEXT #perPageCnt# ROWS ONLY
+        ]]>
+        </isEqual>
+    </select>
+
+    <select id="Rent#getCodeCnt" resultClass="int">
+        <![CDATA[
+        SELECT COUNT(*) AS TOTALCNT
+        FROM ONESTOP_RENT_CODE
+        WHERE DELYN = 'N'
+        AND GBLEV = #GBLEV#
+        ]]>
+        <isNotEmpty property="UPCODE">
+        <![CDATA[
+        AND SUBSTRING(GBUP,0,$STRIDX$) = #UPCODE#
+        ]]>
+        </isNotEmpty>
+        <isNotEmpty property="GBUP">
+        <![CDATA[
+        AND GBUP = #GBUP#
+        ]]>
+        </isNotEmpty>
+        <isNotEmpty property="GBCD">
+        <![CDATA[
+        AND GBCD = #GBCD#
+        ]]>
+        </isNotEmpty>
+    </select>
+
+    <select id="Rent#getMaxGbcd" resultClass="String">
+        <![CDATA[
+        SELECT MAX(GBCD) AS GBCDMAX
+        FROM ONESTOP_RENT_CODE
+        WHERE LEN(GBCD) = #GBCDLEN#
+        ]]>
+        <isNotEmpty property="UPCODE">
+        <![CDATA[
+            AND SUBSTRING(GBCD, 1, $STRIDX$) = #UPCODE#
+        ]]>
+        </isNotEmpty>
+    </select>
+
+    <insert id="Rent#insCode">
+        <![CDATA[
+        INSERT INTO ONESTOP_RENT_CODE
+       (
+           GBCD
+           ]]>
+           <isNotEmpty property="GBNM">
+           ,GBNM
+           </isNotEmpty>
+           <isNotEmpty property="GBUP">
+           ,GBUP
+           </isNotEmpty>
+           <isNotEmpty property="GBYN">
+           ,GBYN
+           </isNotEmpty>
+           <isNotEmpty property="GBBG">
+           ,GBBG
+           </isNotEmpty>
+           <isNotEmpty property="GBLEV">
+           ,GBLEV
+           </isNotEmpty>
+           <isNotEmpty property="EQHNO">
+           ,EQHNO
+           </isNotEmpty>
+           ,DELYN
+       )
+       VALUES
+       (
+           #GBCD#
+           <isNotEmpty property="GBNM">
+           ,#GBNM#
+           </isNotEmpty>
+           <isNotEmpty property="GBUP">
+           ,#GBUP#
+           </isNotEmpty>
+           <isNotEmpty property="GBYN">
+           ,#GBYN#
+           </isNotEmpty>
+           <isNotEmpty property="GBBG">
+           ,#GBBG#
+           </isNotEmpty>
+           <isNotEmpty property="GBLEV">
+           ,#GBLEV#
+           </isNotEmpty>
+           <isNotEmpty property="EQHNO">
+           ,#EQHNO#
+           </isNotEmpty>
+           ,'N'
+       )
+    </insert>
+
+    <update id="Rent#updCode">
+        <![CDATA[
+        UPDATE dbo.ONESTOP_RENT_CODE
+            SET
+            ]]>
+            <isNotNull removeFirstPrepend="true">
+            <isNotEmpty property="GBNM" prepend=",">
+            <![CDATA[
+            GBNM = #GBNM#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="GBUP" prepend=",">
+            <![CDATA[
+            GBUP = #GBUP#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="GBYN" prepend=",">
+            <![CDATA[
+            GBYN = #GBYN#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="GBBG" prepend=",">
+            <![CDATA[
+            GBBG = #GBBG#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="GBLEV" prepend=",">
+            <![CDATA[
+            GBLEV = #GBLEV#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQHNO" prepend=",">
+            <![CDATA[
+            EQHNO = #EQHNO#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="DELYN" prepend=",">
+            <![CDATA[
+            DELYN = #DELYN#
+            ]]>
+            </isNotEmpty>
+            <isEqual property="DELYN" compareValue="Y" prepend=",">
+            <![CDATA[
+            DELDT = convert(varchar(8), getdate(), 112) + replace(convert(varchar(8), getdate(), 108), ':', '')
+            ]]>
+            </isEqual>
+            </isNotNull>
+        <![CDATA[
+        WHERE GBCD = #GBCD#
+        ]]>
+    </update>
+
+    <select id="Rent#getSubCode" resultClass="RentDto">
+        <![CDATA[
+        WITH LINKED_RENT_CODE
+        AS
+        (
+        SELECT
+            A.GBCD,
+            A.GBNM,
+            A.GBYN,
+            A.GBLEV
+        FROM ONESTOP_RENT_CODE A
+        WHERE A.GBCD = #GBCD#
+
+        UNION ALL
+
+        SELECT
+            B1.GBCD,
+            B1.GBNM,
+            B1.GBYN,
+            B1.GBLEV
+        FROM ONESTOP_RENT_CODE B1
+        JOIN LINKED_RENT_CODE B2
+        ON B1.GBUP = B2.GBCD
+        )
+        SELECT * FROM LINKED_RENT_CODE WHERE GBCD != #GBCD#
+        ]]>
+        <isNotEmpty property="GBLEV">
+        <![CDATA[
+        AND GBLEV = #GBLEV#
+        ]]>
+        </isNotEmpty>
+
+    </select>
+
+    <select id="Rent#adminList" resultClass="RentDto">
+        <![CDATA[
+        SELECT EMP_ID,
+            EMP_NM,
+            DEPT_NM,
+            GET_MAIL
+        FROM ONESTOP_RENT_ADMIN
+        ]]>
+    </select>
+
+    <update id="Rent#updateAdmin">
+        <![CDATA[
+        UPDATE ONESTOP_RENT_ADMIN
+        SET GET_MAIL = #GET_MAIL#
+        WHERE EMP_ID = #EMP_ID#
+        ]]>
+    </update>
+
+    <delete id="Rent#deleteAdmin">
+        <![CDATA[
+        DELETE FROM ONESTOP_RENT_ADMIN
+        ]]>
+        <dynamic prepend="WHERE">
+        <isNotEmpty property="EMP_ID_ARR" prepend="AND">
+                <![CDATA[
+                EMP_ID
+                ]]>
+            <iterate prepend="in" open="(" conjunction="," close=")" property="EMP_ID_ARR">
+                <![CDATA[
+                #EMP_ID_ARR[]#
+                ]]>
+            </iterate>
+        </isNotEmpty>
+        </dynamic>
+    </delete>
+
+    <select id="Rent#empidChk" resultClass="int">
+        <![CDATA[
+        SELECT COUNT(*)
+        FROM ONESTOP_RENT_ADMIN
+        WHERE EMP_ID = #EMP_ID#
+        ]]>
+    </select>
+
+    <insert id="Rent#insertAdmin">
+        INSERT INTO ONESTOP_RENT_ADMIN
+       (
+           EMP_ID
+           ,EMP_NM
+           <isNotEmpty property="DEPT_NM" prepend=",">
+           DEPT_NM
+           </isNotEmpty>
+           ,GET_MAIL
+       )
+       VALUES
+       (
+           #EMP_ID#
+           ,#EMP_NM#
+           <isNotEmpty property="DEPT_NM" prepend=",">
+           #DEPT_NM#
+           </isNotEmpty>
+           ,#GET_MAIL#
+       )
+    </insert>
+
+    <select id="Rent#searchAdmin" resultClass="RentDto">
+        <![CDATA[
+        SELECT EMPNO,
+            NAME,
+            DEPTNO,
+            TELNO
+        FROM INSA_TBL
+        WHERE EMPNO = #keyword#
+            OR NAME like '%$keyword$%'
+        ]]>
+    </select>
+
+    <select id="Rent#stanModelList" resultClass="RentDto">
+        <![CDATA[
+        SELECT MDSEQ
+            ,GBCD
+            ,MDNO
+            ,MDNM
+            ,MDBG
+            ,MDTXT
+            ,LCHDT
+            FROM ONESTOP_RENT_MODEL
+            WHERE DELYN = 'N'
+            ]]>
+            <isNotEmpty property="GBCD">
+            <![CDATA[
+            AND GBCD = #GBCD#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="MDSEQ">
+            <![CDATA[
+            AND MDSEQ = #MDSEQ#
+            ]]>
+            </isNotEmpty>
+        <![CDATA[
+        ORDER BY MDSEQ DESC
+        ]]>
+        <isEqual property="PAGESET" compareValue="ON">
+        <![CDATA[
+        OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+          FETCH NEXT #perPageCnt# ROWS ONLY
+        ]]>
+        </isEqual>
+    </select>
+
+    <select id="Rent#getStanModelCnt" resultClass="int">
+        SELECT COUNT(*) AS totalCnt
+        FROM ONESTOP_RENT_MODEL
+        WHERE DELYN = 'N'
+            AND GBCD = #GBCD#
+    </select>
+
+    <insert id="Rent#insModel">
+        INSERT INTO ONESTOP_RENT_MODEL
+       (
+           MDSEQ,
+           GBCD,
+           MDNO,
+           MDNM,
+           MDBG,
+           MDTXT,
+           REGENO,
+           REGENM,
+           REGDT,
+           DELYN,
+           LCHDT
+       )
+       VALUES
+       (
+              #MDSEQ#,
+              #GBCD#,
+              #MDNO#,
+              #MDNM#,
+              #MDBG#,
+              #MDTXT#,
+              #REGENO#,
+              #REGENM#,
+              convert(varchar(8), getdate(), 112) + replace(convert(varchar(8), getdate(), 108), ':', ''),
+              'N',
+              #LCHDT#
+          )
+    </insert>
+
+    <select id="Rent#maxMdseqModel" resultClass="int">
+        SELECT MAX(MDSEQ)
+          FROM ONESTOP_RENT_MODEL ORM
+    </select>
+
+    <select id="Rent#getModelSub" resultClass="RentDto">
+        SELECT GBCD,
+            ITEM
+        FROM ONESTOP_RENT_MODEL_SUB
+        WHERE MDSEQ = #MDSEQ#
+    </select>
+
+    <insert id="Rent#insModelSub">
+        INSERT INTO ONESTOP_RENT_MODEL_SUB
+        (
+            MDSEQ,
+            GBCD,
+            ITEM
+        )
+        VALUES
+        (
+            #MDSEQ#,
+            #GBCD#,
+            #ITEM#
+        )
+    </insert>
+
+    <delete id="Rent#delModelSub">
+        DELETE
+        FROM ONESTOP_RENT_MODEL_SUB
+        WHERE GBCD = #GBCD#
+    </delete>
+
+    <select id="Rent#equipList" resultClass="RentDto">
+        <!-- SELECT MAX(EQ.GBCD) GBCD,
+            MAX(EQ.MDSEQ) MDSEQ,
+            EQ.EQNO,
+            MAX(EQ.EQSN) EQSN,
+            MAX(EQ.EQNM) EQNM,
+            MAX(EQ.EQLST) EQLST,
+            MAX(EQ.EQMST) EQMST,
+            MAX(EQ.EQDET) EQDET,
+            MAX(EQ.EQALIAS) EQALIAS
+        FROM ONESTOP_RENT_EQUIP EQ
+        LEFT JOIN ONESTOP_RENT_MODEL_SUB MS
+        ON MS.MDSEQ = EQ.MDSEQ
+        LEFT JOIN ONESTOP_RENT_CODE CD
+            ON EQ.GBCD = CD.GBCD
+        WHERE EQ.DELYN = 'N'
+        AND CD.GBYN = 'Y'
+        <isNotEqual property="GBCD" compareValue="all">
+        AND EQ.GBCD = #GBCD#
+        </isNotEqual>
+        GROUP BY EQ.EQNO
+        ORDER BY EQ.EQNO DESC
+        OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+          FETCH NEXT #perPageCnt# ROWS ONLY -->
+
+          SELECT MAX(EQ.GBCD) GBCD,
+            MAX(EQ.MDSEQ) MDSEQ,
+            EQ.EQNO,
+            MAX(EQ.EQSN) EQSN,
+            MAX(EQ.EQNM) EQNM,
+            MAX(EQ.EQLST) EQLST,
+            MAX(EQ.EQMST) EQMST,
+            MAX(EQ.EQDET) EQDET,
+            MAX(EQ.EQALIAS) EQALIAS
+        FROM ONESTOP_RENT_EQUIP EQ
+        LEFT JOIN ONESTOP_RENT_MODEL_SUB MS
+        ON MS.MDSEQ = EQ.MDSEQ
+        WHERE EQ.DELYN = 'N'
+        <isNotEqual property="GBCD" compareValue="all">
+        AND EQ.GBCD = #GBCD#
+        </isNotEqual>
+        <isNotEmpty property="ITEM">
+        AND MS.ITEM = #ITEM#
+        </isNotEmpty>
+        <isNotEmpty property="EQLST">
+        AND EQ.EQLST = #EQLST#
+        </isNotEmpty>
+        <isNotEmpty property="EQRST">
+        AND EQ.EQRST = #EQRST#
+        </isNotEmpty>
+        <isNotEmpty property="EQMST">
+        AND EQ.EQMST = #EQMST#
+        </isNotEmpty>
+        <isNotEmpty property="EQSN">
+        AND ( EQ.EQSN LIKE '%$EQSN$%' OR EQ.EQNM LIKE '%$EQSN$%' OR EQ.EQALIAS LIKE '%$EQSN$%' OR EQ.EQASSETSNO LIKE '%$EQSN$%' )
+        </isNotEmpty>
+        <isNotEmpty property="MDSEQ">
+        AND EQ.MDSEQ = #MDSEQ#
+        </isNotEmpty>
+        <isNotEmpty property="EQNO">
+        AND EQ.EQNO = #EQNO#
+        </isNotEmpty>
+        GROUP BY EQ.EQNO
+        ORDER BY EQ.EQNO DESC
+        OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+          FETCH NEXT #perPageCnt# ROWS ONLY
+    </select>
+
+    <select id="Rent#getEquipCnt" resultClass="int">
+        <!-- SELECT COUNT(*) AS TOTALCNT
+        FROM
+            (SELECT EQ.EQNO
+                FROM ONESTOP_RENT_EQUIP EQ
+                LEFT JOIN ONESTOP_RENT_MODEL_SUB MS
+                    ON MS.MDSEQ = EQ.MDSEQ
+                LEFT JOIN ONESTOP_RENT_CODE CD
+                    ON EQ.GBCD = CD.GBCD
+                WHERE EQ.DELYN = 'N'
+                    AND CD.GBYN = 'Y'
+                    <isNotEqual property="GBCD" compareValue="all">
+                    AND EQ.GBCD = #GBCD#
+                    </isNotEqual>
+                GROUP BY EQ.EQNO
+            ) AS T -->
+
+        SELECT COUNT(*) AS TOTALCNT
+        FROM
+            (SELECT EQ.EQNO
+                FROM ONESTOP_RENT_EQUIP EQ
+                LEFT JOIN ONESTOP_RENT_MODEL_SUB MS
+                    ON MS.MDSEQ = EQ.MDSEQ
+                WHERE EQ.DELYN = 'N'
+                    <isNotEqual property="GBCD" compareValue="all">
+                    AND EQ.GBCD = #GBCD#
+                    </isNotEqual>
+                    <isNotEmpty property="ITEM">
+                    AND MS.ITEM = #ITEM#
+                    </isNotEmpty>
+                    <isNotEmpty property="EQLST">
+                    AND EQ.EQLST = #EQLST#
+                    </isNotEmpty>
+                    <isNotEmpty property="EQRST">
+                    AND EQ.EQRST = #EQRST#
+                    </isNotEmpty>
+                    <isNotEmpty property="EQMST">
+                    AND EQ.EQMST = #EQMST#
+                    </isNotEmpty>
+                    <isNotEmpty property="EQSN">
+                    AND ( EQ.EQSN LIKE '%$EQSN$%' OR EQ.EQNM LIKE '%$EQSN$%' OR EQ.EQALIAS LIKE '%$EQSN$%' OR EQ.EQASSETSNO LIKE '%$EQSN$%' )
+                    </isNotEmpty>
+                    <isNotEmpty property="MDSEQ">
+                    <isNotEmpty property="EQNO">
+                    AND EQ.EQNO = #EQNO#
+                    </isNotEmpty>
+                    AND EQ.MDSEQ = #MDSEQ#
+                    </isNotEmpty>
+                GROUP BY EQ.EQNO
+            ) AS T
+    </select>
+
+    <select id="Rent#discardList" resultClass="RentDto">
+        SELECT GBCD,
+            MDSEQ,
+            EQNO,
+            EQSN,
+            EQNM,
+            EQLST,
+            EQDET
+        FROM ONESTOP_RENT_EQUIP
+        WHERE DELYN = 'N'
+        AND EQMST = '4'
+        <isNotEqual property="GBCD" compareValue="all">
+         AND GBCD = #GBCD#
+        </isNotEqual>
+        ORDER BY EQNO DESC
+        OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+    </select>
+
+    <select id="Rent#getDiscardCnt" resultClass="int">
+        SELECT COUNT(*) AS TOTALCNT
+        FROM ONESTOP_RENT_EQUIP
+        WHERE DELYN = 'N'
+        AND EQMST = '4'
+        <isNotEqual property="GBCD" compareValue="all">
+         AND GBCD = #GBCD#
+        </isNotEqual>
+    </select>
+
+    <select id="Rent#companyList" resultClass="RentDto">
+        WITH LINKED_RENT_CODE
+        AS
+        (
+        SELECT
+            A.GBCD,
+            A.GBNM
+        FROM ONESTOP_RENT_CODE A
+        WHERE A.GBNM = '제조사'
+            AND A.DELYN = 'N'
+            AND SUBSTRING(A.GBCD, 0, 4) = #GBCD#
+
+        UNION ALL
+
+        SELECT
+            B1.GBCD,
+            B1.GBNM
+        FROM ONESTOP_RENT_CODE B1
+        JOIN LINKED_RENT_CODE B2
+        ON B1.GBUP = B2.GBCD
+        )
+        SELECT * FROM LINKED_RENT_CODE WHERE LEN(GBCD) = 9
+    </select>
+
+    <select id="Rent#getModelList" resultClass="RentDto">
+        SELECT GBCD,
+            MDNO,
+            MDSEQ,
+            MDNM,
+            MDTXT,
+            MDBG
+        FROM ONESTOP_RENT_MODEL
+        WHERE DELYN = 'N'
+      AND GBCD = #GBCD#
+      ORDER BY MDNM COLLATE Korean_Wansung_BIN
+    </select>
+
+    <update id="Rent#updModel">
+        UPDATE ONESTOP_RENT_MODEL
+            SET
+            <isNotNull removeFirstPrepend="true">
+            <isNotEmpty property="GBCD" prepend=",">
+            <![CDATA[
+            GBCD = #GBCD#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="MDNO" prepend=",">
+            <![CDATA[
+            MDNO = #MDNO#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="MDNM" prepend=",">
+            <![CDATA[
+            MDNM = #MDNM#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="MDBG" prepend=",">
+            <![CDATA[
+            MDBG = #MDBG#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="MDTXT" prepend=",">
+            <![CDATA[
+            MDTXT = #MDTXT#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="REGENO" prepend=",">
+            <![CDATA[
+            REGENO = #REGENO#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="REGENM" prepend=",">
+            <![CDATA[
+            REGENM = #REGENM#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="REGDT" prepend=",">
+            <![CDATA[
+            REGDT = #REGDT#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQPKG" prepend=",">
+            <![CDATA[
+            EQPKG = #EQPKG#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQDET" prepend=",">
+            <![CDATA[
+            EQDET = #EQDET#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQBRK" prepend=",">
+            <![CDATA[
+            EQBRK = #EQBRK#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQBG" prepend=",">
+            <![CDATA[
+            EQBG = #EQBG#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="REGENO" prepend=",">
+            <![CDATA[
+            REGENO = #REGENO#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="REGENM" prepend=",">
+            <![CDATA[
+            REGENM = #REGENM#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="REGDT" prepend=",">
+            <![CDATA[
+            REGDT = #REGDT#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="LCHDT" prepend=",">
+            <![CDATA[
+            LCHDT = #LCHDT#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="DELYN" prepend=",">
+            <![CDATA[
+            DELYN = #DELYN#
+            ]]>
+            </isNotEmpty>
+            <isEqual property="DELYN" compareValue="Y" prepend=",">
+            <![CDATA[
+            DELDT = convert(varchar(8), getdate(), 112) + replace(convert(varchar(8), getdate(), 108), ':', '')
+            ]]>
+            </isEqual>
+            </isNotNull>
+        WHERE MDSEQ = #MDSEQ#
+    </update>
+
+    <update id="Rent#updModelSub">
+        UPDATE ONESTOP_RENT_MODEL_SUB
+            SET
+            ITEM = #ITEM#
+        WHERE MDSEQ = #MDSEQ#
+        AND GBCD = #GBCD#
+    </update>
+
+    <select id="Rent#equipInfo" resultClass="RentDto">
+        SELECT GBCD,
+            MDSEQ,
+            EQNO,
+            EQNM,
+            EQSN,
+            EQCDT,
+            EQRDT,
+            EQRST,
+            EQMST,
+            EQLST,
+            EQPKG,
+            EQDET,
+            EQBRK,
+            EQBG,
+            REGENO,
+            REGENM,
+            REGDT,
+            DELYN,
+            DELDT,
+            EQBRKDT,
+            ETC1,
+            ETC2,
+            ETC3,
+            ETC4,
+            ETC5,
+            ETC6,
+            EQALIAS, 
+            EQASSETSNO
+        FROM ONESTOP_RENT_EQUIP
+        WHERE EQNO = #EQNO#
+    </select>
+
+    <select id="Rent#getAdminChk" resultClass="RentDto">
+        SELECT EMP_ID
+        FROM ONESTOP_RENT_ADMIN
+        WHERE EMP_ID = #EMP_ID#
+    </select>
+
+    <select id="Rent#getEQLSTChk" resultClass="RentDto">
+        SELECT GBCD,
+            EQLST
+        FROM ONESTOP_RENT_EQUIP
+        WHERE EQNO = #EQNO#
+    </select>
+
+    <update id="Rent#updEquip">
+        UPDATE ONESTOP_RENT_EQUIP
+            SET
+            <isNotNull removeFirstPrepend="true">
+            <isNotEmpty property="GBCD" prepend=",">
+            <![CDATA[
+            GBCD = #GBCD#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="MDSEQ" prepend=",">
+            <![CDATA[
+            MDSEQ = #MDSEQ#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQNM" prepend=",">
+            <![CDATA[
+            EQNM = #EQNM#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQSN" prepend=",">
+            <![CDATA[
+            EQSN = #EQSN#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQCDT" prepend=",">
+            <![CDATA[
+            EQCDT = #EQCDT#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQRDT" prepend=",">
+            <![CDATA[
+            EQRDT = #EQRDT#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQRST" prepend=",">
+            <![CDATA[
+            EQRST = #EQRST#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQMST" prepend=",">
+            <![CDATA[
+            EQMST = #EQMST#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQLST" prepend=",">
+            <![CDATA[
+            EQLST = #EQLST#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQPKG" prepend=",">
+            <![CDATA[
+            EQPKG = #EQPKG#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQDET" prepend=",">
+            <![CDATA[
+            EQDET = #EQDET#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQBRK" prepend=",">
+            <![CDATA[
+            EQBRK = #EQBRK#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQBG" prepend=",">
+            <![CDATA[
+            EQBG = #EQBG#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="REGENO" prepend=",">
+            <![CDATA[
+            REGENO = #REGENO#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="REGENM" prepend=",">
+            <![CDATA[
+            REGENM = #REGENM#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="REGDT" prepend=",">
+            <![CDATA[
+            REGDT = #REGDT#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQBRKDT" prepend=",">
+            <![CDATA[
+            EQBRKDT = #EQBRKDT#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="ETC1" prepend=",">
+            <![CDATA[
+            ETC1 = #ETC1#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="ETC2" prepend=",">
+            <![CDATA[
+            ETC2 = #ETC2#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="ETC3" prepend=",">
+            <![CDATA[
+            ETC3 = #ETC3#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="ETC4" prepend=",">
+            <![CDATA[
+            ETC4 = #ETC4#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="ETC5" prepend=",">
+            <![CDATA[
+            ETC5 = #ETC5#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="ETC6" prepend=",">
+            <![CDATA[
+            ETC6 = #ETC6#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQALIAS" prepend=",">
+            <![CDATA[
+            EQALIAS = #EQALIAS#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="EQASSETSNO" prepend=",">
+            <![CDATA[
+            EQASSETSNO = #EQASSETSNO#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="DELYN" prepend=",">
+            <![CDATA[
+            DELYN = #DELYN#
+            ]]>
+            </isNotEmpty>
+            <isEqual property="DELYN" compareValue="Y" prepend=",">
+            <![CDATA[
+            DELDT = convert(varchar(8), getdate(), 112) + replace(convert(varchar(8), getdate(), 108), ':', '')
+            ]]>
+            </isEqual>
+            </isNotNull>
+        WHERE EQNO = #EQNO#
+        <!-- 2018. 02. 20 krh 
+        <isNotEmpty property="MDSEQ">
+        AND MDSEQ = #MDSEQ#
+        </isNotEmpty>
+         -->
+    </update>
+
+    <select id="Rent#getNewEqnm" resultClass="String">
+        SELECT REPLICATE('0', 4 - LEN(CAST(ISNULL(MAX(SUBSTRING(EQNM, 5, 9)+1),1) AS VARCHAR))) + CAST(ISNULL(MAX(SUBSTRING(EQNM, 5, 9)+1),1) AS VARCHAR) AS NEW_EQNM
+            FROM ONESTOP_RENT_EQUIP
+            WHERE EQNM LIKE '$EQNM$%'
+    </select>
+
+    <select id="Rent#getMaxEqno" resultClass="int">
+        SELECT MAX(EQNO) AS EQNO
+        FROM ONESTOP_RENT_EQUIP;
+    </select>
+
+    <insert id="Rent#insEquip">
+        INSERT INTO ONESTOP_RENT_EQUIP
+       (
+       <isNotNull removeFirstPrepend="true">
+       <isNotEmpty property="GBCD" prepend=",">
+           GBCD
+       </isNotEmpty>
+       <isNotEmpty property="MDSEQ" prepend=",">
+           MDSEQ
+       </isNotEmpty>
+       <isNotEmpty property="EQNO" prepend=",">
+           EQNO
+       </isNotEmpty>
+       <isNotEmpty property="EQNM" prepend=",">
+           EQNM
+       </isNotEmpty>
+       <isNotEmpty property="EQSN" prepend=",">
+           EQSN
+       </isNotEmpty>
+       <isNotEmpty property="EQCDT" prepend=",">
+           EQCDT
+       </isNotEmpty>
+       <isNotEmpty property="EQRDT" prepend=",">
+           EQRDT
+       </isNotEmpty>
+       <isNotEmpty property="EQRST" prepend=",">
+           EQRST
+       </isNotEmpty>
+       <isNotEmpty property="EQMST" prepend=",">
+           EQMST
+       </isNotEmpty>
+       <isNotEmpty property="EQLST" prepend=",">
+           EQLST
+       </isNotEmpty>
+       <isNotEmpty property="EQPKG" prepend=",">
+           EQPKG
+       </isNotEmpty>
+       <isNotEmpty property="EQDET" prepend=",">
+           EQDET
+       </isNotEmpty>
+       <isNotEmpty property="EQBRK" prepend=",">
+           EQBRK
+       </isNotEmpty>
+       <isNotEmpty property="EQBG" prepend=",">
+           EQBG
+       </isNotEmpty>
+       <isNotEmpty property="REGENO" prepend=",">
+           REGENO
+       </isNotEmpty>
+       <isNotEmpty property="REGENM" prepend=",">
+           REGENM
+       </isNotEmpty>
+       <isNotEmpty property="EQBRKDT" prepend=",">
+           EQBRKDT
+       </isNotEmpty>
+       <isNotEmpty property="ETC1" prepend=",">
+           ETC1
+       </isNotEmpty>
+       <isNotEmpty property="ETC2" prepend=",">
+           ETC2
+       </isNotEmpty>
+       <isNotEmpty property="ETC3" prepend=",">
+           ETC3
+       </isNotEmpty>
+       <isNotEmpty property="ETC4" prepend=",">
+           ETC4
+       </isNotEmpty>
+       <isNotEmpty property="ETC5" prepend=",">
+           ETC5
+       </isNotEmpty>
+       <isNotEmpty property="ETC6" prepend=",">
+           ETC6
+       </isNotEmpty>
+       <isNotEmpty property="EQALIAS" prepend=",">
+           EQALIAS
+       </isNotEmpty>
+       <isNotEmpty property="EQASSETSNO" prepend=",">
+           EQASSETSNO
+       </isNotEmpty>
+            ,REGDT
+            ,DELYN
+       </isNotNull>
+       )
+       VALUES
+       (
+       <isNotNull removeFirstPrepend="true">
+       <isNotEmpty property="GBCD" prepend=",">
+           #GBCD#
+       </isNotEmpty>
+       <isNotEmpty property="MDSEQ" prepend=",">
+           #MDSEQ#
+       </isNotEmpty>
+       <isNotEmpty property="EQNO" prepend=",">
+           #EQNO#
+       </isNotEmpty>
+       <isNotEmpty property="EQNM" prepend=",">
+           #EQNM#
+       </isNotEmpty>
+       <isNotEmpty property="EQSN" prepend=",">
+           #EQSN#
+       </isNotEmpty>
+       <isNotEmpty property="EQCDT" prepend=",">
+           #EQCDT#
+       </isNotEmpty>
+       <isNotEmpty property="EQRDT" prepend=",">
+           #EQRDT#
+       </isNotEmpty>
+       <isNotEmpty property="EQRST" prepend=",">
+           #EQRST#
+       </isNotEmpty>
+       <isNotEmpty property="EQMST" prepend=",">
+           #EQMST#
+       </isNotEmpty>
+       <isNotEmpty property="EQLST" prepend=",">
+           #EQLST#
+       </isNotEmpty>
+       <isNotEmpty property="EQPKG" prepend=",">
+           #EQPKG#
+       </isNotEmpty>
+       <isNotEmpty property="EQDET" prepend=",">
+           #EQDET#
+       </isNotEmpty>
+       <isNotEmpty property="EQBRK" prepend=",">
+           #EQBRK#
+       </isNotEmpty>
+       <isNotEmpty property="EQBG" prepend=",">
+           #EQBG#
+       </isNotEmpty>
+       <isNotEmpty property="REGENO" prepend=",">
+           #REGENO#
+       </isNotEmpty>
+       <isNotEmpty property="REGENM" prepend=",">
+           #REGENM#
+       </isNotEmpty>
+       <isNotEmpty property="EQBRKDT" prepend=",">
+           #EQBRKDT#
+       </isNotEmpty>
+       <isNotEmpty property="ETC1" prepend=",">
+           #ETC1#
+       </isNotEmpty>
+       <isNotEmpty property="ETC2" prepend=",">
+           #ETC2#
+       </isNotEmpty>
+       <isNotEmpty property="ETC3" prepend=",">
+           #ETC3#
+       </isNotEmpty>
+       <isNotEmpty property="ETC4" prepend=",">
+           #ETC4#
+       </isNotEmpty>
+       <isNotEmpty property="ETC5" prepend=",">
+           #ETC5#
+       </isNotEmpty>
+       <isNotEmpty property="ETC6" prepend=",">
+           #ETC6#
+       </isNotEmpty>
+       <isNotEmpty property="EQALIAS" prepend=",">
+           #EQALIAS#
+       </isNotEmpty>
+       <isNotEmpty property="EQASSETSNO" prepend=",">
+           #EQASSETSNO#
+       </isNotEmpty>
+            ,convert(varchar(8), getdate(), 112) + replace(convert(varchar(8), getdate(), 108), ':', '')
+            ,'N'
+       </isNotNull>
+       )
+    </insert>
+
+    <select id="Rent#getMaxFileNo" resultClass="Integer">
+        SELECT MAX(FILENO) AS FILENO
+        FROM ONESTOP_RENT_FILES
+    </select>
+
+    <insert id="Rent#insFile">
+        INSERT INTO ONESTOP_RENT_FILES
+            (
+                FILENO,
+                REFNO,
+                FILETP,
+                FILENM,
+                PATHNM
+            )
+            VALUES
+            (
+                #FILENO#,
+                #REFNO#,
+                #FILETP#,
+                #FILENM#,
+                #PATHNM#
+            )
+    </insert>
+
+    <select id="Rent#getFileList" resultClass="RentDto">
+        SELECT FILENO, FILENM, PATHNM
+        FROM ONESTOP_RENT_FILES
+        WHERE REFNO = #REFNO#
+        AND FILETP = #FILETP#
+    </select>
+
+    <delete id="Rent#delFile">
+        DELETE FROM ONESTOP_RENT_FILES
+        WHERE
+        <isNotEmpty property="REFNO">
+        REFNO = #REFNO#
+        </isNotEmpty>
+        <isNotEmpty property="FILENO">
+        FILENO = #FILENO#
+        </isNotEmpty>
+    </delete>
+
+    <select id="Rent#recList" resultClass="rentDto">
+    	SELECT 
+			APPNO 
+			,GBNM 
+			,MDSEQ_GRP
+			,MDNM
+			,EQALIAS
+			,AMOUNT
+			,STRDT
+			,ENDDT
+			,BANPDT
+			,REGDT
+			,STATUS
+			,APPNUM
+			,APPROVAL
+			,APPENM
+			,APPUENM
+		FROM (
+        SELECT A.APPNO,
+                (STUFF((SELECT
+                ',' + Z.GBNM
+                FROM ONESTOP_RENT_CODE Z
+                JOIN ONESTOP_RENT_MODEL RM
+                ON Z.GBCD = RM.GBCD
+                JOIN ONESTOP_RENT_APP_MODEL OAM
+                ON RM.MDSEQ = OAM.MDSEQ
+                WHERE OAM.APPNO = A.APPNO
+                FOR XML PATH('')
+                ) ,1,1,'')) GBNM,
+                (STUFF((SELECT
+                ',' + CONVERT(VARCHAR,OAM.MDSEQ)
+                FROM ONESTOP_RENT_CODE Z
+                JOIN ONESTOP_RENT_MODEL RM
+                ON Z.GBCD = RM.GBCD
+                JOIN ONESTOP_RENT_APP_MODEL OAM
+                ON RM.MDSEQ = OAM.MDSEQ
+                WHERE OAM.APPNO = A.APPNO
+                FOR XML PATH('')
+                ) ,1,1,'')) MDSEQ_GRP,
+                (STUFF((SELECT
+                ',' + RM.MDNM
+                FROM ONESTOP_RENT_CODE Z
+                JOIN ONESTOP_RENT_MODEL RM
+                ON Z.GBCD = RM.GBCD
+                JOIN ONESTOP_RENT_APP_MODEL OAM
+                ON RM.MDSEQ = OAM.MDSEQ
+                WHERE OAM.APPNO = A.APPNO
+                FOR XML PATH('')
+                ) ,1,1,'')) MDNM,
+                (STUFF((SELECT
+                ',' + EQ.EQALIAS
+                FROM ONESTOP_RENT_MODEL RM                                										
+                JOIN ONESTOP_RENT_APP_MODEL OAM
+                ON RM.MDSEQ = OAM.MDSEQ
+				JOIN ONESTOP_RENT_APP_EQUIP AEQ
+				ON OAM.APPNO = AEQ.APPNO
+				JOIN ONESTOP_RENT_EQUIP EQ
+				ON AEQ.EQNO = EQ.EQNO
+				AND RM.MDSEQ = EQ.MDSEQ
+                WHERE OAM.APPNO = A.APPNO
+                FOR XML PATH('')
+                ) ,1,1,'')) EQALIAS, 
+            (SELECT SUM(RAM.AMOUNT) FROM ONESTOP_RENT_APP_MODEL RAM WHERE RAM.APPNO = A.APPNO) AMOUNT,
+            MAX(A.STRDT) STRDT,
+            MAX(A.ENDDT) ENDDT,
+            MAX(A.BANPDT) BANPDT,
+            MAX(A.REGDT) REGDT,
+            MAX(A.STATUS) STATUS,
+            MAX(APPNUM) APPNUM,
+            MAX(A.APPROVAL) APPROVAL,
+            MAX(APPENM) APPENM,
+			CASE 
+			WHEN (SELECT COUNT(*) -1 FROM (SELECT RAEU.APPUENO FROM ONESTOP_RENT_APP_EQUIP_USER RAEU WHERE RAEU.APPNO = A.APPNO GROUP BY RAEU.APPUENO) TMP) > 0
+			THEN CONCAT(MAX(EU.APPUENM),'외 ',(SELECT COUNT(*) -1 FROM (SELECT RAEU.APPUENO FROM ONESTOP_RENT_APP_EQUIP_USER RAEU WHERE RAEU.APPNO = A.APPNO GROUP BY RAEU.APPUENO) TMP),'명')
+			ELSE MAX(EU.APPUENM)
+			END AS APPUENM     
+        FROM ONESTOP_RENT_APP a
+		LEFT JOIN (
+			SELECT a.APPNO, a.MDSEQ, b.BANPFLAG, b.BANPDT FROM ONESTOP_RENT_APP_MODEL a LEFT JOIN ONESTOP_RENT_APP_EQUIP b ON a.APPNO = b.APPNO AND a.MDSEQ = b.MDSEQ
+		) b ON a.APPNO = b.APPNO
+		LEFT JOIN ONESTOP_RENT_MODEL c ON b.MDSEQ = c.MDSEQ
+		LEFT JOIN ONESTOP_RENT_CODE d ON c.GBCD = d.GBCD
+		LEFT JOIN (
+					SELECT DISTINCT APPNO, APPUENM FROM ONESTOP_RENT_APP_EQUIP_USER 
+		)EU ON A.APPNO = EU.APPNO
+		WHERE
+			a.DELYN = 'N'
+		AND c.DELYN = 'N'
+		AND d.DELYN = 'N'
+        <isNotEqual property="GBCD" compareValue="all">
+           AND C.GBCD = #GBCD#
+        </isNotEqual>
+        <isNotEmpty prepend="AND" property="sch_status"> A.STATUS = #sch_status#</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sch_approval"> A.APPROVAL = #sch_approval#</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sch_text" >
+			(
+				A.APPENM LIKE '%$sch_text$%'
+				OR EU.APPUENM LIKE '%$sch_text$%'
+				OR A.INSUNM LIKE '%$sch_text$%'
+				OR A.BANPNM LIKE '%$sch_text$%'
+				OR A.APPENO = '$sch_text$'
+			)
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sch_text2">
+			(SELECT COUNT(*) FROM ONESTOP_RENT_APP_EQUIP AEQ
+			LEFT OUTER JOIN ONESTOP_RENT_EQUIP EQ
+			ON EQ.EQNO = AEQ.EQNO
+			WHERE APPNO = A.APPNO
+			AND EQ.EQNM LIKE '%$sch_text2$%'
+			) > 0 
+			OR A.APPNUM LIKE '%$sch_text2$%'
+	 	</isNotEmpty>
+	 	<isEqual property="sch_status" compareValue="1">
+	 		<isNotEmpty property="sch_strdt" >
+	 			<isNotEmpty property="sch_enddt" >
+	 			AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.REGDT))) BETWEEN #sch_strdt# AND #sch_enddt#
+	 			</isNotEmpty>
+	 		</isNotEmpty>
+	 	</isEqual>
+	 	<isEqual property="sch_status" compareValue="2">
+	 		<isNotEmpty property="sch_strdt" >
+	 			<isNotEmpty property="sch_enddt" >
+	 			AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.CANCELDT))) BETWEEN #sch_strdt# AND #sch_enddt#
+	 			</isNotEmpty>
+	 		</isNotEmpty>
+	 	</isEqual>
+	 	<isEqual property="sch_status" compareValue="3">
+	 		<isNotEmpty property="sch_strdt" >
+	 			<isNotEmpty property="sch_enddt" >
+	 			AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.STRDT))) BETWEEN #sch_strdt# AND #sch_enddt#
+	 			</isNotEmpty>
+	 		</isNotEmpty>
+	 	</isEqual>
+	 	<isEqual property="sch_status" compareValue="4">
+	 		<isNotEmpty property="sch_strdt" >
+	 			<isNotEmpty property="sch_enddt" >
+	 			AND (
+	 				#sch_strdt# BETWEEN 
+	 								CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.STRDT))) 
+ 								AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT)))
+	 				OR #sch_enddt# BETWEEN 
+	 								CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.STRDT))) 
+ 								AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT)))
+	 			)
+	 			</isNotEmpty>
+	 		</isNotEmpty>
+	 	</isEqual>
+	 	<isEqual property="sch_status" compareValue="6">
+	 		<isNotEmpty property="sch_strdt" >
+	 			<isNotEmpty property="sch_enddt" >
+	 			AND CONVERT(varchar(10),  B.BANPDT, 23) BETWEEN #sch_strdt# AND #sch_enddt#
+	 			</isNotEmpty>  
+	 		</isNotEmpty>
+	 	</isEqual>
+	 	<isEqual property="sch_return" compareValue="no">
+                <![CDATA[
+                    AND A.STATUS = '4' AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) < CONVERT(varchar(10), getDate(), 23)
+                ]]>
+        </isEqual>
+        <isEqual property="sch_return" compareValue="noStat">
+                <![CDATA[
+                    AND A.STATUS = '4'
+                ]]>
+                <isNotEmpty property="sch_strdt">
+                <![CDATA[
+                	AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) < #sch_strdt#
+               	]]>
+                </isNotEmpty>
+        </isEqual>
+        <isEqual property="sch_return" compareValue="plan">
+                <![CDATA[
+                    AND A.STATUS = '4'
+                    AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) <= CONVERT(varchar(10), getDate()+3, 23)
+                	AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) >= CONVERT(varchar(10), getDate(), 23)
+                ]]>
+        </isEqual>
+        <isEqual property="sch_return" compareValue="planStat">
+                <![CDATA[
+                    AND A.STATUS = '4'
+                ]]>
+                <isNotEmpty property="sch_strdt">
+                <![CDATA[
+                	AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) <= DATEADD(Day,3,#sch_strdt#)
+                	AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) >= #sch_strdt#
+                ]]>
+                </isNotEmpty>
+        </isEqual>
+        <isEqual property="todayRecCode" compareValue="on">
+             <![CDATA[
+                 AND
+                 (
+                     A.STRDT = CONVERT(varchar(8), getDate(), 112)
+                     OR A.ENDDT = CONVERT(varchar(8), getDate(), 112)
+                     OR CONVERT(varchar(8), A.BANPDT, 112)  = CONVERT(varchar(8), getDate(), 112)
+                 )
+             ]]>
+         </isEqual>
+        GROUP BY A.APPNO
+        ) AS TB
+       <!--  <isNotEmpty property="sch_text">        
+        WHERE TB.EQALIAS LIKE '%$sch_text$%'
+        </isNotEmpty> -->
+        ORDER BY TB.REGDT DESC
+        OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+        FETCH NEXT #perPageCnt# ROWS ONLY
+    </select>
+
+	<!-- 접수현황 상단 카테고리  -->
+	<select id="Rent#getRentListCnt" resultClass="java.util.HashMap">
+		SELECT
+			a.GBCD,
+			a.GBNM,
+			CASE
+			WHEN A.GBCD = '000' THEN SUM(B.equip_Cnt) OVER ()
+			WHEN A.GBCD != '000' THEN ISNULL(B.equip_Cnt, 0)
+			END APPNO_CNT
+		FROM
+			(SELECT '전체'AS GBNM, '000' AS GBCD UNION (SELECT GBNM, GBCD  FROM ONESTOP_RENT_CODE WHERE GBLEV = '1' AND DELYN = 'N' )) A
+			LEFT JOIN(
+				SELECT
+					d.GBCD, COUNT(b.MDSEQ) AS equip_Cnt 
+				FROM
+					ONESTOP_RENT_APP a
+				LEFT JOIN (
+					SELECT a.APPNO, a.MDSEQ, b.BANPFLAG, b.BANPDT FROM ONESTOP_RENT_APP_MODEL a LEFT JOIN ONESTOP_RENT_APP_EQUIP b ON a.APPNO = b.APPNO AND a.MDSEQ = b.MDSEQ
+				) b ON a.APPNO = b.APPNO
+				LEFT JOIN ONESTOP_RENT_MODEL c ON b.MDSEQ = c.MDSEQ
+				LEFT JOIN ONESTOP_RENT_CODE d ON c.GBCD = d.GBCD
+				LEFT JOIN (
+							SELECT DISTINCT APPNO FROM ONESTOP_RENT_APP_EQUIP_USER 
+							<isNotEmpty property="sch_text">
+								WHERE (
+										APPUENM LIKE '%$sch_text$%'
+										OR APPUENO = '$sch_text$'
+									)
+							</isNotEmpty>
+				)EU ON A.APPNO = EU.APPNO
+				WHERE
+					a.DELYN = 'N'
+				AND c.DELYN = 'N'
+				AND d.DELYN = 'N'
+				<isNotEmpty prepend="AND" property="sch_status"> A.STATUS = #sch_status#</isNotEmpty>
+				<isNotEmpty prepend="AND" property="sch_approval"> A.APPROVAL = #sch_approval#</isNotEmpty>
+				<isNotEmpty prepend="AND" property="sch_text" >
+					(
+						A.APPENM LIKE '%$sch_text$%'
+						OR A.INSUNM LIKE '%$sch_text$%'
+						OR A.BANPNM LIKE '%$sch_text$%'
+						OR A.APPENO = '$sch_text$'
+					)
+				</isNotEmpty>
+				<isNotEmpty prepend="AND" property="sch_text2">
+					(SELECT COUNT(*) FROM ONESTOP_RENT_APP_EQUIP AEQ
+					LEFT OUTER JOIN ONESTOP_RENT_EQUIP EQ
+					ON EQ.EQNO = AEQ.EQNO
+					WHERE APPNO = A.APPNO
+					AND EQ.EQNM LIKE '%$sch_text2$%'
+					) > 0 
+					OR A.APPNUM LIKE '%$sch_text2$%'
+			 	</isNotEmpty>
+			 	<isEqual property="sch_status" compareValue="1">
+			 		<isNotEmpty property="sch_strdt" >
+			 			<isNotEmpty property="sch_enddt" >
+			 			AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.REGDT))) BETWEEN #sch_strdt# AND #sch_enddt#
+			 			</isNotEmpty>
+			 		</isNotEmpty>
+			 	</isEqual>
+			 	<isEqual property="sch_status" compareValue="2">
+			 		<isNotEmpty property="sch_strdt" >
+			 			<isNotEmpty property="sch_enddt" >
+			 			AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.CANCELDT))) BETWEEN #sch_strdt# AND #sch_enddt#
+			 			</isNotEmpty>
+			 		</isNotEmpty>
+			 	</isEqual>
+			 	<isEqual property="sch_status" compareValue="3">
+			 		<isNotEmpty property="sch_strdt" >
+			 			<isNotEmpty property="sch_enddt" >
+			 			AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.STRDT))) BETWEEN #sch_strdt# AND #sch_enddt#
+			 			</isNotEmpty>
+			 		</isNotEmpty>
+			 	</isEqual>
+			 	<isEqual property="sch_status" compareValue="4">
+			 		<isNotEmpty property="sch_strdt" >
+			 			<isNotEmpty property="sch_enddt" >
+			 			AND (
+			 				#sch_strdt# BETWEEN 
+			 								CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.STRDT))) 
+		 								AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT)))
+			 				OR #sch_enddt# BETWEEN 
+			 								CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.STRDT))) 
+		 								AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT)))
+			 			)
+			 			</isNotEmpty>
+			 		</isNotEmpty>
+			 	</isEqual>
+			 	<isEqual property="sch_status" compareValue="6">
+			 		<isNotEmpty property="sch_strdt" >
+			 			<isNotEmpty property="sch_enddt" >
+			 			AND CONVERT(varchar(10),  B.BANPDT, 23) BETWEEN #sch_strdt# AND #sch_enddt#
+			 			</isNotEmpty>  
+			 		</isNotEmpty>
+			 	</isEqual>
+			 	<isEqual property="sch_return" compareValue="no">
+                <![CDATA[
+                    AND A.STATUS = '4' AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) < CONVERT(varchar(10), getDate(), 23)
+                ]]>
+        </isEqual>
+        <isEqual property="sch_return" compareValue="noStat">
+                <![CDATA[
+                    AND A.STATUS = '4'
+                ]]>
+                <isNotEmpty property="sch_strdt">
+                <![CDATA[
+                	AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) < #sch_strdt#
+               	]]>
+                </isNotEmpty>
+        </isEqual>
+        <isEqual property="sch_return" compareValue="plan">
+                <![CDATA[
+                    AND A.STATUS = '4'
+                    AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) <= CONVERT(varchar(10), getDate()+3, 23)
+                	AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) >= CONVERT(varchar(10), getDate(), 23)
+                ]]>
+        </isEqual>
+        <isEqual property="sch_return" compareValue="planStat">
+                <![CDATA[
+                    AND A.STATUS = '4'
+                ]]>
+                <isNotEmpty property="sch_strdt">
+                <![CDATA[
+                	AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) <= DATEADD(Day,3,#sch_strdt#)
+                	AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) >= #sch_strdt#
+                ]]>
+                </isNotEmpty>
+        </isEqual>
+        <isEqual property="todayRecCode" compareValue="on">
+             <![CDATA[
+                 AND
+                 (
+                     A.STRDT = CONVERT(varchar(8), getDate(), 112)
+                     OR A.ENDDT = CONVERT(varchar(8), getDate(), 112)
+                     OR CONVERT(varchar(8), A.BANPDT, 112)  = CONVERT(varchar(8), getDate(), 112)
+                 )
+             ]]>
+         </isEqual>
+				GROUP BY d.GBCD
+			)b ON a.GBCD = b.GBCD
+	</select>
+
+    <select id="Rent#getRecListCnt" resultClass="int">
+            SELECT COUNT(*) AS TOTALCNT
+            FROM
+                (SELECT APPNO
+                		,EQALIAS
+                	FROM ( 
+                	SELECT A.APPNO,
+		                	(STUFF((SELECT
+			                ',' + EQ.EQALIAS
+			                FROM ONESTOP_RENT_MODEL RM                                										
+			                JOIN ONESTOP_RENT_APP_MODEL OAM
+			                ON RM.MDSEQ = OAM.MDSEQ
+							JOIN ONESTOP_RENT_APP_EQUIP AEQ
+							ON OAM.APPNO = AEQ.APPNO
+							JOIN ONESTOP_RENT_EQUIP EQ
+							ON AEQ.EQNO = EQ.EQNO
+							AND RM.MDSEQ = EQ.MDSEQ
+			                WHERE OAM.APPNO = A.APPNO
+			                FOR XML PATH('')
+			                ) ,1,1,'')) EQALIAS 
+                    FROM ONESTOP_RENT_APP a
+					LEFT JOIN (
+						SELECT a.APPNO, a.MDSEQ, b.BANPFLAG, b.BANPDT FROM ONESTOP_RENT_APP_MODEL a LEFT JOIN ONESTOP_RENT_APP_EQUIP b ON a.APPNO = b.APPNO AND a.MDSEQ = b.MDSEQ
+					) b ON a.APPNO = b.APPNO
+					LEFT JOIN ONESTOP_RENT_MODEL c ON b.MDSEQ = c.MDSEQ
+					LEFT JOIN ONESTOP_RENT_CODE d ON c.GBCD = d.GBCD
+					LEFT JOIN (
+								SELECT DISTINCT APPNO FROM ONESTOP_RENT_APP_EQUIP_USER 
+								<isNotEmpty property="sch_text">
+									WHERE (
+											APPUENM LIKE '%$sch_text$%'
+											OR APPUENO = '$sch_text$'
+										)
+								</isNotEmpty>
+					)EU ON A.APPNO = EU.APPNO
+					WHERE
+						a.DELYN = 'N'
+					AND c.DELYN = 'N'
+					AND d.DELYN = 'N'
+                    <isNotEmpty prepend="AND" property="sch_status"> A.STATUS = #sch_status#</isNotEmpty>
+					<isNotEmpty prepend="AND" property="sch_approval"> A.APPROVAL = #sch_approval#</isNotEmpty>
+					<isNotEmpty prepend="AND" property="sch_text" >
+						(
+							A.APPENM LIKE '%$sch_text$%'
+							OR A.INSUNM LIKE '%$sch_text$%'
+							OR A.BANPNM LIKE '%$sch_text$%'
+							OR A.APPENO = '$sch_text$'
+						)
+					</isNotEmpty>
+					<isNotEmpty prepend="AND" property="sch_text2">
+						(SELECT COUNT(*) FROM ONESTOP_RENT_APP_EQUIP AEQ
+						LEFT OUTER JOIN ONESTOP_RENT_EQUIP EQ
+						ON EQ.EQNO = AEQ.EQNO
+						WHERE APPNO = A.APPNO
+						AND EQ.EQNM LIKE '%$sch_text2$%'
+						) > 0 
+						OR A.APPNUM LIKE '%$sch_text2$%'
+				 	</isNotEmpty>
+				 	<isEqual property="sch_status" compareValue="1">
+				 		<isNotEmpty property="sch_strdt" >
+				 			<isNotEmpty property="sch_enddt" >
+				 			AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.REGDT))) BETWEEN #sch_strdt# AND #sch_enddt#
+				 			</isNotEmpty>
+				 		</isNotEmpty>
+				 	</isEqual>
+				 	<isEqual property="sch_status" compareValue="2">
+				 		<isNotEmpty property="sch_strdt" >
+				 			<isNotEmpty property="sch_enddt" >
+				 			AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.CANCELDT))) BETWEEN #sch_strdt# AND #sch_enddt#
+				 			</isNotEmpty>
+				 		</isNotEmpty>
+				 	</isEqual>
+				 	<isEqual property="sch_status" compareValue="3">
+				 		<isNotEmpty property="sch_strdt" >
+				 			<isNotEmpty property="sch_enddt" >
+				 			AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.STRDT))) BETWEEN #sch_strdt# AND #sch_enddt#
+				 			</isNotEmpty>
+				 		</isNotEmpty>
+				 	</isEqual>
+				 	<isEqual property="sch_status" compareValue="4">
+				 		<isNotEmpty property="sch_strdt" >
+				 			<isNotEmpty property="sch_enddt" >
+				 			AND (
+				 				#sch_strdt# BETWEEN 
+				 								CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.STRDT))) 
+			 								AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT)))
+				 				OR #sch_enddt# BETWEEN 
+				 								CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.STRDT))) 
+			 								AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT)))
+				 			)
+				 			</isNotEmpty>
+				 		</isNotEmpty>
+				 	</isEqual>
+				 	<isEqual property="sch_status" compareValue="6">
+				 		<isNotEmpty property="sch_strdt" >
+				 			<isNotEmpty property="sch_enddt" >
+				 			AND CONVERT(varchar(10),  B.BANPDT, 23) BETWEEN #sch_strdt# AND #sch_enddt#
+				 			</isNotEmpty>  
+				 		</isNotEmpty>
+				 	</isEqual>
+				 	<isEqual property="sch_return" compareValue="no">
+                <![CDATA[
+                    AND A.STATUS = '4' AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) < CONVERT(varchar(10), getDate(), 23)
+                ]]>
+        </isEqual>
+        <isEqual property="sch_return" compareValue="noStat">
+                <![CDATA[
+                    AND A.STATUS = '4'
+                ]]>
+                <isNotEmpty property="sch_strdt">
+                <![CDATA[
+                	AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) < #sch_strdt#
+               	]]>
+                </isNotEmpty>
+        </isEqual>
+        <isEqual property="sch_return" compareValue="plan">
+                <![CDATA[
+                    AND A.STATUS = '4'
+                    AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) <= CONVERT(varchar(10), getDate()+3, 23)
+                	AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) >= CONVERT(varchar(10), getDate(), 23)
+                ]]>
+        </isEqual>
+        <isEqual property="sch_return" compareValue="planStat">
+                <![CDATA[
+                    AND A.STATUS = '4'
+                ]]>
+                <isNotEmpty property="sch_strdt">
+                <![CDATA[
+                	AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) <= DATEADD(Day,3,#sch_strdt#)
+                	AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), A.ENDDT))) >= #sch_strdt#
+                ]]>
+                </isNotEmpty>
+        </isEqual>
+                    
+                    
+                    
+                    <isNotEqual property="GBCD" compareValue="all">
+                    AND C.GBCD = #GBCD#
+                    </isNotEqual>
+                    <isEqual property="todayRecCode" compareValue="on">
+             <![CDATA[
+                 AND
+                 (
+                     A.STRDT = CONVERT(varchar(8), getDate(), 112)
+                     OR A.ENDDT = CONVERT(varchar(8), getDate(), 112)
+                     OR CONVERT(varchar(8), A.BANPDT, 112)  = CONVERT(varchar(8), getDate(), 112)
+                 )
+             ]]>
+         </isEqual>
+                    
+                    <![CDATA[
+                    GROUP BY A.APPNO
+                ) AS TB
+        		]]>
+        <!-- <isNotEmpty property="sch_text">        
+        WHERE TB.EQALIAS LIKE '%$sch_text$%'
+        </isNotEmpty> -->
+        ) AS T
+    </select>
+
+    <select id="Rent#codeChkOfCode" resultClass="RentDto">
+        WITH LINKED_RENT_CODE
+        AS
+        (
+        SELECT
+            A.GBCD
+        FROM ONESTOP_RENT_CODE A
+        WHERE A.GBCD = #GBCD#
+
+        UNION ALL
+
+        SELECT
+            B1.GBCD
+        FROM ONESTOP_RENT_CODE B1
+        JOIN LINKED_RENT_CODE B2
+        ON B1.GBUP = B2.GBCD
+        WHERE B1.GBLEV = '2'
+        )
+        SELECT * FROM LINKED_RENT_CODE WHERE GBCD != #GBCD#
+        ORDER BY GBCD
+    </select>
+
+    <select id="Rent#codeChkOfModelSub" resultClass="RentDto">
+        SELECT GBCD
+        FROM ONESTOP_RENT_MODEL_SUB
+        WHERE MDSEQ = #MDSEQ#
+        ORDER BY GBCD
+    </select>
+
+    <select id="Rent#getUseEquipCnt" resultClass="int">
+        SELECT COUNT(*) AS CNT
+        FROM ONESTOP_RENT_EQUIP
+        WHERE DELYN = 'N'
+            AND EQLST = #EQLST#
+            AND MDSEQ = #MDSEQ#
+    </select>
+
+    <select id="Rent#msHistory" resultClass="RentDto">
+        SELECT TYPE,
+            SENDDT,
+            SENDMS,
+            ETC
+        FROM ONESTOP_RENT_MS_HISTORY
+        WHERE REFNO = #REFNO#
+    </select>
+
+    <select id="Rent#searchMember" resultClass="RentDto">
+        SELECT EMPNO,
+            NAME,
+            DEPT_NAME AS DEPT_NM,
+            DEPTNO,
+            TELNO,
+			dbo.SPLIT_STR(replace(ltrim(dept_name),' ','||'),'||',2) as dept1Name
+        FROM tbSVC_TDMSEMP
+        WHERE (
+                EMPNO = #KEYWORD#
+                OR NAME LIKE '%$KEYWORD$%'
+            )
+        <![CDATA[
+            AND DEPTNO IN (SELECT dept_code FROM tbSVC_TDMSDEPT WHERE del_flag <> 'y' AND hostname <> '지사')
+        ]]>
+        ORDER BY NAME
+    </select>
+
+    <select id="Rent#equipRentPop" resultClass="RentDto">
+        SELECT
+            A.APPNO,
+            (STUFF((SELECT
+                ',' + Z.GBNM
+            FROM ONESTOP_RENT_CODE Z
+            JOIN ONESTOP_RENT_MODEL RM
+                ON Z.GBCD = RM.GBCD
+            JOIN ONESTOP_RENT_APP_MODEL OAM
+                ON RM.MDSEQ = OAM.MDSEQ
+            WHERE OAM.APPNO = A.APPNO
+            FOR XML PATH('')
+            ) ,1,1,'')) GBNM,
+            MAX(A.STRDT) STRDT,
+            MAX(A.ENDDT) ENDDT,
+            MAX(A.REGDT) REGDT,
+            MAX(A.STATUS) STATUS,
+            MAX(APPNUM) APPNUM,
+            MAX(A.APPROVAL) APPROVAL,
+            MAX(A.APPENM) APPENM,
+            MAX(A.APPUENM) APPUENM
+        FROM ONESTOP_RENT_APP A
+        JOIN ONESTOP_RENT_APP_MODEL AM
+            ON A.APPNO = AM.APPNO
+        JOIN ONESTOP_RENT_MODEL M
+            ON M.MDSEQ = AM.MDSEQ
+        JOIN ONESTOP_RENT_CODE C
+            ON C.GBCD = M.GBCD
+        WHERE A.STATUS IN ('1','3','4')
+        AND A.APPROVAL IN ('1','2')
+        AND A.DELYN = 'N'
+        AND A.REGENO = #REGENO#
+        GROUP BY A.APPNO
+        ORDER BY A.APPNO DESC
+    </select>
+
+    <select id="Rent#getEquipRentPopCnt" resultClass="int">
+        SELECT COUNT(*) AS TOTALCNT
+        FROM
+            (SELECT A.APPNO
+                FROM ONESTOP_RENT_APP A
+                JOIN ONESTOP_RENT_APP_MODEL AM
+                    ON A.APPNO = AM.APPNO
+                JOIN ONESTOP_RENT_MODEL M
+                    ON M.MDSEQ = AM.MDSEQ
+                JOIN ONESTOP_RENT_CODE C
+                    ON C.GBCD = M.GBCD
+                WHERE A.STATUS IN ('1','3','4')
+                    AND A.APPROVAL IN ('1','2')
+                    AND A.DELYN = 'N'
+                    AND A.REGENO = #REGENO#
+                GROUP BY A.APPNO
+            ) AS T
+    </select>
+
+    <select id="Rent#equipRentStatusNo1" resultClass="RentDto">
+        SELECT COUNT(*) AMOUNT, GBCD
+        FROM ONESTOP_RENT_EQUIP
+        WHERE DELYN =  'N'
+        <isEqual property="STATMODE" compareValue="rent">
+            AND EQLST = '1'
+        </isEqual>
+        <isEqual property="STATMODE" compareValue="enable">
+            AND EQLST = '0'
+            AND EQRST = '1'
+            AND EQMST = '1'
+        </isEqual>
+        GROUP BY GBCD
+    </select>
+
+    <select id="Rent#equipRentStatusNo2" resultClass="RentDto">
+        SELECT SUM(AM.AMOUNT) AMOUNT,
+            M.GBCD
+        FROM ONESTOP_RENT_APP_MODEL AM
+        LEFT JOIN ONESTOP_RENT_APP APP
+            ON APP.APPNO = AM.APPNO
+        LEFT JOIN ONESTOP_RENT_MODEL M
+            ON M.MDSEQ = AM.MDSEQ
+        WHERE APP.DELYN = 'N'
+        <isEqual property="STATMODE" compareValue="usingEq">
+            <![CDATA[
+                AND APP.STATUS = '4'
+                AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), APP.ENDDT))) >= CONVERT(varchar(10), #SETDATE#, 23)
+                AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), APP.STRDT))) <= CONVERT(varchar(10), #SETDATE#, 23)
+            ]]>
+        </isEqual>
+        <isEqual property="STATMODE" compareValue="planOut">
+            <![CDATA[
+                AND APP.STATUS = '3' AND APP.APPROVAL = '2'
+                AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), APP.ENDDT))) >= CONVERT(varchar(10), #SETDATE#, 23)
+                AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), APP.STRDT))) <= CONVERT(varchar(10), #SETDATE#, 23)
+            ]]>
+        </isEqual>
+        <isEqual property="STATMODE" compareValue="return">
+            <![CDATA[
+                AND APP.STATUS = '4'
+                AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), APP.ENDDT))) <= CONVERT(varchar(10), #SETDATE#+3, 23)
+            	AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), APP.ENDDT))) >= CONVERT(varchar(10), #SETDATE#, 23)
+            ]]>
+        </isEqual>
+        <isEqual property="STATMODE" compareValue="missing">
+            <![CDATA[
+                AND APP.STATUS = '4'
+                AND CONVERT(varchar(10), CONVERT(date, CONVERT(varchar(8), APP.ENDDT))) < CONVERT(varchar(10), #SETDATE#, 23)
+            ]]>
+        </isEqual>
+        GROUP BY M.GBCD
+        ORDER BY M.GBCD
+    </select>
+
+    <select id="Rent#monthlyRentStatusElement" resultClass="RentDto">
+        SELECT EQNO,
+            EQNM,
+            EQMST
+        FROM ONESTOP_RENT_EQUIP
+        WHERE DELYN = 'N'
+            AND EQMST != '4'
+            <isEmpty property="MDSEQ">
+            AND GBCD = #GBCD#
+            </isEmpty>
+            <isNotEmpty property="MDSEQ">
+            AND MDSEQ = #MDSEQ#
+            </isNotEmpty>
+        ORDER BY EQNM
+    </select>
+
+    <select id="Rent#monthlyRentStatusData" resultClass="RentDto">
+        <![CDATA[
+        SELECT EQ.EQNO,
+            APP.APPNO,
+            APP.APPENM,
+            APP.APPSS,
+            APP.STRDT,
+            APP.ENDDT
+        FROM ONESTOP_RENT_APP_EQUIP AEQ
+        LEFT JOIN ONESTOP_RENT_EQUIP EQ
+            ON EQ.EQNO = AEQ.EQNO
+        LEFT JOIN ONESTOP_RENT_APP APP
+            ON APP.APPNO = AEQ.APPNO
+        WHERE APP.DELYN = 'N'
+            AND EQ.DELYN = 'N'
+            AND EQ.EQLST = 1
+            AND SUBSTRING(APP.ENDDT,0,6) >= #SETDATE#
+            AND SUBSTRING(APP.STRDT,0,6) <= #SETDATE#
+        ]]>
+    </select>
+
+    <select id="Rent#mailView" resultClass="RentDto">
+        SELECT
+        SUM(AM.AMOUNT) AS AMOUNT,
+            (STUFF((SELECT
+        ',' + Z.GBNM
+        FROM ONESTOP_RENT_CODE Z
+        JOIN ONESTOP_RENT_MODEL RM
+        ON Z.GBCD = RM.GBCD
+        JOIN ONESTOP_RENT_APP_MODEL OAM
+        ON RM.MDSEQ = OAM.MDSEQ
+        WHERE OAM.APPNO = A.APPNO
+        FOR XML PATH('')
+        ) ,1,1,'')) GBNM,
+            (STUFF((SELECT
+        ',' + RM.MDNM
+        FROM ONESTOP_RENT_CODE Z
+        JOIN ONESTOP_RENT_MODEL RM
+        ON Z.GBCD = RM.GBCD
+        JOIN ONESTOP_RENT_APP_MODEL OAM
+        ON RM.MDSEQ = OAM.MDSEQ
+        WHERE OAM.APPNO = A.APPNO
+        FOR XML PATH('')
+        ) ,1,1,'')) MDNM,
+        MAX(A.STRDT) STRDT,
+        MAX(A.ENDDT) ENDDT,
+        MAX(A.REGDT) REGDT,
+        MAX(APPNUM) APPNUM,
+        MAX(A.APPENM) APPENM,
+        MAX(A.USEOBJ) USEOBJ
+        FROM ONESTOP_RENT_APP A
+        LEFT JOIN ONESTOP_RENT_APP_MODEL AM
+        ON AM.APPNO = A.APPNO
+        LEFT JOIN ONESTOP_RENT_MODEL M
+        ON M.MDSEQ = AM.MDSEQ
+        LEFT JOIN ONESTOP_RENT_CODE C
+        ON C.GBCD = M.GBCD
+        WHERE A.APPNO = #APPNO#
+        GROUP BY A.APPNO
+    </select>
+
+    <select id="Rent#signInfo" resultClass="RentDto">
+        SELECT
+            APPNO,
+            IS_SIGN,
+            STATUS
+        FROM ONESTOP_RENT_APP
+        WHERE APPNO = #APPNO#
+    </select>
+
+    <select id="Rent#getSignStatusInfo" resultClass="RentDto">
+        SELECT
+            <isEqual property="SIGNMODE" compareValue="REG_SIGN">
+            REG_SIGN
+            </isEqual>
+            <isEqual property="SIGNMODE" compareValue="EMPNO">
+            EMPNO
+            </isEqual>
+            FROM ONESTOP_RENT_SIGN
+            WHERE APPNO = #APPNO#
+            AND STATUS = #STATUS#
+    </select>
+
+    <update id="Rent#updStatus">
+        UPDATE ONESTOP_RENT_SIGN
+        SET
+        <isNotEmpty property="REG_SIGN">
+        REG_SIGN = #REG_SIGN#
+        </isNotEmpty>
+        WHERE APPNO = #APPNO#
+        <isNotEmpty property="STATUS">
+        AND STATUS = #STATUS#
+        </isNotEmpty>
+    </update>
+
+    <update id="Rent#updSign">
+        UPDATE ONESTOP_RENT_APP
+        SET
+        <isNotEmpty property="IS_SIGN">
+        IS_SIGN = #IS_SIGN#
+        </isNotEmpty>
+        WHERE APPNO = #APPNO#
+    </update>
+
+    <select id="Rent#assignedApp" resultClass="RentDto">
+        <![CDATA[
+        SELECT AEQ.EQNO
+            FROM ONESTOP_RENT_APP APP
+            LEFT JOIN ONESTOP_RENT_APP_EQUIP AEQ
+            ON APP.APPNO = AEQ.APPNO
+            WHERE APP.DELYN = 'N'
+            AND APP.APPROVAL != '3'
+            AND APP.APPNO != #APPNO#
+            AND AEQ.MDSEQ = #MDSEQ#
+            AND APP.ENDDT >= #STRDT#
+            AND APP.STRDT <= #ENDDT#
+            AND APP.STATUS NOT IN ('2','6')
+            ]]>
+            <!-- 2: 취소 , 6: 반납완료 -->
+    </select>
+
+    <select id="Rent#allocList" resultClass="RentDto">
+        SELECT TOP (#AMOUNT# + 1) EQNO
+        <!-- SELECT TOP 5) EQNO -->
+        FROM ONESTOP_RENT_EQUIP
+        WHERE DELYN = 'N'
+        AND MDSEQ = #MDSEQ#
+        AND EQRST = '1'
+        AND EQMST = '1'
+        <isNotEmpty property="ASSIGNEDEQNO_ARR">
+            AND EQNO NOT IN
+            <iterate open="(" close=")" conjunction="," property="ASSIGNEDEQNO_ARR" >
+                #ASSIGNEDEQNO_ARR[]#
+            </iterate>
+        </isNotEmpty>
+    </select>
+
+    <insert id="Rent#insAppEquip">
+        INSERT INTO ONESTOP_RENT_APP_EQUIP (APPNO, MDSEQ, EQNO)
+        VALUES (#APPNO#, #MDSEQ#, #EQNO#)
+    </insert>
+
+    <select id="Rent#getEquipRentNum" resultClass="int">
+        SELECT COUNT(*) AS COUNT
+        FROM ONESTOP_RENT_EQUIP
+        WHERE DELYN = 'N'
+        AND MDSEQ = #MDSEQ#
+        AND EQRST = '1'
+        AND EQMST = '1'
+    </select>
+
+    <select id="Rent#getCurrentAppSumAmount" resultClass="java.lang.String">
+        <![CDATA[
+        SELECT SUM(M.AMOUNT)
+        FROM ONESTOP_RENT_APP_MODEL M
+        LEFT JOIN ONESTOP_RENT_APP APP
+        ON M.APPNO = APP.APPNO
+        WHERE
+            APP.DELYN = 'N'
+            AND APP.APPROVAL != 3
+            AND APP.STATUS NOT IN ( '2', '6' )
+            AND ( APP.IS_SIGN IS NULL OR APP.IS_SIGN != 'R' )
+            AND M.MDSEQ = #MDSEQ#
+            AND APP.ENDDT >= #STRDT#
+            AND APP.STRDT <= #ENDDT#
+        ]]>
+        <isNotEmpty property="EXCEPT_SELF_APPNO">
+            AND APP.APPNO != #EXCEPT_SELF_APPNO#
+        </isNotEmpty>
+    </select>
+
+    <select id="Rent#getBasketSumAmount" resultClass="java.lang.String">
+        <![CDATA[
+        SELECT ISNULL(AMOUNT,0) AS AMOUNT
+        FROM ONESTOP_RENT_BASKET
+        WHERE MDSEQ = #MDSEQ#
+        AND ENDDT >= #STRDT#
+        AND STRDT <= #ENDDT#
+        ]]>
+        <isNotEmpty property="REGENO">
+        AND REGENO = #REGENO#
+        </isNotEmpty>
+    </select>
+
+    <update id="Rent#updAppModel">
+        UPDATE ONESTOP_RENT_APP_MODEL
+        SET
+        <isNotNull removeFirstPrepend="true">
+        <isNotEmpty prepend="," property="MDSEQ">
+        MDSEQ = #MDSEQ#
+        </isNotEmpty>
+        <isNotEmpty prepend="," property="AMOUNT">
+        AMOUNT = #AMOUNT#
+        </isNotEmpty>
+        </isNotNull>
+        WHERE APPNO = #APPNO#
+        AND MDSEQ = #CURR_MDSEQ#
+    </update>
+
+    <select id="Rent#getEqnoAppEquipInfo" resultClass="RentDto">
+        SELECT
+            MAX(APP.STRDT) STRDT,
+            MAX(APP.ENDDT) ENDDT,
+            MAX(APP.STATUS) STATUS,
+            MAX(APP.APPROVAL) APPROVAL,
+            (STUFF((SELECT ',' + CONVERT(VARCHAR,ORAE.EQNO)
+        FROM ONESTOP_RENT_APP RA
+        LEFT JOIN ONESTOP_RENT_APP_EQUIP ORAE
+        ON ORAE.APPNO = RA.APPNO
+        WHERE ORAE.APPNO = #APPNO#
+        FOR XML PATH('')) ,1,1,'')) EQNO
+        FROM ONESTOP_RENT_APP APP
+        LEFT JOIN ONESTOP_RENT_APP_EQUIP AEQ
+        ON AEQ.APPNO = APP.APPNO
+        WHERE AEQ.APPNO = #APPNO#
+        GROUP BY AEQ.APPNO
+    </select>
+
+    <select id="Rent#getReservedEquipInfo" resultClass="RentDto">
+        <![CDATA[
+            SELECT APPNO, APPNUM, STRDT, ENDDT
+            FROM ONESTOP_RENT_APP
+            WHERE DELYN = 'N'
+            AND (STATUS = '1' OR STATUS = '3')
+            AND APPROVAL != '3'
+            AND APPNO != #APPNO#
+            AND ENDDT >= #ENDDT#
+            AND STRDT <= #STRDT#
+        ]]>
+    </select>
+
+    <select id="Rent#getEquipInfoForExt" resultClass="RentDto">
+        SELECT EQ.EQNM, EQ.EQALIAS, AEQ.EQNO
+        FROM ONESTOP_RENT_APP_EQUIP AEQ
+        LEFT JOIN ONESTOP_RENT_EQUIP EQ ON EQ.EQNO = AEQ.EQNO
+        WHERE AEQ.APPNO = #APPNO#
+    </select>
+
+    <update id="Rent#updAppDate">
+        UPDATE ONESTOP_RENT_APP
+        SET
+        <isNotNull removeFirstPrepend="true">
+        <isNotEmpty property="STRDT" prepend=",">
+        STRDT = #STRDT#
+        </isNotEmpty>
+        <isNotEmpty property="ENDDT" prepend=",">
+        ENDDT = #ENDDT#
+        </isNotEmpty>
+        </isNotNull>
+        WHERE APPNO = #APPNO#
+    </update>
+
+    <select id="Rent#getAppInfo" resultClass="RentDto">
+ 			SELECT SUM(AM.AMOUNT) AS AMOUNT, 
+			       STUFF
+			       (
+			              (SELECT ',' + C.GBNM 
+			                FROM ONESTOP_RENT_APP A 
+			                 LEFT JOIN ONESTOP_RENT_APP_MODEL AM 
+			                     ON AM.APPNO = A.APPNO 
+			                 LEFT JOIN ONESTOP_RENT_MODEL M 
+			                     ON M.MDSEQ = AM.MDSEQ 
+			                 LEFT JOIN ONESTOP_RENT_CODE C 
+			                     ON C.GBCD = M.GBCD 
+			               WHERE A.APPNO = #APPNO# FOR XML PATH('')
+			              ),1,1,''
+			          ) AS GBNM, 
+			          MAX(A.STRDT) STRDT, MAX(A.ENDDT) ENDDT, MAX(APPNUM) APPNUM, MAX(A.APPENO) APPENO, 
+			          MAX(A.APPENM) APPENM, MAX(A.STATUS) STATUS, MAX(A.APPROVAL) APPROVAL, MAX(A.APPUENO) APPUENO, 
+			          MAX(A.APPTEL) APPTEL, MAX(A.APPUENM) APPUENM, MAX(A.APPSS) APPSS, MAX(A.APPMAIL) APPMAIL, 
+			          MAX(A.USEOBJ) USEOBJ, MAX(A.INSUNO) APPINSUNO, MAX(A.INSUNM) APPINSUNM, MAX(A.INSUDT) INSUDT, 
+			          MAX(A.BIGO) BIGO, MAX(A.BANPNO) BANPNO, MAX(A.BANPNM) BANPNM, MAX(A.BANPDT) BANPDT, 
+			          MAX(A.BANPST) BANPST, MAX(A.UHSEQ) UHSEQ, MAX(EUH.INGAENM) INGAENM, MAX(EUH.INGAENO) INGAENO, 
+			          MAX(EUH.INSUNM) INSUNM, MAX(EUH.INSUNO) INSUNO, MAX(EUH.MAILAPPROVAL) MAILAPPROVAL, 
+			          MAX(EUH.MODE) MODE, MAX(EUH.REGDT) REGDT, MAX(A.RENT_IN_MAIL_PATH) RENT_IN_MAIL_PATH, 
+					  MAX(A.RENT_OUT_MAIL_PATH) RENT_OUT_MAIL_PATH,
+					  MAX(M.MDNM) MDNM 
+			     FROM ONESTOP_RENT_APP A 
+			      LEFT JOIN ONESTOP_RENT_APP_MODEL AM 
+			          ON AM.APPNO = A.APPNO 
+			      LEFT JOIN ONESTOP_RENT_MODEL M 
+			          ON M.MDSEQ = AM.MDSEQ 
+			      LEFT JOIN ONESTOP_RENT_CODE C 
+			          ON C.GBCD = M.GBCD 
+			      LEFT JOIN ONESTOP_RENT_APP_EQUIP_USER_HISTORY EUH 
+			          ON A.APPNO = EUH.APPNO 
+			          AND A.UHSEQ = EUH.UHSEQ 
+			    WHERE A.APPNO = #APPNO#
+			    GROUP BY A.APPNO
+    </select>
+
+    <select id="Rent#getAppModelInfo" resultClass="RentDto">
+        SELECT SUM(AMOUNT) AS AMOUNT,
+            (STUFF((SELECT
+            ',' + CONVERT(VARCHAR,OAM.MDSEQ)
+            FROM ONESTOP_RENT_CODE Z
+            JOIN ONESTOP_RENT_MODEL RM
+            ON Z.GBCD = RM.GBCD
+            JOIN ONESTOP_RENT_APP_MODEL OAM
+            ON RM.MDSEQ = OAM.MDSEQ
+            WHERE OAM.APPNO = A.APPNO
+            FOR XML PATH('')
+            ) ,1,1,'')) MDSEQ_GRP
+            FROM ONESTOP_RENT_APP_MODEL A
+            WHERE A.APPNO = #APPNO#
+            GROUP BY A.APPNO
+    </select>
+
+    <select id="Rent#getAppAmount" resultClass="Int" >
+        SELECT COUNT(*) AS AMOUNT
+            FROM ONESTOP_RENT_APP_EQUIP AEQ
+            LEFT JOIN ONESTOP_RENT_EQUIP EQ
+            ON EQ.EQNO = AEQ.EQNO
+            LEFT JOIN ONESTOP_RENT_MODEL M
+            ON M.MDSEQ = AEQ.MDSEQ
+            WHERE AEQ.APPNO = #APPNO#
+            AND M.DELYN = 'N'
+            AND EQ.EQRST = '1'
+            AND EQ.EQMST = '1'
+            <isNotEmpty property="MDSEQ" prepend="AND">
+            AEQ.MDSEQ
+            <iterate prepend="in" open="(" conjunction="," close=")" property="MDSEQ_ARR">
+            <![CDATA[
+            #MDSEQ_ARR[]#
+            ]]>
+            </iterate>
+            </isNotEmpty>
+    </select>
+
+    <update id="Rent#updAppInfo">
+        UPDATE ONESTOP_RENT_APP
+        SET
+        <isNotNull removeFirstPrepend="true">
+        <isNotEmpty property="INSUNO" prepend=",">
+        INSUNO = #INSUNO#
+        </isNotEmpty>
+        <isNotEmpty property="INSUNM" prepend=",">
+        INSUNM = #INSUNM#
+        </isNotEmpty>
+        <isNotEmpty property="INSUDT" prepend=",">
+        INSUDT = #INSUDT#
+        </isNotEmpty>
+        <isNotEmpty property="BANPNO" prepend=",">
+        BANPNO = #BANPNO#
+        </isNotEmpty>
+        <isNotEmpty property="BANPNM" prepend=",">
+        BANPNM = #BANPNM#
+        </isNotEmpty>
+        <isNotEmpty property="BANPDT" prepend=",">
+        BANPDT = #BANPDT#
+        </isNotEmpty>
+        <isNotEmpty property="BANPST" prepend=",">
+        BANPST = #BANPST#
+        </isNotEmpty>
+        <isNotEmpty property="STATUS" prepend=",">
+        STATUS = #STATUS#
+        </isNotEmpty>
+        <isNotEmpty property="APPROVAL" prepend=",">
+        APPROVAL = #APPROVAL#
+        </isNotEmpty>
+        <isNotEmpty property="IS_SIGN" prepend=",">
+        IS_SIGN = #IS_SIGN#
+        </isNotEmpty>
+        <isNotEmpty property="RENT_OUT_MAIL_SEND" prepend=",">
+        RENT_OUT_MAIL_SEND = #RENT_OUT_MAIL_SEND#
+        </isNotEmpty>
+        <isNotEmpty property="RENT_IN_MAIL_SEND" prepend=",">
+        RENT_IN_MAIL_SEND = #RENT_IN_MAIL_SEND#
+        </isNotEmpty>
+        <isNotEmpty property="RENT_OUT_MAIL_PATH" prepend=",">
+        RENT_OUT_MAIL_PATH = #RENT_OUT_MAIL_PATH#
+        </isNotEmpty>
+        <isNotEmpty property="RENT_IN_MAIL_PATH" prepend=",">
+        RENT_IN_MAIL_PATH = #RENT_IN_MAIL_PATH#
+        </isNotEmpty>
+        <isNotEmpty property="UHSEQ" prepend=",">
+        UHSEQ = #UHSEQ#
+        </isNotEmpty>
+        <isEqual property="UHSEQNULL" prepend="," compareValue="null">
+		UHSEQ = #NULL:NVARCHAR#
+		</isEqual>
+		<isNotEmpty property="LINKKEY" prepend=",">
+        LINKKEY = #LINKKEY#
+        </isNotEmpty>
+		<isNotEmpty property="RENT_IN_SIGN_IMG" prepend=",">
+        RENT_IN_SIGN_IMG = #RENT_IN_SIGN_IMG#
+        </isNotEmpty>
+		<isNotEmpty property="RENT_OUT_SIGN_IMG" prepend=",">
+        RENT_OUT_SIGN_IMG = #RENT_OUT_SIGN_IMG#
+        </isNotEmpty>
+        </isNotNull>
+        WHERE APPNO = #APPNO#
+    </update>
+
+    <select id="Rent#smsToUser" resultClass="RentDto">
+        SELECT CELLNO AS HP FROM dbo.tbSVC_TDMSDETAIL WHERE EMPNO = #APPENO#
+        UNION
+        SELECT CELLNO AS HP FROM dbo.tbSVC_TDMSDETAIL WHERE EMPNO = #APPUENO#
+    </select>
+
+    <select id="Rent#getAppEquip" resultClass="RentDto">
+        SELECT APPNO,
+            MDSEQ,
+            EQNO,
+            EUSEQ
+        FROM ONESTOP_RENT_APP_EQUIP
+        WHERE APPNO = #APPNO#
+    </select>
+
+    <update id="Rent#updAppEquip">
+        UPDATE ONESTOP_RENT_EQUIP SET
+            <isNotNull removeFirstPrepend="true">
+            <isNotEmpty property="EQLST" prepend=",">
+                EQLST = #EQLST#
+            </isNotEmpty>
+            </isNotNull>
+        WHERE EQNO = #EQNO#
+        AND MDSEQ = #MDSEQ#
+    </update>
+    
+    <select id="Rent#recListPreview" resultClass="RentDto">
+    	SELECT E.EQNM, 
+		       E.EQALIAS,
+		       E.MDSEQ 
+		  FROM ONESTOP_RENT_APP_EQUIP AE
+		  LEFT JOIN ONESTOP_RENT_EQUIP E
+		  ON E.EQNO = AE.EQNO
+		  WHERE AE.APPNO = #APPNO#		
+		  <isNotEmpty property="EQNO">
+			AND AE.EQNO = #EQNO#
+		  </isNotEmpty>  
+		  <isNotEmpty property="MDSEQ_ARR" prepend="AND">
+	          <![CDATA[
+	          AE.MDSEQ
+	          ]]>
+	          <iterate prepend="in" open="(" conjunction="," close=")" property="MDSEQ_ARR">
+	          <![CDATA[
+	          #MDSEQ_ARR[]#
+	          ]]>
+	          </iterate>
+          </isNotEmpty>
+    </select>
+    
+    <update id="Rent#updAppEquipUser">
+    	UPDATE dbo.ONESTOP_RENT_APP_EQUIP_USER
+			SET
+			<isNotNull removeFirstPrepend="true">
+			<isNotEmpty property="MDSEQ" prepend=",">
+				MDSEQ = #MDSEQ#
+			</isNotEmpty>
+			<isNotEmpty property="EQNO" prepend=",">
+				EQNO = #EQNO#
+			</isNotEmpty>
+			<isEqual property="EQNONULL" prepend="," compareValue="null">
+				EQNO = #EQNO:NVARCHAR#
+			</isEqual>
+			<isNotEmpty property="APPUENO" prepend=",">
+				APPUENO = #APPUENO#
+			</isNotEmpty>
+			<isNotEmpty property="APPUENM" prepend=",">
+				APPUENM = #APPUENM#
+			</isNotEmpty>
+			<isNotEmpty property="UHSEQ" prepend=",">
+				UHSEQ = #UHSEQ#
+			</isNotEmpty>
+			<isEqual property="UHSEQNULL" prepend="," compareValue="null">
+				UHSEQ = #NULL:NVARCHAR#
+			</isEqual>
+			<isNotEmpty property="DEPTNO" prepend=",">
+				DEPTNO = #DEPTNO#
+			</isNotEmpty>
+			<isNotEmpty property="DEPT1NM" prepend=",">
+				DEPT1NM = #DEPT1NM#
+			</isNotEmpty>
+			</isNotNull>
+			WHERE 
+			EUSEQ = #EUSEQ#
+			AND APPNO = #APPNO#
+			<isNotEmpty property="CURR_MDSEQ">
+			AND MDSEQ = #CURR_MDSEQ#
+			</isNotEmpty>
+    </update>
+    
+    <insert id="Rent#insAppModel">
+    	INSERT INTO dbo.ONESTOP_RENT_APP_MODEL ( APPNO,MDSEQ,AMOUNT )
+		VALUES ( #APPNO#, #MDSEQ#, #AMOUNT#)
+    </insert>
+    
+    <delete id="Rent#delAppModel">
+    	DELETE FROM dbo.ONESTOP_RENT_APP_MODEL
+		WHERE APPNO = #APPNO# AND MDSEQ = #MDSEQ#
+    </delete>
+    
+    <select id="Rent#getEquipUserHistory" resultClass="RentDto">
+    	SELECT EUSEQ,
+		       APPNO,
+		       MDSEQ,
+		       EQNO,
+		       UHSEQ,
+		       MODE,
+		       INSUNO,
+		       INSUNM,
+		       INGAENO,
+		       INGAENM,
+		       REGENO,
+		       REGENM,
+		       REGDT,
+		       MAILAPPROVAL,
+		       LASTMODDT 
+		  FROM dbo.ONESTOP_RENT_APP_EQUIP_USER_HISTORY
+		  WHERE APPNO = #APPNO#
+		  AND UHSEQ = #UHSEQ#		 
+    </select>
+    
+    <insert id="Rent#insEquipUserHistory">
+    	INSERT INTO dbo.ONESTOP_RENT_APP_EQUIP_USER_HISTORY 
+       ( 
+           EUSEQ,
+           APPNO,
+           MDSEQ,
+           EQNO,
+           UHSEQ,
+           MODE,
+           INSUNO,
+           INSUNM,
+           INGAENO,
+           INGAENM,
+           REGENO,
+           REGENM,
+           REGDT,
+           MAILAPPROVAL
+       ) 
+       VALUES 
+       ( 
+           #EUSEQ#, 
+           #APPNO#, 
+           #MDSEQ#, 
+           #EQNO#, 
+           (SELECT ISNULL( MAX(EUH.UHSEQ) + 1, 1) FROM ONESTOP_RENT_APP_EQUIP_USER_HISTORY EUH WHERE APPNO = #APPNO#), 
+           #MODE#, 
+           #INSUNO#, 
+           #INSUNM#, 
+           #INGAENO#, 
+           #INGAENM#, 
+           #REGENO#, 
+           #REGENM#, 
+           convert(varchar(8), getdate(), 112) + replace(convert(varchar(8), getdate(), 108), ':', ''), 
+           '0' 
+       )
+    </insert>
+    
+    <update id="Rent#updEquipUserHistory">
+    	UPDATE dbo.ONESTOP_RENT_APP_EQUIP_USER_HISTORY
+			SET 
+				<isNotNull removeFirstPrepend="true">
+				<isNotEmpty property="MAILAPPROVAL" prepend=",">
+					MAILAPPROVAL = #MAILAPPROVAL#
+				</isNotEmpty>
+				</isNotNull> 
+				,LASTMODDT = convert(varchar(8), getdate(), 112) + replace(convert(varchar(8), getdate(), 108), ':', '')
+				WHERE APPNO = #APPNO#
+				<isNotEmpty property="EUSEQ">
+				AND EUSEQ = #EUSEQ# 
+				</isNotEmpty> 
+				<isNotEmpty property="UHSEQ">
+				AND UHSEQ = #UHSEQ# 
+				</isNotEmpty> 
+    </update>
+    
+    <select id="Rent#getMaxUhseq" resultClass="String">
+    	SELECT ISNULL( MAX(EUH.UHSEQ), 1) AS UHSEQ 
+		  FROM ONESTOP_RENT_APP_EQUIP_USER_HISTORY EUH 
+		 WHERE APPNO = #APPNO#
+    </select>
+    
+    <select id="Rent#getMailViewChgEu" resultClass="RentDto">
+    	SELECT EUH.EUSEQ, 
+		       EUH.APPNO, 
+		       EUH.MDSEQ, 
+		       EUH.EQNO, 
+		       EUH.UHSEQ, 
+		       EUH.MODE, 
+		       EUH.INSUNO, 
+		       EUH.INSUNM, 
+		       EUH.INGAENO, 
+		       EUH.INGAENM, 
+		       EUH.REGENO, 
+		       EUH.REGENM, 
+		       EUH.REGDT, 
+		       EUH.MAILAPPROVAL, 
+		       M.MDNM, 
+		       EQ.EQNM, 
+		       EQ.EQALIAS, 
+		       EQ.GBCD, 
+		       CD.GBNM,
+		       AP.APPNUM,
+		       AP.STRDT,
+		       AP.ENDDT,
+		       EUH.EUSEQ,
+		       SEMP.DEPTNO,
+			   dbo.SPLIT_STR(replace(ltrim(SEMP.dept_name),' ','||'),'||',2) as DEPT1NM
+		  FROM dbo.ONESTOP_RENT_APP_EQUIP_USER_HISTORY EUH 
+		   INNER JOIN ONESTOP_RENT_MODEL M 
+		       ON EUH.MDSEQ = M.MDSEQ 
+		       AND EUH.APPNO = #APPNO# 
+		   INNER JOIN ONESTOP_RENT_EQUIP EQ 
+		       ON EUH.MDSEQ = EQ.MDSEQ 
+		       AND EUH.EQNO = EQ.EQNO 
+		   INNER JOIN ONESTOP_RENT_CODE CD 
+		       ON EQ.GBCD = CD.GBCD 
+		   INNER JOIN ONESTOP_RENT_APP AP
+   	   		   ON EUH.APPNO = AP.APPNO
+			INNER JOIN tbSVC_TDMSEMP SEMP ON EUH.INSUNO = SEMP.EMPNO
+		 WHERE EUH.APPNO = #APPNO#
+		       AND EUH.UHSEQ = #UHSEQ#  
+    </select>
+    
+    <select id="Rent#getMailViewChgEm" resultClass="RentDto">
+    	SELECT SUM(AM.AMOUNT) AS AMOUNT, 
+		       STUFF 
+		       ( 
+		              (SELECT ',' + C.GBNM 
+		                FROM ONESTOP_RENT_APP A 
+		                 LEFT JOIN ONESTOP_RENT_APP_MODEL AM 
+		                     ON AM.APPNO = A.APPNO 
+		                 LEFT JOIN ONESTOP_RENT_MODEL M 
+		                     ON M.MDSEQ = AM.MDSEQ 
+		                 LEFT JOIN ONESTOP_RENT_CODE C 
+		                     ON C.GBCD = M.GBCD 
+		               WHERE A.APPNO = #APPNO# FOR XML PATH('') 
+		              ),1,1,'' 
+		          ) AS GBNM, 
+		          MAX(A.STRDT) STRDT, 
+		          MAX(A.ENDDT) ENDDT, 
+		          MAX(APPNUM) APPNUM, 
+		          MAX(A.APPENO) APPENO, 
+		          MAX(A.APPENM) APPENM, 
+		          MAX(A.INSUDT) INSUDT, 
+		          MAX(A.UHSEQ) UHSEQ, 
+		          MAX(EUH.INGAENM) INGAENM, 
+		          MAX(EUH.INGAENO) INGAENO, 
+		          MAX(EUH.INSUNM) INSUNM, 
+		          MAX(EUH.INSUNO) INSUNO, 
+		          MAX(EUH.MAILAPPROVAL) MAILAPPROVAL, 
+		          MAX(EUH.MODE) MODE, 
+		          MAX(EUH.REGDT) REGDT 
+		     FROM ONESTOP_RENT_APP_EQUIP_USER_HISTORY EUH 
+		      INNER JOIN ONESTOP_RENT_APP A 
+		          ON EUH.APPNO = A.APPNO 
+		      LEFT JOIN ONESTOP_RENT_APP_MODEL AM 
+		          ON AM.APPNO = A.APPNO 
+		    WHERE EUH.APPNO = #APPNO# 
+		          AND EUH.UHSEQ = #UHSEQ#
+    </select>
+    
+    <select id="Rent#getAppListView" resultClass="RentDto">
+    	SELECT M.GBCD, 
+			   EU.APPNO, 
+			   EU.MDSEQ, 
+			   EU.EQNO, 
+			   AM.AMOUNT, 
+			   EU.EUSEQ, 
+			   EU.APPUENO, 
+			   EU.APPUENM,  
+			   M.MDNM,
+			   REQ.EQNM,
+	   		   REQ.EQALIAS,
+			   EUH.UHSEQ,
+			   EUH.INGAENO,
+			   EUH.INGAENM,
+			   EUH.INSUNO,
+			   EUH.INSUNM,
+			   EUH.MAILAPPROVAL 
+		  FROM ONESTOP_RENT_APP_EQUIP_USER EU 
+		   INNER JOIN ONESTOP_RENT_MODEL M 
+			   ON EU.MDSEQ = M.MDSEQ 
+			   AND EU.APPNO = #APPNO#
+		   INNER JOIN ONESTOP_RENT_APP_MODEL AM
+			   ON EU.MDSEQ = AM.MDSEQ
+			   AND EU.APPNO = AM.APPNO
+		   LEFT JOIN ONESTOP_RENT_APP_EQUIP EQ 
+			   ON EU.APPNO = EQ.APPNO 
+			   AND EU.MDSEQ = EQ.MDSEQ 
+			   AND EU.EQNO = EQ.EQNO 
+			   AND EQ.APPNO = #APPNO#
+		   LEFT JOIN ONESTOP_RENT_EQUIP REQ
+		   	   ON EU.EQNO = REQ.EQNO 
+			   AND EU.MDSEQ = REQ.MDSEQ			   
+		   LEFT JOIN ONESTOP_RENT_APP_EQUIP_USER_HISTORY EUH
+			   ON EU.APPNO = EUH.APPNO
+			   AND EU.MDSEQ = EUH.MDSEQ
+			   AND EU.EQNO = EUH.EQNO
+			   AND EU.EUSEQ = EUH.EUSEQ 
+			   AND EU.UHSEQ = EUH.UHSEQ
+		 WHERE EU.APPNO = #APPNO#
+    </select>
+    
+    <select id="Rent#getMailViewInfo" resultClass="RentDto">
+    	SELECT
+        (SELECT SUM(RAM.AMOUNT) FROM ONESTOP_RENT_APP_MODEL RAM WHERE RAM.APPNO = A.APPNO) AMOUNT,
+            (STUFF((SELECT
+        ',' + Z.GBNM
+        FROM ONESTOP_RENT_CODE Z
+        JOIN ONESTOP_RENT_MODEL RM
+        ON Z.GBCD = RM.GBCD
+        JOIN ONESTOP_RENT_APP_MODEL OAM
+        ON RM.MDSEQ = OAM.MDSEQ
+        WHERE OAM.APPNO = A.APPNO
+        FOR XML PATH('')
+        ) ,1,1,'')) GBNM,
+        (STUFF((SELECT
+        ',' + RM.MDNM
+        FROM ONESTOP_RENT_CODE Z
+        JOIN ONESTOP_RENT_MODEL RM
+        ON Z.GBCD = RM.GBCD
+        JOIN ONESTOP_RENT_APP_MODEL OAM
+        ON RM.MDSEQ = OAM.MDSEQ
+        WHERE OAM.APPNO = A.APPNO
+        FOR XML PATH('')
+        ) ,1,1,'')) MDNM,
+        MAX(A.STRDT) STRDT,
+        MAX(A.ENDDT) ENDDT,
+        MAX(A.REGDT) REGDT,
+        MAX(A.APPNUM) APPNUM,
+        MAX(A.APPENO) APPENO,
+        MAX(A.APPENM) APPENM,
+		MAX(A.INSUNO) INSUNO,
+		MAX(A.INSUNM) INSUNM,
+		(STUFF((SELECT
+        ',' + RAEU.APPUENO
+        FROM ONESTOP_RENT_APP_EQUIP_USER RAEU
+        WHERE RAEU.APPNO = A.APPNO
+        FOR XML PATH('')
+        ) ,1,1,'')) APPUENO,
+		(STUFF((SELECT
+        ',' + RAEU.APPUENM + ' (' + RAEU.APPUENO + ')'
+        FROM ONESTOP_RENT_APP_EQUIP_USER RAEU
+        WHERE RAEU.APPNO = A.APPNO
+        FOR XML PATH('')
+        ) ,1,1,'')) APPUENM,
+        MAX(A.USEOBJ) USEOBJ
+        FROM ONESTOP_RENT_APP A
+        LEFT JOIN ONESTOP_RENT_APP_MODEL AM
+        ON AM.APPNO = A.APPNO		
+		LEFT JOIN ONESTOP_RENT_APP_EQUIP EQ
+		ON A.APPNO = EQ.APPNO
+		LEFT JOIN ONESTOP_RENT_APP_EQUIP_USER EU
+		ON EQ.EUSEQ = EU.EUSEQ
+        WHERE A.APPNO = #APPNO#
+        GROUP BY A.APPNO
+    </select>
+    
+    <select id="Rent#getEquipUser" resultClass="RentDto">
+    	SELECT APPUENO, 
+		       APPUENM, 
+		       UHSEQ 
+		  FROM ONESTOP_RENT_APP_EQUIP_USER 
+		 WHERE APPNO = #APPNO#
+		   AND EUSEQ = #EUSEQ#
+    </select>
+    
+    <select id="Rent#putJojikDep0List" resultClass="RentDto">
+    	SELECT dept_code, 
+		       dept_name, 
+		       dbo.fu_dept_info(dept_code,'name','^') AS dept_nm_tree 
+		  FROM jojik_tbl 
+		 WHERE up_code=dept_code 
+		       AND 
+		       (
+		           del_flag IS NULL 
+		           OR del_flag!='Y'
+		       ) 
+		ORDER BY dept_order
+    </select>
+    
+    <select id="Rent#getDept1List" resultClass="RentDto">
+    	SELECT DISTINCT DEPT_NAME AS dept1Name, 
+		       DEPT_CODE AS dept1Code,
+			   DEPT_ORDER as dept1Order 
+		  FROM tbSVC_TDMSDEPT 
+		 WHERE DEPT_CODE = UP_CODE
+		   AND (DEL_FLAG != 'Y' OR DEL_FLAG IS NULL)
+		 ORDER BY DEPT_ORDER
+    </select>
+    
+    <select id="Rent#getDept2List" resultClass="RentDto">
+    	SELECT DISTINCT DEPT1.DEPT_CODE AS dept1Code,
+			DEPT2.DEPT_NAME AS dept2Name,
+			DEPT2.DEPT_CODE AS dept2Code,
+			DEPT1.DEPT_ORDER AS dept1Order,
+			DEPT2.DEPT_ORDER AS dept2Order
+		FROM tbSVC_TDMSDEPT DEPT1 
+			LEFT JOIN tbSVC_TDMSDEPT DEPT2
+			ON DEPT1.DEPT_CODE = DEPT2.UP_CODE
+			AND DEPT2.DEPT_CODE != DEPT1.DEPT_CODE
+			AND (DEPT2.DEL_FLAG != 'Y' OR DEPT2.DEL_FLAG IS NULL)
+		WHERE DEPT1.DEPT_CODE = DEPT1.UP_CODE
+			AND (DEPT1.DEL_FLAG != 'Y' OR DEPT1.DEL_FLAG IS NULL)
+			AND DEPT1.DEPT_CODE IS NOT NULL
+			AND DEPT2.DEPT_CODE IS NOT NULL
+			ORDER BY DEPT1.DEPT_ORDER, DEPT2.DEPT_ORDER
+    </select>
+    
+    <select id="Rent#getDept3List" resultClass="RentDto">
+    	SELECT DISTINCT DEPT2.DEPT_CODE AS dept2Code,
+			DEPT3.DEPT_NAME AS dept3Name,
+			DEPT3.DEPT_CODE AS dept3Code,
+			DEPT1.DEPT_ORDER AS dept1Order,
+			DEPT2.DEPT_ORDER AS dept2Order,
+			DEPT3.DEPT_ORDER AS dept3Order
+		FROM tbSVC_TDMSDEPT DEPT1 
+			LEFT JOIN tbSVC_TDMSDEPT DEPT2
+			ON DEPT1.DEPT_CODE = DEPT2.UP_CODE
+			AND DEPT2.DEPT_CODE != DEPT1.DEPT_CODE
+			AND (DEPT2.DEL_FLAG != 'Y' OR DEPT2.DEL_FLAG IS NULL)
+			LEFT JOIN tbSVC_TDMSDEPT DEPT3
+			ON DEPT2.DEPT_CODE = DEPT3.UP_CODE
+			AND DEPT3.DEPT_CODE != DEPT2.DEPT_CODE
+			AND (DEPT3.DEL_FLAG != 'Y' OR DEPT3.DEL_FLAG IS NULL)
+		WHERE DEPT1.DEPT_CODE = DEPT1.UP_CODE
+			AND (DEPT1.DEL_FLAG != 'Y' OR DEPT1.DEL_FLAG IS NULL)
+			AND DEPT1.DEPT_CODE IS NOT NULL
+			AND DEPT2.DEPT_CODE IS NOT NULL
+			AND DEPT3.DEPT_CODE IS NOT NULL
+			ORDER BY DEPT1.DEPT_ORDER, DEPT2.DEPT_ORDER, DEPT3.DEPT_ORDER
+    </select>
+    
+    <select id="Rent#getDept4List" resultClass="RentDto">
+    	SELECT DISTINCT DEPT3.DEPT_CODE AS dept3Code,
+			DEPT4.DEPT_NAME AS dept4Name,
+			DEPT4.DEPT_CODE AS dept4Code,
+			DEPT1.DEPT_ORDER AS dept1Order,
+			DEPT2.DEPT_ORDER AS dept2Order,
+			DEPT3.DEPT_ORDER AS dept3Order,
+			DEPT4.DEPT_ORDER AS dept4Order
+		FROM tbSVC_TDMSDEPT DEPT1 
+			LEFT JOIN tbSVC_TDMSDEPT DEPT2
+			ON DEPT1.DEPT_CODE = DEPT2.UP_CODE
+			AND DEPT2.DEPT_CODE != DEPT1.DEPT_CODE
+			AND (DEPT2.DEL_FLAG != 'Y' OR DEPT2.DEL_FLAG IS NULL)
+			LEFT JOIN tbSVC_TDMSDEPT DEPT3
+			ON DEPT2.DEPT_CODE = DEPT3.UP_CODE
+			AND DEPT3.DEPT_CODE != DEPT2.DEPT_CODE
+			AND (DEPT3.DEL_FLAG != 'Y' OR DEPT3.DEL_FLAG IS NULL)
+			LEFT JOIN tbSVC_TDMSDEPT DEPT4
+			ON DEPT3.DEPT_CODE = DEPT4.UP_CODE
+			AND DEPT4.DEPT_CODE != DEPT3.DEPT_CODE
+			AND (DEPT4.DEL_FLAG != 'Y' OR DEPT4.DEL_FLAG IS NULL)
+		WHERE DEPT1.DEPT_CODE = DEPT1.UP_CODE
+			AND (DEPT1.DEL_FLAG != 'Y' OR DEPT1.DEL_FLAG IS NULL)
+			AND DEPT1.DEPT_CODE IS NOT NULL
+			AND DEPT2.DEPT_CODE IS NOT NULL
+			AND DEPT3.DEPT_CODE IS NOT NULL
+			AND DEPT4.DEPT_CODE IS NOT NULL
+			ORDER BY DEPT1.DEPT_ORDER, DEPT2.DEPT_ORDER, DEPT3.DEPT_ORDER, DEPT4.DEPT_ORDER
+    </select>
+    
+    <select id="Rent#getDept5List" resultClass="RentDto">
+		SELECT DISTINCT DEPT4.DEPT_CODE AS dept4Code,
+			DEPT5.DEPT_NAME AS dept5Name,
+			DEPT5.DEPT_CODE AS dept5Code,
+			DEPT1.DEPT_ORDER AS dept1Order,
+			DEPT2.DEPT_ORDER AS dept2Order,
+			DEPT3.DEPT_ORDER AS dept3Order,
+			DEPT4.DEPT_ORDER AS dept4Order,
+			DEPT5.DEPT_ORDER AS dept5Order
+		FROM tbSVC_TDMSDEPT DEPT1 
+			LEFT JOIN tbSVC_TDMSDEPT DEPT2
+			ON DEPT1.DEPT_CODE = DEPT2.UP_CODE
+			AND DEPT2.DEPT_CODE != DEPT1.DEPT_CODE
+			AND (DEPT2.DEL_FLAG != 'Y' OR DEPT2.DEL_FLAG IS NULL)
+			LEFT JOIN tbSVC_TDMSDEPT DEPT3
+			ON DEPT2.DEPT_CODE = DEPT3.UP_CODE
+			AND DEPT3.DEPT_CODE != DEPT2.DEPT_CODE
+			AND (DEPT3.DEL_FLAG != 'Y' OR DEPT3.DEL_FLAG IS NULL)
+			LEFT JOIN tbSVC_TDMSDEPT DEPT4
+			ON DEPT3.DEPT_CODE = DEPT4.UP_CODE
+			AND DEPT4.DEPT_CODE != DEPT3.DEPT_CODE
+			AND (DEPT4.DEL_FLAG != 'Y' OR DEPT4.DEL_FLAG IS NULL)
+			LEFT JOIN tbSVC_TDMSDEPT DEPT5
+			ON DEPT4.DEPT_CODE = DEPT5.UP_CODE
+			AND DEPT5.DEPT_CODE != DEPT4.DEPT_CODE
+			AND (DEPT5.DEL_FLAG != 'Y' OR DEPT5.DEL_FLAG IS NULL)
+		WHERE DEPT1.DEPT_CODE = DEPT1.UP_CODE
+			AND (DEPT1.DEL_FLAG != 'Y' OR DEPT1.DEL_FLAG IS NULL)
+			AND DEPT1.DEPT_CODE IS NOT NULL
+			AND DEPT2.DEPT_CODE IS NOT NULL
+			AND DEPT3.DEPT_CODE IS NOT NULL
+			AND DEPT4.DEPT_CODE IS NOT NULL
+			AND DEPT5.DEPT_CODE IS NOT NULL
+			ORDER BY DEPT1.DEPT_ORDER, DEPT2.DEPT_ORDER, DEPT3.DEPT_ORDER, DEPT4.DEPT_ORDER, DEPT5.DEPT_ORDER
+    </select>
+    
+    <select id="Rent#getDept6List" resultClass="RentDto">
+		SELECT DISTINCT DEPT5.DEPT_CODE AS dept5Code,
+			DEPT6.DEPT_NAME AS dept6Name,
+			DEPT6.DEPT_CODE AS dept6Code,
+			DEPT1.DEPT_ORDER AS dept1Order,
+			DEPT2.DEPT_ORDER AS dept2Order,
+			DEPT3.DEPT_ORDER AS dept3Order,
+			DEPT4.DEPT_ORDER AS dept4Order,
+			DEPT5.DEPT_ORDER AS dept5Order,
+			DEPT6.DEPT_ORDER AS dept6Order
+		FROM tbSVC_TDMSDEPT DEPT1 
+			LEFT JOIN tbSVC_TDMSDEPT DEPT2
+			ON DEPT1.DEPT_CODE = DEPT2.UP_CODE
+			AND DEPT2.DEPT_CODE != DEPT1.DEPT_CODE
+			AND (DEPT2.DEL_FLAG != 'Y' OR DEPT2.DEL_FLAG IS NULL)
+			LEFT JOIN tbSVC_TDMSDEPT DEPT3
+			ON DEPT2.DEPT_CODE = DEPT3.UP_CODE
+			AND DEPT3.DEPT_CODE != DEPT2.DEPT_CODE
+			AND (DEPT3.DEL_FLAG != 'Y' OR DEPT3.DEL_FLAG IS NULL)
+			LEFT JOIN tbSVC_TDMSDEPT DEPT4
+			ON DEPT3.DEPT_CODE = DEPT4.UP_CODE
+			AND DEPT4.DEPT_CODE != DEPT3.DEPT_CODE
+			AND (DEPT4.DEL_FLAG != 'Y' OR DEPT4.DEL_FLAG IS NULL)
+			LEFT JOIN tbSVC_TDMSDEPT DEPT5
+			ON DEPT4.DEPT_CODE = DEPT5.UP_CODE
+			AND DEPT5.DEPT_CODE != DEPT4.DEPT_CODE
+			AND (DEPT5.DEL_FLAG != 'Y' OR DEPT5.DEL_FLAG IS NULL)
+			LEFT JOIN tbSVC_TDMSDEPT DEPT6
+			ON DEPT5.DEPT_CODE = DEPT6.UP_CODE
+			AND DEPT6.DEPT_CODE != DEPT5.DEPT_CODE	
+			AND (DEPT6.DEL_FLAG != 'Y' OR DEPT6.DEL_FLAG IS NULL)
+		WHERE DEPT1.DEPT_CODE = DEPT1.UP_CODE
+			AND (DEPT1.DEL_FLAG != 'Y' OR DEPT1.DEL_FLAG IS NULL)
+			AND DEPT1.DEPT_CODE IS NOT NULL
+			AND DEPT2.DEPT_CODE IS NOT NULL
+			AND DEPT3.DEPT_CODE IS NOT NULL
+			AND DEPT4.DEPT_CODE IS NOT NULL
+			AND DEPT5.DEPT_CODE IS NOT NULL
+			AND DEPT6.DEPT_CODE IS NOT NULL	
+			ORDER BY DEPT1.DEPT_ORDER, DEPT2.DEPT_ORDER, DEPT3.DEPT_ORDER, DEPT4.DEPT_ORDER, DEPT5.DEPT_ORDER, DEPT6.DEPT_ORDER
+    </select>
+    
+        
+    <select id="Rent#getDept3ListByCode" resultClass="RentDto">
+        SELECT DISTINCT DEPT2.DEPT_CODE AS dept2Code,
+            DEPT3.DEPT_NAME AS dept3Name,
+            DEPT3.DEPT_CODE AS dept3Code,
+            DEPT1.DEPT_ORDER AS dept1Order,
+            DEPT2.DEPT_ORDER AS dept2Order,
+            DEPT3.DEPT_ORDER AS dept3Order
+        FROM tbSVC_TDMSDEPT DEPT1 
+            LEFT JOIN tbSVC_TDMSDEPT DEPT2
+            ON DEPT1.DEPT_CODE = DEPT2.UP_CODE
+            AND DEPT2.DEPT_CODE != DEPT1.DEPT_CODE
+        	AND DEPT1.DEPT_CODE = #dept_code#
+            AND (DEPT2.DEL_FLAG != 'Y' OR DEPT2.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT3
+            ON DEPT2.DEPT_CODE = DEPT3.UP_CODE
+            AND DEPT3.DEPT_CODE != DEPT2.DEPT_CODE
+            AND (DEPT3.DEL_FLAG != 'Y' OR DEPT3.DEL_FLAG IS NULL)
+        WHERE DEPT1.DEPT_CODE = DEPT1.UP_CODE
+            AND (DEPT1.DEL_FLAG != 'Y' OR DEPT1.DEL_FLAG IS NULL)
+            AND DEPT1.DEPT_CODE IS NOT NULL
+            AND DEPT2.DEPT_CODE IS NOT NULL
+            AND DEPT3.DEPT_CODE IS NOT NULL
+            ORDER BY DEPT1.DEPT_ORDER, DEPT2.DEPT_ORDER, DEPT3.DEPT_ORDER
+    </select>
+    
+    <select id="Rent#getDept4ListByCode" resultClass="RentDto">
+        SELECT DISTINCT DEPT3.DEPT_CODE AS dept3Code,
+            DEPT4.DEPT_NAME AS dept4Name,
+            DEPT4.DEPT_CODE AS dept4Code,
+            DEPT1.DEPT_ORDER AS dept1Order,
+            DEPT2.DEPT_ORDER AS dept2Order,
+            DEPT3.DEPT_ORDER AS dept3Order,
+            DEPT4.DEPT_ORDER AS dept4Order
+        FROM tbSVC_TDMSDEPT DEPT1 
+            LEFT JOIN tbSVC_TDMSDEPT DEPT2
+            ON DEPT1.DEPT_CODE = DEPT2.UP_CODE
+            AND DEPT2.DEPT_CODE != DEPT1.DEPT_CODE
+            AND (DEPT2.DEL_FLAG != 'Y' OR DEPT2.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT3
+            ON DEPT2.DEPT_CODE = DEPT3.UP_CODE
+            AND DEPT3.DEPT_CODE != DEPT2.DEPT_CODE
+            AND DEPT2.DEPT_CODE = #dept_code#
+            AND (DEPT3.DEL_FLAG != 'Y' OR DEPT3.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT4
+            ON DEPT3.DEPT_CODE = DEPT4.UP_CODE
+            AND DEPT4.DEPT_CODE != DEPT3.DEPT_CODE
+            AND (DEPT4.DEL_FLAG != 'Y' OR DEPT4.DEL_FLAG IS NULL)
+        WHERE DEPT1.DEPT_CODE = DEPT1.UP_CODE
+            AND (DEPT1.DEL_FLAG != 'Y' OR DEPT1.DEL_FLAG IS NULL)
+            AND DEPT1.DEPT_CODE IS NOT NULL
+            AND DEPT2.DEPT_CODE IS NOT NULL
+            AND DEPT3.DEPT_CODE IS NOT NULL
+            AND DEPT4.DEPT_CODE IS NOT NULL
+            ORDER BY DEPT1.DEPT_ORDER, DEPT2.DEPT_ORDER, DEPT3.DEPT_ORDER, DEPT4.DEPT_ORDER
+    </select>
+    
+    <select id="Rent#getDept5ListByCode" resultClass="RentDto">
+        SELECT DISTINCT DEPT4.DEPT_CODE AS dept4Code,
+            DEPT5.DEPT_NAME AS dept5Name,
+            DEPT5.DEPT_CODE AS dept5Code,
+            DEPT1.DEPT_ORDER AS dept1Order,
+            DEPT2.DEPT_ORDER AS dept2Order,
+            DEPT3.DEPT_ORDER AS dept3Order,
+            DEPT4.DEPT_ORDER AS dept4Order,
+            DEPT5.DEPT_ORDER AS dept5Order
+        FROM tbSVC_TDMSDEPT DEPT1 
+            LEFT JOIN tbSVC_TDMSDEPT DEPT2
+            ON DEPT1.DEPT_CODE = DEPT2.UP_CODE
+            AND DEPT2.DEPT_CODE != DEPT1.DEPT_CODE
+            AND (DEPT2.DEL_FLAG != 'Y' OR DEPT2.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT3
+            ON DEPT2.DEPT_CODE = DEPT3.UP_CODE
+            AND DEPT3.DEPT_CODE != DEPT2.DEPT_CODE
+            AND (DEPT3.DEL_FLAG != 'Y' OR DEPT3.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT4
+            ON DEPT3.DEPT_CODE = DEPT4.UP_CODE
+            AND DEPT4.DEPT_CODE != DEPT3.DEPT_CODE
+            AND DEPT3.DEPT_CODE = #dept_code#
+            AND (DEPT4.DEL_FLAG != 'Y' OR DEPT4.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT5
+            ON DEPT4.DEPT_CODE = DEPT5.UP_CODE
+            AND DEPT5.DEPT_CODE != DEPT4.DEPT_CODE
+            AND (DEPT5.DEL_FLAG != 'Y' OR DEPT5.DEL_FLAG IS NULL)
+        WHERE DEPT1.DEPT_CODE = DEPT1.UP_CODE
+            AND (DEPT1.DEL_FLAG != 'Y' OR DEPT1.DEL_FLAG IS NULL)
+            AND DEPT1.DEPT_CODE IS NOT NULL
+            AND DEPT2.DEPT_CODE IS NOT NULL
+            AND DEPT3.DEPT_CODE IS NOT NULL
+            AND DEPT4.DEPT_CODE IS NOT NULL
+            AND DEPT5.DEPT_CODE IS NOT NULL
+            ORDER BY DEPT1.DEPT_ORDER, DEPT2.DEPT_ORDER, DEPT3.DEPT_ORDER, DEPT4.DEPT_ORDER, DEPT5.DEPT_ORDER
+    </select>
+    
+    <select id="Rent#getDept6ListByCode" resultClass="RentDto">
+        SELECT DISTINCT DEPT5.DEPT_CODE AS dept5Code,
+            DEPT6.DEPT_NAME AS dept6Name,
+            DEPT6.DEPT_CODE AS dept6Code,
+            DEPT1.DEPT_ORDER AS dept1Order,
+            DEPT2.DEPT_ORDER AS dept2Order,
+            DEPT3.DEPT_ORDER AS dept3Order,
+            DEPT4.DEPT_ORDER AS dept4Order,
+            DEPT5.DEPT_ORDER AS dept5Order,
+            DEPT6.DEPT_ORDER AS dept6Order
+        FROM tbSVC_TDMSDEPT DEPT1 
+            LEFT JOIN tbSVC_TDMSDEPT DEPT2
+            ON DEPT1.DEPT_CODE = DEPT2.UP_CODE
+            AND DEPT2.DEPT_CODE != DEPT1.DEPT_CODE
+            AND (DEPT2.DEL_FLAG != 'Y' OR DEPT2.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT3
+            ON DEPT2.DEPT_CODE = DEPT3.UP_CODE
+            AND DEPT3.DEPT_CODE != DEPT2.DEPT_CODE
+            AND (DEPT3.DEL_FLAG != 'Y' OR DEPT3.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT4
+            ON DEPT3.DEPT_CODE = DEPT4.UP_CODE
+            AND DEPT4.DEPT_CODE != DEPT3.DEPT_CODE
+            AND (DEPT4.DEL_FLAG != 'Y' OR DEPT4.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT5
+            ON DEPT4.DEPT_CODE = DEPT5.UP_CODE
+            AND DEPT5.DEPT_CODE != DEPT4.DEPT_CODE
+            AND DEPT4.DEPT_CODE = #dept_code#
+            AND (DEPT5.DEL_FLAG != 'Y' OR DEPT5.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT6
+            ON DEPT5.DEPT_CODE = DEPT6.UP_CODE
+            AND DEPT6.DEPT_CODE != DEPT5.DEPT_CODE  
+            AND (DEPT6.DEL_FLAG != 'Y' OR DEPT6.DEL_FLAG IS NULL)
+        WHERE DEPT1.DEPT_CODE = DEPT1.UP_CODE
+            AND (DEPT1.DEL_FLAG != 'Y' OR DEPT1.DEL_FLAG IS NULL)
+            AND DEPT1.DEPT_CODE IS NOT NULL
+            AND DEPT2.DEPT_CODE IS NOT NULL
+            AND DEPT3.DEPT_CODE IS NOT NULL
+            AND DEPT4.DEPT_CODE IS NOT NULL
+            AND DEPT5.DEPT_CODE IS NOT NULL
+            AND DEPT6.DEPT_CODE IS NOT NULL 
+            ORDER BY DEPT1.DEPT_ORDER, DEPT2.DEPT_ORDER, DEPT3.DEPT_ORDER, DEPT4.DEPT_ORDER, DEPT5.DEPT_ORDER, DEPT6.DEPT_ORDER
+    </select>
+    
+    <select id="Rent#getDept1UserListByCode" resultClass="RentDto">
+        SELECT
+               DEPT_CODE AS dept_code,
+               EMP.empno as EMPNO,
+               EMP.name as user_name,
+               EMP.title as pos_name,
+               substring(EMP.empno, 3,1) AS sex,
+               EMP.levelno,
+               EMP.dept_name
+          FROM tbSVC_TDMSDEPT 
+               LEFT JOIN tbSVC_TDMSEMP EMP
+               ON DEPT_CODE = EMP.DEPTNO
+               AND EXIST IN (1,2,5,7)
+         WHERE DEPT_CODE = UP_CODE
+           AND (DEL_FLAG != 'Y' OR DEL_FLAG IS NULL)
+         ORDER BY DEPT_ORDER
+    </select>
+    
+    <select id="Rent#getDept2UserListByCode" resultClass="RentDto">
+        SELECT
+            DEPT2.DEPT_CODE AS dept_code,
+            EMP.empno as EMPNO,
+            EMP.name as user_name,
+            EMP.title as pos_name,
+            substring(EMP.empno, 3,1) AS sex,
+            EMP.levelno,
+            EMP.dept_name
+        FROM tbSVC_TDMSDEPT DEPT1 
+            LEFT JOIN tbSVC_TDMSDEPT DEPT2
+            ON DEPT1.DEPT_CODE = DEPT2.UP_CODE
+            AND DEPT2.DEPT_CODE != DEPT1.DEPT_CODE
+            AND (DEPT2.DEL_FLAG != 'Y' OR DEPT2.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSEMP EMP
+            ON DEPT2.DEPT_CODE = EMP.DEPTNO
+            AND EXIST IN (1,2,5,7)
+        WHERE DEPT1.DEPT_CODE = DEPT1.UP_CODE
+            AND (DEPT1.DEL_FLAG != 'Y' OR DEPT1.DEL_FLAG IS NULL)
+            AND DEPT1.DEPT_CODE IS NOT NULL
+            AND DEPT2.DEPT_CODE IS NOT NULL
+            ORDER BY DEPT1.DEPT_ORDER, DEPT2.DEPT_ORDER
+    </select>
+    
+    <select id="Rent#getDept3UserListByCode" resultClass="RentDto">
+        SELECT
+            DEPT3.DEPT_CODE AS dept_code,
+            EMP.empno AS EMPNO,
+            EMP.name as user_name,
+            EMP.title as pos_name,
+            substring(EMP.empno, 3,1) AS sex,
+            EMP.levelno,
+            EMP.dept_name
+        FROM tbSVC_TDMSDEPT DEPT1 
+            LEFT JOIN tbSVC_TDMSDEPT DEPT2
+            ON DEPT1.DEPT_CODE = DEPT2.UP_CODE
+            AND DEPT2.DEPT_CODE != DEPT1.DEPT_CODE
+            AND DEPT1.DEPT_CODE = #dept_code#
+            AND (DEPT2.DEL_FLAG != 'Y' OR DEPT2.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT3
+            ON DEPT2.DEPT_CODE = DEPT3.UP_CODE
+            AND DEPT3.DEPT_CODE != DEPT2.DEPT_CODE
+            AND (DEPT3.DEL_FLAG != 'Y' OR DEPT3.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSEMP EMP
+            ON DEPT3.DEPT_CODE = EMP.DEPTNO
+            AND EXIST IN (1,2,5,7)
+        WHERE DEPT1.DEPT_CODE = DEPT1.UP_CODE
+            AND (DEPT1.DEL_FLAG != 'Y' OR DEPT1.DEL_FLAG IS NULL)
+            AND DEPT1.DEPT_CODE IS NOT NULL
+            AND DEPT2.DEPT_CODE IS NOT NULL
+            AND DEPT3.DEPT_CODE IS NOT NULL
+            ORDER BY DEPT1.DEPT_ORDER, DEPT2.DEPT_ORDER, DEPT3.DEPT_ORDER
+    </select>
+    
+    <select id="Rent#getDept4UserListByCode" resultClass="RentDto">
+        SELECT
+            DEPT4.DEPT_CODE AS dept_code,
+            EMP.empno AS EMPNO,
+            EMP.name as user_name,
+            EMP.title as pos_name,
+            substring(EMP.empno, 3,1) AS sex,
+            EMP.levelno,
+            EMP.dept_name
+        FROM tbSVC_TDMSDEPT DEPT1 
+            LEFT JOIN tbSVC_TDMSDEPT DEPT2
+            ON DEPT1.DEPT_CODE = DEPT2.UP_CODE
+            AND DEPT2.DEPT_CODE != DEPT1.DEPT_CODE
+            AND (DEPT2.DEL_FLAG != 'Y' OR DEPT2.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT3
+            ON DEPT2.DEPT_CODE = DEPT3.UP_CODE
+            AND DEPT3.DEPT_CODE != DEPT2.DEPT_CODE
+            AND DEPT2.DEPT_CODE = #dept_code#
+            AND (DEPT3.DEL_FLAG != 'Y' OR DEPT3.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT4
+            ON DEPT3.DEPT_CODE = DEPT4.UP_CODE
+            AND DEPT4.DEPT_CODE != DEPT3.DEPT_CODE
+            AND (DEPT4.DEL_FLAG != 'Y' OR DEPT4.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSEMP EMP
+            ON DEPT4.DEPT_CODE = EMP.DEPTNO
+            AND EXIST IN (1,2,5,7)
+        WHERE DEPT1.DEPT_CODE = DEPT1.UP_CODE
+            AND (DEPT1.DEL_FLAG != 'Y' OR DEPT1.DEL_FLAG IS NULL)
+            AND DEPT1.DEPT_CODE IS NOT NULL
+            AND DEPT2.DEPT_CODE IS NOT NULL
+            AND DEPT3.DEPT_CODE IS NOT NULL
+            AND DEPT4.DEPT_CODE IS NOT NULL
+            ORDER BY DEPT1.DEPT_ORDER, DEPT2.DEPT_ORDER, DEPT3.DEPT_ORDER, DEPT4.DEPT_ORDER
+    </select>
+    
+    <select id="Rent#getDept5UserListByCode" resultClass="RentDto">
+        SELECT
+            DEPT5.DEPT_CODE AS dept_code,
+            EMP.empno AS EMPNO,
+            EMP.name as user_name,
+            EMP.title as pos_name,
+            substring(EMP.empno, 3,1) AS sex,
+            EMP.levelno,
+            EMP.dept_name
+        FROM tbSVC_TDMSDEPT DEPT1 
+            LEFT JOIN tbSVC_TDMSDEPT DEPT2
+            ON DEPT1.DEPT_CODE = DEPT2.UP_CODE
+            AND DEPT2.DEPT_CODE != DEPT1.DEPT_CODE
+            AND (DEPT2.DEL_FLAG != 'Y' OR DEPT2.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT3
+            ON DEPT2.DEPT_CODE = DEPT3.UP_CODE
+            AND DEPT3.DEPT_CODE != DEPT2.DEPT_CODE
+            AND (DEPT3.DEL_FLAG != 'Y' OR DEPT3.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT4
+            ON DEPT3.DEPT_CODE = DEPT4.UP_CODE
+            AND DEPT4.DEPT_CODE != DEPT3.DEPT_CODE
+            AND DEPT3.DEPT_CODE = #dept_code#
+            AND (DEPT4.DEL_FLAG != 'Y' OR DEPT4.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT5
+            ON DEPT4.DEPT_CODE = DEPT5.UP_CODE
+            AND DEPT5.DEPT_CODE != DEPT4.DEPT_CODE
+            AND (DEPT5.DEL_FLAG != 'Y' OR DEPT5.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSEMP EMP
+            ON DEPT5.DEPT_CODE = EMP.DEPTNO
+            AND EXIST IN (1,2,5,7)
+        WHERE DEPT1.DEPT_CODE = DEPT1.UP_CODE
+            AND (DEPT1.DEL_FLAG != 'Y' OR DEPT1.DEL_FLAG IS NULL)
+            AND DEPT1.DEPT_CODE IS NOT NULL
+            AND DEPT2.DEPT_CODE IS NOT NULL
+            AND DEPT3.DEPT_CODE IS NOT NULL
+            AND DEPT4.DEPT_CODE IS NOT NULL
+            AND DEPT5.DEPT_CODE IS NOT NULL
+            ORDER BY DEPT1.DEPT_ORDER, DEPT2.DEPT_ORDER, DEPT3.DEPT_ORDER, DEPT4.DEPT_ORDER, DEPT5.DEPT_ORDER
+    </select>
+    
+    <select id="Rent#getDept6UserListByCode" resultClass="RentDto">
+        SELECT
+            DEPT6.DEPT_CODE AS dept_code,
+            EMP.empno AS EMPNO,
+            EMP.name as user_name,
+            EMP.title as pos_name,
+            substring(EMP.empno, 3,1) AS sex,
+            EMP.levelno,
+            EMP.dept_name
+        FROM tbSVC_TDMSDEPT DEPT1
+            LEFT JOIN tbSVC_TDMSDEPT DEPT2
+            ON DEPT1.DEPT_CODE = DEPT2.UP_CODE
+            AND DEPT2.DEPT_CODE != DEPT1.DEPT_CODE
+            AND (DEPT2.DEL_FLAG != 'Y' OR DEPT2.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT3
+            ON DEPT2.DEPT_CODE = DEPT3.UP_CODE
+            AND DEPT3.DEPT_CODE != DEPT2.DEPT_CODE
+            AND (DEPT3.DEL_FLAG != 'Y' OR DEPT3.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT4
+            ON DEPT3.DEPT_CODE = DEPT4.UP_CODE
+            AND DEPT4.DEPT_CODE != DEPT3.DEPT_CODE
+            AND (DEPT4.DEL_FLAG != 'Y' OR DEPT4.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT5
+            ON DEPT4.DEPT_CODE = DEPT5.UP_CODE
+            AND DEPT5.DEPT_CODE != DEPT4.DEPT_CODE
+            AND DEPT4.DEPT_CODE = #dept_code#
+            AND (DEPT5.DEL_FLAG != 'Y' OR DEPT5.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSDEPT DEPT6
+            ON DEPT5.DEPT_CODE = DEPT6.UP_CODE
+            AND DEPT6.DEPT_CODE != DEPT5.DEPT_CODE  
+            AND (DEPT6.DEL_FLAG != 'Y' OR DEPT6.DEL_FLAG IS NULL)
+            LEFT JOIN tbSVC_TDMSEMP EMP
+            ON DEPT6.DEPT_CODE = EMP.DEPTNO
+            AND EXIST IN (1,2,5,7)
+        WHERE DEPT1.DEPT_CODE = DEPT1.UP_CODE
+            AND (DEPT1.DEL_FLAG != 'Y' OR DEPT1.DEL_FLAG IS NULL)
+            AND DEPT1.DEPT_CODE IS NOT NULL
+            AND DEPT2.DEPT_CODE IS NOT NULL
+            AND DEPT3.DEPT_CODE IS NOT NULL
+            AND DEPT4.DEPT_CODE IS NOT NULL
+            AND DEPT5.DEPT_CODE IS NOT NULL
+            AND DEPT6.DEPT_CODE IS NOT NULL 
+            ORDER BY DEPT1.DEPT_ORDER, DEPT2.DEPT_ORDER, DEPT3.DEPT_ORDER, DEPT4.DEPT_ORDER, DEPT5.DEPT_ORDER, DEPT6.DEPT_ORDER
+    </select>
+    
+    <select id="Rent#getDeptEmpList" resultClass="RentDto">
+    	SELECT empno AS EMPNO, 
+		       name as user_name, 
+		       title as pos_name, 
+		       substring(empno, 3,1) AS sex, 
+		       levelno 
+		  FROM tbSVC_TDMSEMP 
+		 WHERE DEPTNO = #DEPTNO# 
+		       AND EXIST IN (1,2,5,7) 
+		ORDER BY levelno, 
+		       empno
+    </select>
+    
+    <select id="Rent#getSearchUser" resultClass="RentDto">
+        SELECT empno AS EMPNO,
+        	   name as user_name, 
+               title as pos_name, 
+        	   substring(empno,3,1) as sex,
+			   levelno,
+			   dept_name, 
+               deptno as dept_code
+          FROM dbo.tbSVC_TDMSEMP 
+         WHERE EXIST IN (1,2,5,7,10)
+         <isNotEmpty property="user_name">
+         AND name = #user_name#
+         </isNotEmpty>
+         <isNotEmpty property="EMPNO"> 
+         AND empno = #EMPNO#
+         </isNotEmpty>
+    </select>
+    
+    <insert id="Rent#insertMikepSign">
+    	INSERT INTO dbo.ONESTOP_RENT_MIKEP_SIGN 
+       ( 
+           SEQNO, 
+           APPNO, 
+           LINKKEY, 
+           SIGN_STATUS, 
+           TITLE, 
+           MASTER_NO, 
+           BATCH_FLAG, 
+           LINK, 
+           EMPNO, 
+           SIGN_LEVEL, 
+           DEPT_NAME as dept_name, 
+           NAME, 
+           POS_NAME as pos_name, 
+           METHOD, 
+           SIGN_DATE,
+           REGDT 
+       ) 
+       VALUES 
+       (SELECT ISNULL( MAX(ORMS.SEQNO) + 1, 1) 
+         FROM ONESTOP_RENT_MIKEP_SIGN ORMS, 
+              #APPNO#, 
+              #LINKKEY#, 
+              #SIGN_STATUS#, 
+              #TITLE#, 
+              #MASTER_NO#, 
+              #BATCH_FLAG#, 
+              #LINK#, 
+              #EMPNO#, 
+              #SIGN_LEVEL#, 
+              #dept_name#, 
+              #NAME#, 
+              #pos_name#, 
+              #METHOD#, 
+              #SIGN_DATE#,
+              convert(varchar(8), getdate(), 112) + replace(convert(varchar(8), getdate(), 108), ':', '')
+       ) GO 
+    </insert>
+    
+	<update id="Rent#partBanp">
+		<![CDATA[
+		update onestop_rent_app_equip
+		   set banpflag = '6' 
+		       ,banpdt = convert(datetime, #BANPDTCONV#)
+		       ,banpnm = #BANPNM#
+		       ,banpno = #BANPNO#
+         where appno = #APPNO#
+           and eqno = #EQNO#
+           and banpflag = '1';
+           
+        if ((select gbcd from onestop_rent_equip where eqno = #EQNO#) = '001') or ((select gbcd from onestop_rent_equip where eqno = #EQNO#) = '018')
+        if (select count(*) as cnt from onestop_rent_check where appno = #APPNO# and eqno = #EQNO#) = '0'
+        	insert into onestop_rent_check (appno, eqno, cmospwyn, logonpwyn, sharefolderdelyn, documentdelyn, osupdateyn, v3updateyn, lastmoddate)
+        	values (#APPNO#, #EQNO#, 'N', 'N', 'N', 'N', 'N', 'N', getDate());
+		]]>
+	</update>
+	
+	<select id="Rent#getMInsuBanpStat" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		select sum(insu_cnt) as insu_cnt
+		       ,sum(banp_cnt) as banp_cnt
+		  from (select count(*) as insu_cnt
+				       ,0 as banp_cnt
+				  from onestop_rent_app a
+				 inner join onestop_rent_app_equip b
+				    on a.appno = b.appno
+				 inner join ONESTOP_RENT_MODEL c
+                    on b.MDSEQ = c.MDSEQ
+				 where insudt like '$insu_date$%'
+				   and c.GBCD = '001'
+		
+				 union 
+		
+				select 0 as insu_cnt
+				       ,count(*) as banp_cnt
+				  from (select convert(varchar, banpdt, 23) banpdt
+				  		  from onestop_rent_app_equip a
+				  		 inner join ONESTOP_RENT_MODEL b
+                            on a.MDSEQ = b.MDSEQ
+				         where b.GBCD = '001'
+					   ) as date_list
+				 where banpdt like '$banp_date$%'
+		 ) as cnt_data
+	</select>
+	
+	<select id="Rent#rentUserList" resultClass="RentDto" parameterClass="RentDto">
+		
+		select
+			ORA.APPNO
+			,CASE WHEN Substring(APPSS, CHARINDEX(' ', APPSS, 1) + 1, LEN(APPSS)) IS NULL THEN Substring(APPSS, 1, LEN(APPSS)) 
+					        	ELSE Substring(APPSS, CHARINDEX(' ', APPSS, 1) + 1, LEN(APPSS)) 
+								END APPSS
+			,ORA.APPSS
+			,ORAEU.MDSEQ
+			,DEPT.dept_name
+			,ORAEU.APPUENM
+			,ORAEU.APPUENO
+			,DEPT1NM
+			,ORA.APPENM
+			,ORA.APPENO
+			,CONVERT(VARCHAR(10), CONVERT(date, CONVERT(VARCHAR(8), ORA.STRDT))) AS STRDT
+			,CONVERT(VARCHAR(10), CONVERT(date, CONVERT(VARCHAR(8), ORA.ENDDT))) AS ENDDT
+			,CASE 
+				WHEN ORA.STATUS = 3 THEN 3
+				WHEN ORA.STATUS = 4 AND ORAEU.BANPFLAG = 1 THEN 4
+				WHEN ORA.STATUS = 4 AND ORAEU.BANPFLAG = 6 THEN 6
+				WHEN ORA.STATUS = 6 AND ORAEU.BANPFLAG = 6 THEN 6
+			END  AS STATUS
+		from ONESTOP_RENT_EQUIP ORE
+			<!-- LEFT JOIN ONESTOP_RENT_APP_EQUIP_USER ORAEU ON ORE.EQNO = ORAEU.EQNO -->
+			INNER JOIN (
+				SELECT
+					*
+				FROM(
+					SELECT 
+						ROW_NUMBER() OVER(PARTITION BY ORAEU.APPNO, ORAEU.MDSEQ, ORAEU.EQNO ORDER BY ORAEU.EUSEQ) AS rowNum, 
+						ORAEU.*, 
+						ORAE.BANPFLAG 
+					FROM 
+						ONESTOP_RENT_APP_EQUIP_USER ORAEU 
+					LEFT JOIN ONESTOP_RENT_APP_EQUIP ORAE ON ORAEU.APPNO = ORAE.APPNO AND ORAEU.MDSEQ = ORAE.MDSEQ AND ORAEU.EQNO = ORAE.EQNO AND ORAEU.APPNO = ORAE.APPNO WHERE ORAE.EQNO IS NOT NULL
+					AND ORAEU.EQNO = #EQNO#
+				)a
+				WHERE a.rowNum = 1
+			) ORAEU  ON ORE.EQNO = ORAEU.EQNO
+			LEFT JOIN ONESTOP_RENT_APP ORA ON ORA.APPNO = ORAEU.APPNO
+			LEFT JOIN tbSVC_TDMSEMP SEMP ON SEMP.empno = ORAEU.APPUENO
+			LEFT JOIN tbSVC_TDMSDEPT DEPT ON DEPT.dept_code = SEMP.deptno
+		WHERE ORE.DELYN = 'N'
+			AND ORE.GBCD = #GBCD#
+		ORDER BY ORA.STRDT DESC
+		OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+		FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="Rent#rentUserListCnt" resultClass="int" parameterClass="RentDto">
+		select
+			COUNT(*)
+		from ONESTOP_RENT_EQUIP ORE
+			<!-- LEFT JOIN ONESTOP_RENT_APP_EQUIP_USER ORAEU ON ORE.EQNO = ORAEU.EQNO -->
+			INNER JOIN (
+				SELECT
+					*
+				FROM(
+					SELECT 
+						ROW_NUMBER() OVER(PARTITION BY ORAEU.APPNO, ORAEU.MDSEQ, ORAEU.EQNO ORDER BY ORAEU.EUSEQ) AS rowNum, 
+						ORAEU.*, 
+						ORAE.BANPFLAG 
+					FROM 
+						ONESTOP_RENT_APP_EQUIP_USER ORAEU 
+					LEFT JOIN ONESTOP_RENT_APP_EQUIP ORAE ON ORAEU.APPNO = ORAE.APPNO AND ORAEU.MDSEQ = ORAE.MDSEQ AND ORAEU.EQNO = ORAE.EQNO AND ORAEU.APPNO = ORAE.APPNO WHERE ORAE.EQNO IS NOT NULL
+					AND ORAEU.EQNO = #EQNO#
+				)a
+				WHERE a.rowNum = 1
+			) ORAEU  ON ORE.EQNO = ORAEU.EQNO
+			LEFT JOIN ONESTOP_RENT_APP ORA ON ORA.APPNO = ORAEU.APPNO
+			LEFT JOIN tbSVC_TDMSEMP SEMP ON SEMP.empno = ORAEU.APPUENO
+			LEFT JOIN tbSVC_TDMSDEPT DEPT ON DEPT.dept_code = SEMP.deptno
+			WHERE ORE.DELYN = 'N'
+			AND ORE.GBCD = #GBCD#
+			<!-- AND ORAEU.EQNO = #EQNO# -->
+	</select>
+	
+	<select id="Rent#rentCheck" resultClass="RentDto" parameterClass="String">
+		SELECT 
+			AE.APPNO
+			,MDSEQ
+			,EQNO
+			,EUSEQ
+		FROM 
+		ONESTOP_RENT_APP_EQUIP AE
+		LEFT JOIN ONESTOP_RENT_APP RA ON AE.APPNO = RA.APPNO 
+		WHERE BANPFLAG != 6 
+			and EUSEQ is not null
+			AND STATUS != '2'
+			AND EQNO = #EQNO#
+	</select>
+	
+</sqlMap>

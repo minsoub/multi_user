@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="UserRentScreen">
+    <typeAlias alias="UserRentScreenDto" type="kr.co.neodreams.multi_user.dto.UserRentScreenDto"/>
+    
+	<select id="UserRentScreen#userRentList" resultClass="UserRentScreenDto">
+		SELECT
+			A.APPNO,
+			(STUFF((SELECT
+				',' + Z.GBNM
+			FROM ONESTOP_RENT_CODE Z
+			JOIN ONESTOP_RENT_MODEL RM
+				ON Z.GBCD = RM.GBCD
+			JOIN ONESTOP_RENT_APP_MODEL OAM
+				ON RM.MDSEQ = OAM.MDSEQ
+			WHERE OAM.APPNO = A.APPNO
+			FOR XML PATH('')
+			) ,1,1,'')) GBNM,
+			MAX(A.STRDT) STRDT,
+			MAX(A.ENDDT) ENDDT,
+			MAX(A.REGDT) REGDT,
+			MAX(A.STATUS) STATUS,
+			CASE MAX(A.STATUS) WHEN '1' THEN '신청' WHEN '3' THEN '접수완료' WHEN '4' THEN '사용중' END STATUSSTR,
+			MAX(APPNUM) APPNUM,
+			MAX(A.APPROVAL) APPROVAL,
+			MAX(A.APPENM) APPENM,
+			MAX(A.APPUENM) APPUENM
+		FROM ONESTOP_RENT_APP A
+		JOIN ONESTOP_RENT_APP_MODEL AM
+			ON A.APPNO = AM.APPNO
+		JOIN ONESTOP_RENT_MODEL M
+			ON M.MDSEQ = AM.MDSEQ
+		JOIN ONESTOP_RENT_CODE C
+			ON C.GBCD = M.GBCD
+		WHERE A.STATUS IN ('1','3','4')
+		AND A.APPROVAL IN ('1','2')
+		AND A.DELYN = 'N'
+		AND A.REGENO = #REGENO#
+		GROUP BY A.APPNO
+		ORDER BY A.APPNO DESC
+	</select>
+    
+</sqlMap>

@@ -1,0 +1,67 @@
+TD,TH    {font-family:dotum;font-size:10Pt;color:#474747;letter-spacing:0;line-height:150%;}
+TABLE    {style="TABLE-LAYOUT: fixed"}
+
+IMG {border:0}
+
+A:link ,A:visited,A:active    	{color:#474747;font-size:10Pt;text-decoration:none;line-height:150%;}
+A:hover   	{color:#259602;font-size:10Pt;text-decoration:underline;line-height:150%;}
+			
+			
+/*SELECT { FONT-SIZE: 9pt; COLOR:#474747; FONT-FAMILY: 돋움;  BACKGROUND: #ffffff;}			*/
+			
+.main_bg {background-image:url(../IMAGE/bg.gif);background-repeat: repeat-x;background-position: left 89px;}
+
+/* 메인 - 진행사항조회 */
+.prgs1 {font-weight:bold; color:#343434}
+.prgs3 {font-weight:bold; color:#838383}
+
+A.prgs2:link ,A.prgs2:visited,A.prgs2:active    	{color:#F45036;font-size:10Pt;text-decoration:none;line-height:150%;font-weight:bold;}
+A.prgs2:hover   	{color:#F45036;font-size:10Pt;text-decoration:underline;line-height:150%;font-weight:bold;}
+
+/* 공지사항*/
+A.noti:link ,A.noti:visited,A.noti:active    	{color:#666666;font-size:10Pt;text-decoration:none;line-height:150%;}
+A.noti:hover   	{color:#259602;font-size:10Pt;text-decoration:underline;line-height:150%;}
+
+.noti2 {color:#666666}
+
+/* 서브 높이 */
+.sh {height:18}
+
+/* history link */
+.his1 {color:7A7A7A;font-size:8pt}
+A.his2:link ,A.his2:visited,A.his2:active    	{color:#7A7A7A;font-size:8Pt;text-decoration:none;line-height:150%;}
+A.his2:hover   	{color:#111111;font-size:8Pt;text-decoration:none;line-height:150%;}
+
+/* 서브페이지 */
+.tt1{font-weight:bold;font-size:12pt;letter-spacing:-1}
+.tt2{font-weight:bold;}
+
+/* 테이블 */
+.ta1 {background-color:#A6C840; font-weight:bold; color:#ffffff}
+.ta2 {background-color:#F0F7DE; padding-left:5}
+.ta3 {background-color:#BEB397; font-weight:bold; color:#ffffff}
+.ta4 {background-color:#F2F2F2; padding-left:5}
+.ta5 {background-color:#CFB1E7; font-weight:bold; color:#ffffff}
+.ta6 {background-color:#F7EEFF; padding-left:5}
+.ta7 {background-color:#F2F2F2;}
+
+
+.input	{FONT:9pt; color:#474747; BACKGROUND-COLOR:#ffffff; BORDER:1pt SOLID #CFCFCF;}
+
+/* 게시판 목록*/
+A.list:link ,A.list:visited,A.list:active    	{color:#474747;font-size:10Pt;text-decoration:none;line-height:150%;}
+A.list:hover   	{color:#000000;font-size:10Pt;text-decoration:underline;line-height:150%;}	
+
+/* 게시판 페이지*/
+A.page:link ,A.page:visited,A.page:active    	{color:#474747;font-size:8Pt;text-decoration:none;line-height:150%;font-family:verdana}
+A.page:hover   	{color:#000000;font-size:8Pt;text-decoration:underline;line-height:150%;font-family:verdana;background-color:#E8E8E8}	
+.page_on {color:#F75718;font-size:8Pt;font-family:verdana;font-weight:bold}
+.gubun {color:#A1A1A1;font-size:7Pt;font-family:verdana;width:13;text-align:center}
+
+
+/* 결제시행 네비게에션 */
+A.sign1:link ,A.sign1:visited,A.sign1:active    	{color:#A9522B;font-size:10Pt;text-decoration:none;line-height:150%;font-weight:bold;}
+A.sign1:hover   	{color:#411603;font-size:10Pt;text-decoration:underline;line-height:150%;font-weight:bold;}
+
+A.sign2:link ,A.sign2:visited,A.sign2:active    	{color:#8F8C8C;font-size:8Pt;text-decoration:none;line-height:150%;}
+A.sign2:hover   	{color:#5F5F5F;font-size:8Pt;text-decoration:underline;line-height:150%;}

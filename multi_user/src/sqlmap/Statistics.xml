@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Statistics">
+	<typeAlias alias="StatisticsDto" type="kr.co.neodreams.multi_user.dto.StatisticsDto"/>
+	
+	<select id="Statistics#getMypageStatisticsList" resultClass="StatisticsDto">
+        <![CDATA[
+        SELECT
+          DATEPART (yyyy, OM.SM_WDATE) AS YR,
+          DATEPART (m, OM.SM_WDATE) AS MTH,
+          COUNT(OM_CT_CNT.SM_SEQ) AS CNT1,
+          COUNT(OM_CT_CLC.SM_SEQ) AS CNT2,
+          COUNT(OM_CT_FNS.SM_SEQ) AS CNT3,
+          COUNT(OM_DS_CNT.SM_SEQ) AS CNT4,
+          COUNT(OM_DS_CLC.SM_SEQ) AS CNT5,
+          COUNT(OM_DS_FNS.SM_SEQ) AS CNT6
+        FROM
+          tbSVC_ORDMASTER AS OM
+          LEFT JOIN tbSVC_ORDMASTER AS OM_CT_CNT
+            ON OM.SM_WDATE = OM_CT_CNT.SM_WDATE
+            AND OM_CT_CNT.SM_SVC1 = '1003'
+            AND OM_CT_CNT.SM_LSTATE = '3093'
+          LEFT JOIN tbSVC_ORDMASTER AS OM_CT_CLC
+            ON OM.SM_WDATE = OM_CT_CLC.SM_WDATE
+            AND OM_CT_CLC.SM_SVC1 = '1003'
+            AND OM_CT_CLC.SM_LSTATE = '3097'
+          LEFT JOIN tbSVC_ORDMASTER AS OM_CT_FNS
+            ON OM.SM_WDATE = OM_CT_FNS.SM_WDATE
+            AND OM_CT_FNS.SM_SVC1 = '1003'
+            AND ( OM_CT_FNS.SM_LSTATE = '3095'
+                  OR OM_CT_FNS.SM_LSTATE = '3096'
+                  OR OM_CT_FNS.SM_LSTATE = '3098')
+          LEFT JOIN tbSVC_ORDMASTER AS OM_DS_CNT
+            ON OM.SM_WDATE = OM_DS_CNT.SM_WDATE
+            AND OM_DS_CNT.SM_SVC1 = '1002'
+            AND OM_DS_CNT.SM_LSTATE = '3093'
+          LEFT JOIN tbSVC_ORDMASTER AS OM_DS_CLC
+            ON OM.SM_WDATE = OM_DS_CLC.SM_WDATE
+            AND OM_DS_CLC.SM_SVC1 = '1002'
+            AND OM_DS_CLC.SM_LSTATE = '3097'
+          LEFT JOIN tbSVC_ORDMASTER AS OM_DS_FNS
+            ON OM.SM_WDATE = OM_DS_FNS.SM_WDATE
+            AND OM_DS_FNS.SM_SVC1 = '1002'
+            AND ( OM_DS_FNS.SM_LSTATE = '3095'
+                  OR OM_DS_FNS.SM_LSTATE = '3096'
+                  OR OM_DS_FNS.SM_LSTATE = '3098')
+        WHERE (OM.SM_SVC1 = '1003' OR OM.SM_SVC1 = '1002')
+            AND (OM.SM_MCCD = '1133')
+        ]]>
+        <isNotEmpty property="SM_MEMPNO">
+        	<![CDATA[
+        	AND (OM.SM_MEMPNO = '$SM_MEMPNO$')
+        	]]>
+        </isNotEmpty>
+        <isNotEmpty property="SM_WDATE_FROM">
+        	<![CDATA[
+        	AND (OM.SM_WDATE > '$SM_WDATE_FROM$')
+        	]]>
+        </isNotEmpty>
+        <isNotEmpty property="SM_WDATE_TO">
+        	<![CDATA[
+            AND (OM.SM_WDATE < '$SM_WDATE_TO$')
+            ]]>
+        </isNotEmpty>
+        <![CDATA[
+        GROUP BY DATEPART (yyyy, OM.SM_WDATE),
+          DATEPART (mm, OM.SM_WDATE)
+        ORDER BY YR DESC,
+          MTH DESC
+        ]]>
+ 	</select>
+ 	
+	<select id="Statistics#getMypageStatisticsListCount" resultClass="int">
+		<![CDATA[
+        SELECT
+          COUNT(OM.SM_NO) AS totalCnt
+        FROM
+          tbSVC_ORDMASTER AS OM
+          LEFT JOIN tbSVC_ORDMASTER AS OM_CT_CNT
+            ON OM.SM_WDATE = OM_CT_CNT.SM_WDATE
+            AND OM_CT_CNT.SM_SVC1 = '1003'
+            AND OM_CT_CNT.SM_LSTATE = '3093'
+          LEFT JOIN tbSVC_ORDMASTER AS OM_CT_CLC
+            ON OM.SM_WDATE = OM_CT_CLC.SM_WDATE
+            AND OM_CT_CLC.SM_SVC1 = '1003'
+            AND OM_CT_CLC.SM_LSTATE = '3097'
+          LEFT JOIN tbSVC_ORDMASTER AS OM_CT_FNS
+            ON OM.SM_WDATE = OM_CT_FNS.SM_WDATE
+            AND OM_CT_FNS.SM_SVC1 = '1003'
+            AND ( OM_CT_FNS.SM_LSTATE = '3095'
+                  OR OM_CT_FNS.SM_LSTATE = '3096'
+                  OR OM_CT_FNS.SM_LSTATE = '3098')
+          LEFT JOIN tbSVC_ORDMASTER AS OM_DS_CNT
+            ON OM.SM_WDATE = OM_DS_CNT.SM_WDATE
+            AND OM_DS_CNT.SM_SVC1 = '1002'
+            AND OM_DS_CNT.SM_LSTATE = '3093'
+          LEFT JOIN tbSVC_ORDMASTER AS OM_DS_CLC
+            ON OM.SM_WDATE = OM_DS_CLC.SM_WDATE
+            AND OM_DS_CLC.SM_SVC1 = '1002'
+            AND OM_DS_CLC.SM_LSTATE = '3097'
+          LEFT JOIN tbSVC_ORDMASTER AS OM_DS_FNS
+            ON OM.SM_WDATE = OM_DS_FNS.SM_WDATE
+            AND OM_DS_FNS.SM_SVC1 = '1002'
+            AND ( OM_DS_FNS.SM_LSTATE = '3095'
+                  OR OM_DS_FNS.SM_LSTATE = '3096'
+                  OR OM_DS_FNS.SM_LSTATE = '3098')
+        WHERE (OM.SM_SVC1 = '1003' OR OM.SM_SVC1 = '1002')
+            AND (OM.SM_MCCD = '1133')
+            ]]>
+        <isNotEmpty property="SM_MEMPNO">
+        	<![CDATA[
+        	AND (OM.SM_MEMPNO = '$SM_MEMPNO$') 
+        	]]>
+        </isNotEmpty>
+        <isNotEmpty property="SM_WDATE_FROM">
+        	<![CDATA[
+        	AND (OM.SM_WDATE > '$SM_WDATE_FROM$') 
+        	]]>
+        </isNotEmpty>
+        <isNotEmpty property="SM_WDATE_TO">
+        	<![CDATA[
+            AND (OM.SM_WDATE < '$SM_WDATE_TO$')
+            ]]>
+        </isNotEmpty>
+ 	</select>
+	
+</sqlMap>

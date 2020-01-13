@@ -1,0 +1,22 @@
+@font-face {
+    font-family: NanumBarunGothicBold;
+    src: url(../font/NanumBarunGothicBold.eot);
+    src: url(../font/NanumBarunGothicBold.woff) format('woff')
+}
+@font-face {
+    font-family: NanumBarunGothicLight;
+    src: url(../font/NanumBarunGothicLight.eot);
+    src: url(../font/NanumBarunGothicLight.woff) format('woff')
+}
+@font-face {
+    font-family: KoPubDotumBold;
+    src: url(../font/KoPubDotumBold.woff) format('woff')
+}
+@font-face {
+    font-family: KoPubDotumMedium;
+    src: url(../font/KoPubDotumMedium.woff) format('woff')
+}
+@font-face {
+    font-family: KoPubDotumLight;
+    src: url(../font/KoPubDotumLight.woff) format('woff')
+}

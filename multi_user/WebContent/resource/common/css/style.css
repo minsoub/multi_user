@@ -1,0 +1,318 @@
+/*@import url("board.css");*/
+body{
+	/*background-color:red;*/
+}
+
+
+/* padding, margin  */
+.pd_01       {padding:1px !important;}
+.pd_b01      {padding-bottom:1px !important;}
+.pd_l01      {padding-left:1px !important;}
+.pd_r01      {padding-right:1px !important;}
+.pd_t01      {padding-top:1px !important;}
+.pd_05       {padding:5px !important;}
+.pd_b05      {padding-bottom:5px !important;}
+.pd_l05      {padding-left:5px !important;}
+.pd_r05      {padding-right:5px !important;}
+.pd_t05      {padding-top:5px !important;}
+.pd_10       {padding:10px !important;}
+.pd_b10      {padding-bottom:10px !important;}
+.pd_l10      {padding-left:10px !important;}
+.pd_r10      {padding-right:10px !important;}
+.pd_t10      {padding-top:10px !important;}
+.pd_20       {padding:20px !important;}
+.pd_b20      {padding-bottom:20px !important;}
+.pd_l20      {padding-left:20px !important;}
+.pd_r20      {padding-right:20px !important;}
+.pd_t20      {padding-top:20px !important;}
+.pd_30       {padding:30px !important;}
+.pd_b30      {padding-bottom:30px !important;}
+.pd_l30      {padding-left:30px !important;}
+.pd_r30      {padding-right:30px !important;}
+.pd_t30      {padding-top:30px !important;}
+.pd_l40      {padding-left:40px !important;}
+.pd_t100         {padding-top:100px !important;}
+
+.mg_01       {margin:1px !important;}
+.mg_b01      {margin-bottom:1px !important;}
+.mg_l01      {margin-left:1px !important;}
+.mg_r01      {margin-right:1px !important;}
+.mg_t01      {margin-top:1px !important;}
+.mg_05       {margin:5px !important;}
+.mg_b05      {margin-bottom:5px !important;}
+.mg_l05      {margin-left:5px !important;}
+.mg_r05      {margin-right:5px !important;}
+.mg_t05      {margin-top:5px !important;}
+.mg_10       {margin:10px !important;}
+.mg_b10      {margin-bottom:10px !important;}
+.mg_l10      {margin-left:10px !important;}
+.mg_r10      {margin-right:10px !important;}
+.mg_t10      {margin-top:10px !important;}
+.mg_20       {margin:20px !important;}
+.mg_b20      {margin-bottom:20px !important;}
+.mg_l20      {margin-left:20px !important;}
+.mg_r20      {margin-right:20px !important;}
+.mg_t20      {margin-top:20px !important;}
+.mg_30       {margin:30px !important;}
+.mg_b30      {margin-bottom:30px !important;}
+.mg_l30      {margin-left:30px !important;}
+.mg_r30      {margin-right:30px !important;}
+.mg_t30      {margin-top:30px !important;}
+.mg_r50      {margin-right:50px !important;}
+    
+
+/* visible, display */
+.visible_visible    {visibility:visible;}
+.visible_hidden {visibility:hidden;}
+.display_none       {display:none;}
+.display_block  {display:block;}
+.display_tr         {display:table-row;}
+.display_inline {display:inline;}
+
+/* ime-mode */
+.ime_ko     { ime-mode:active; }
+.ime_en     { ime-mode:inactive; }
+.ime_no     { ime-mode:disabled; }
+
+
+/* input addon text */
+.info_txt { font-size:10px; color:red; }
+.ok_txt { font-size:10px; color:green; }
+
+
+.bs-docs-nav{border:0px solid #000;}
+.bs-docs-header{border:0px solid #000;}
+.bs-docs-container{border:0px solid #000;}
+.col-md-3{border:0px solid #000;}
+.col-md-9{border:0px solid #000;}
+.bs-docs-footer{border:0px solid #000;}
+
+
+/*main popup ������*/
+.pop_position{position: absolute; width:100%;top:100px;}
+.tiles-wrap {
+  position: relative; /** Needed to ensure items are laid out relative to this container **/
+  margin: 10px 0;
+  padding: 0;
+  list-style-type: none;
+  display: none;
+}
+
+.tiles-wrap li {
+  display: block;
+  opacity: 1;
+  text-align: center;
+  list-style-type: none;
+  background-color: #fff;
+  float: left;
+  cursor: pointer;
+  padding: 4px;
+ 
+}
+.tiles-wrap.animated li {
+  -webkit-transition: all 0.3s ease-out;
+     -moz-transition: all 0.3s ease-out;
+       -o-transition: all 0.3s ease-out;
+          transition: all 0.3s ease-out;
+}
+/*main popup ������ ��*/
+
+
+
+
+/* Base structure*/
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+
+/* Global add-ons*/
+.sub-header {padding-bottom: 10px;border-bottom: 1px solid #eee;}
+
+/*
+ * Top navigation
+ * Hide default border to remove 1px line.
+ */
+.navbar-fixed-top {border: 0;}
+
+.navbar-inverse{background-color: #29a7b6;} 	
+.navbar-inverse .navbar-nav>li>a{color:#fff}	
+.navbar-inverse .navbar-brand{color:#fff}		
+.navbar-inverse .navbar-nav>.open>a{background-color: #008080;}
+.navbar-inverse .navbar-nav>.open>a:focus, .navbar-inverse .navbar-nav>.open>a:hover {background-color: #008080;}
+.dropdown-menu{background-color: #29a7b6;}
+.dropdown-menu>li>a {color:#fff;}
+
+/*
+ * Sidebar
+ */
+
+/* Hide for mobile, show later */
+.sidebar {display: none;}
+@media (min-width: 768px) {
+  .sidebar {
+    position: fixed;
+    /*top: 51px;*/
+   	top: 0px;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+    display: block;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    background-color: #f5f5f5;
+    border-right: 1px solid #eee;
+  }
+}
+
+/* Sidebar navigation */
+.nav-sidebar {
+  margin-right: -21px; /* 20px padding + 1px border */
+  margin-bottom: 20px;
+  margin-left: -20px;
+}
+.nav-sidebar > li > a {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+.nav-sidebar > .active > a,
+.nav-sidebar > .active > a:hover,
+.nav-sidebar > .active > a:focus {
+  color: #fff;
+  background-color: #428bca;
+}
+
+
+/*
+ * Main content
+ */
+
+@media (min-width: 768px) {
+  .main {padding-right: 40px;padding-left: 40px;}
+}
+.main .page-header {margin-top: 0;}
+
+
+/*
+ * Placeholder dashboard ideas
+ */
+
+.placeholders {margin-bottom: 30px;text-align: center;}
+.placeholders h4 {margin-bottom: 0;}
+.placeholder {margin-bottom: 20px;}
+.placeholder img {display: inline-block;border-radius: 50%;}
+
+/*------------------*/
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+  margin-bottom: 10px;
+}
+.form-signin .checkbox {
+  font-weight: normal;
+}
+.form-signin .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+
+
+header{margin-top:20px;}
+
+/*-------------------------------------------------------------------*/
+
+/* 회원 가입 */
+#agree_form .agree { width:100%; height:200px; overflow:auto; padding:20px; }
+
+
+.sub_title{border-bottom:2px solid #daddde;color:#000;font-size:20px;font-weight:bold;padding:0 0 7px;line-height:1.3em;} 
+.page_title{ color:#000; font-size:15px; font-weight:bold; margin:10px 0 ;line-height:1.3em;} 
+
+.float_left { float: left; }
+.float_right { float: right; }
+.float_clear { clear: both; }
+
+/*사이트 관리자*/
+.site_info_title {text-align:right; width: 100px;}
+.site_info_title2 {text-align:right; width: 200px;}
+.board_write_addon {text-align:right; width: 210px;}
+
+/*make*/
+.make_button_div{text-align: center;}
+.list_button_div{text-align: right;}
+.make_button {}
+
+/*admin_footer*/
+.admin_footer_text{text-align: center;}
+
+/* 팝업 */
+.tile     {position:absolute; border:1px solid silver; background-color:white; filter:alpha(opacity=50); -moz-opacity:0.50; opacity:0.50; font-family:arial, sans-serif; font-size:12px; padding:3px; }
+.links  {font-family:arial, sans-serif; font-size:11px; padding:0px; visibility:hidden; }
+.alts     {font-family:arial, sans-serif; font-size:11px; padding:0px; visibility:hidden; margin-top: 5px; }
+
+
+/*Account-Management*/
+.act_Div{}
+.act_depth1{margin-bottom: 10px;padding:0;list-style: none; border: #409AD5 1px dashed;}
+.act_depth1>li>.act_depth1_title{font-weight:bold;width:100%;background-color: #AFD9EE;}
+.act_depth2{margin:0;padding:0;list-style: none;}
+.act_depth2>li>.act_depth2_title{font-weight:bold;width:100%;background-color: #E4B9B9;}
+.act_depth3{margin:0;padding:0;list-style: none;}
+.act_depth3>li>.dep3_1{margin-left:15px;}
+.act_depth3>li>.dep3_2{margin-left:29px;}
+
+/*menu_management*/
+.MMU_line {border: #409AD5 1px dashed;}
+/*.MMU_line:first-child {border-left:0px; }*/
+.MMU{list-style:none;cursor:pointer;}
+.MMUI{list-style:none;margin:0;padding:0;}
+.MMUI.on{display: none;}
+.MMUI>li>span>.admin_menu_cancel{display: none;}
+.MMUI>li>span>.admin_menu_cancel.on{display: inline;}
+.mm_name{text-align:left; width:100px;}
+
+
+
+/* 시스템 정보 */
+.table_title { color:#07A; font-weight:bold; padding:1 15 0 15; font-family:tahoma; 돋움; }
+.table_title span { color:#333; font-family:tahoma; 돋움; }
+.no-bottom-margin { margin-bottom:0 !important;}
+
+
+/*popup*/
+#workSpace{position:relative; height:auto; padding:0px;}
+.popup_ul{margin: 0px;padding: 0px;}
+.popup_ul li{margin-right:10px;float:left;}
+
+
+
+/* 반응형 css ----------------------------------------------------------*/
+/* 작은 기기들 (태블릿, 768px 이상) */
+@media (min-width:768px) { 
+        
+     }
+
+/* 중간 기기들 (데스크탑, 992px 이상) */
+@media (min-width:992px) { 
+    .div_tb_cell{ text-align:right;}
+    
+     }
+
+/* 큰 기기들 (큰 데스크탑, 1200px 이상) */
+@media (min-width:1200px) { 
+    /*menu_management*/
+	.MMU{height:380px;}
+     }
+
+

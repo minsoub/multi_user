@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="NoticeDto">
+	<typeAlias alias="NoticeDto" type="kr.co.neodreams.multi_user.dto.NoticeDto"/>
+	
+	<select id="Notice#getNoticeList" resultClass="NoticeDto">
+		SELECT
+			notice_Seq,
+			notice_Gbn,
+			notice_Title,
+			notice_Content,
+			write_User,
+			write_User_Name,
+			CONVERT(char(10), write_Date,126) AS write_Date
+		FROM
+			multi_Notice
+		<isNotEmpty property="schNoticeGbn" prepend="WHERE">
+				notice_Gbn = #schNoticeGbn#
+			<isNotEmpty property="searchText" prepend="AND">
+				(
+					notice_Title LIKE '%$searchText$%' 
+					OR notice_Content LIKE '%$searchText$%'
+					OR write_User LIKE '%$searchText$%'
+					OR CONVERT(char(10), write_Date,126) LIKE '%$searchText$%'
+				)
+			</isNotEmpty>
+		</isNotEmpty>
+		
+		<isEmpty property="schNoticeGbn">
+			<isNotEmpty property="searchText" prepend="WHERE">
+				(
+					notice_Title LIKE '%$searchText$%' 
+					OR notice_Content LIKE '%$searchText$%'
+					OR write_User LIKE '%$searchText$%'
+					OR CONVERT(char(10), write_Date,126) LIKE '%$searchText$%'
+				)
+			</isNotEmpty>
+		</isEmpty>
+		
+		ORDER BY write_Date DESC
+		OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+		FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="Notice#getNoticeListCnt" resultClass="int">
+		SELECT
+			COUNT(*)
+		FROM
+			multi_Notice
+		<isNotEmpty property="schNoticeGbn" prepend="WHERE">
+				notice_Gbn = #schNoticeGbn#
+			<isNotEmpty property="searchText" prepend="AND">
+				(
+					notice_Title LIKE '%$searchText$%' 
+					OR notice_Content LIKE '%$searchText$%'
+					OR write_User LIKE '%$searchText$%'
+					OR CONVERT(char(10), write_Date,126) LIKE '%$searchText$%'
+				)
+			</isNotEmpty>
+		</isNotEmpty>
+		
+		<isEmpty property="schNoticeGbn">
+			<isNotEmpty property="searchText" prepend="WHERE">
+				(
+					notice_Title LIKE '%$searchText$%' 
+					OR notice_Content LIKE '%$searchText$%'
+					OR write_User LIKE '%$searchText$%'
+					OR CONVERT(char(10), write_Date,126) LIKE '%$searchText$%'
+				)
+			</isNotEmpty>
+		</isEmpty>
+	</select>
+	
+	<resultMap class="kr.co.neodreams.multi_user.dto.NoticeDto" id="noticeResult">
+		<result property="notice_Seq" 		column="notice_Seq"/>
+		<result property="notice_Gbn" 		column="notice_Gbn"/>
+		<result property="notice_Title" 	column="notice_Title"/>
+		<result property="notice_Content" 	column="notice_Content"/>
+		<result property="write_User" 		column="write_User"/>
+		<result property="write_User_Name" 	column="write_User_Name"/>
+		<result property="write_Date" 		column="write_Date"/>
+		<result property="attatch_Seq" 		column="attatch_Seq"/>
+		<result property="attatchList" 		column="{notice_Seq=notice_Seq, attatch_Seq=attatch_Seq}" select="Notice#getAttatchList" />
+	</resultMap>
+	
+	<resultMap class="kr.co.neodreams.multi_user.dto.NoticeDto" id="attatchResult" >
+		<result property="notice_Seq" 		column="notice_Seq"/>
+		<result property="attatch_Seq" 		column="attatch_Seq"/>
+		<result property="attatch_OrgName" 	column="attatch_OrgName"/>
+		<result property="attatch_PhyPath"	column="attatch_PhyPath"/>
+		<result property="attatch_LogPath"	column="attatch_LogPath"/>
+	</resultMap>
+	
+	<select id="Notice#getNotice" resultMap="noticeResult">
+		SELECT
+			notice_Seq,
+			notice_Gbn,
+			notice_Title,
+			notice_Content,
+			write_User,
+			write_User_Name,
+			write_Date,
+			'0' AS attatch_Seq
+		FROM
+			multi_Notice
+		WHERE 
+			notice_Seq = #notice_Seq#
+	</select>
+	
+	<select id="Notice#getAttatchList" resultMap="attatchResult">
+		SELECT
+			a.notice_Seq,
+			b.attatch_Seq, 
+			b.attatch_OrgName, 
+			b.attatch_PhyPath, 
+			b.attatch_LogPath
+		FROM
+			notice_Attatch a
+		INNER JOIN multi_Attatch b ON a.attatch_Seq = b.attatch_Seq
+		WHERE
+			a.notice_Seq = #notice_Seq#
+		<isNotNull property="attatch_Seq">
+			<isNotEqual property="attatch_Seq" compareValue="0" prepend="AND">
+			b.attatch_Seq = #attatch_Seq#
+			</isNotEqual>
+		</isNotNull>
+	</select>
+	
+	<select id="Notice#garbageAttatch" resultClass="NoticeDto">
+		SELECT
+			ISNULL(b.notice_Seq, 0) AS notice_Seq,
+			a.attatch_Seq, 
+			a.attatch_OrgName, 
+			a.attatch_PhyPath, 
+			a.attatch_LogPath
+		FROM 
+			multi_Attatch a
+		LEFT JOIN notice_Attatch b ON a.attatch_Seq = b.attatch_Seq
+		WHERE
+			<isNotEqual property="notice_Seq" compareValue="0" >
+			b.notice_Seq = #notice_Seq#
+				<isNotEqual property="attatch_Seq" compareValue="0" prepend="AND" >
+				a.attatch_Seq = #attatch_Seq#
+				</isNotEqual>
+			</isNotEqual>
+			<isEqual property="notice_Seq" compareValue="0" >
+				<isNotEqual property="attatch_Seq" compareValue="0" >
+					a.attatch_Seq = #attatch_Seq#
+				</isNotEqual>
+				<isEqual property="attatch_Seq" compareValue="0" >
+				b.notice_Seq IS NULL
+				</isEqual>
+			</isEqual>
+	</select>
+	
+	<insert id="Notice#noticeInsert">
+		<selectKey keyProperty="notice_Seq" resultClass="int">
+			SELECT COALESCE(max(notice_Seq), 0)+1 FROM multi_Notice
+		</selectKey>
+		INSERT INTO multi_Notice(
+			notice_Seq,		notice_Gbn,			notice_Title,		notice_Content,
+			write_User,		write_User_Name,	write_Date
+		)VALUES(
+			#notice_Seq#,	#notice_Gbn#,		#notice_Title#,		#notice_Content#,
+			#write_User#,	#write_User_Name#,	getDate()
+		)
+	</insert>
+	
+	<insert id="Notice#noticeAttatchInsert" parameterClass="java.util.ArrayList">
+		INSERT INTO notice_Attatch(
+			notice_Seq,				attatch_Seq
+		)VALUES
+		<iterate conjunction=",">
+		(
+			#List[].notice_Seq#,	#List[].attatch_Seq#
+		)
+		</iterate>
+	</insert>
+	
+	<update id="Notice#noticeUpdate">
+		UPDATE 
+			multi_Notice 
+		SET
+			notice_Gbn = #notice_Gbn#,
+			notice_Title = #notice_Title#,
+			notice_Content = #notice_Content#
+		WHERE
+			notice_Seq = #notice_Seq#
+	</update>
+	
+	<delete id="Notice#noticeDelete">
+		DELETE FROM multi_Notice WHERE notice_Seq = #notice_Seq#
+	</delete>
+	
+	<delete id="Notice#attatchDelete">
+		DELETE FROM notice_Attatch WHERE notice_Seq = #notice_Seq#
+	</delete>
+	
+	<delete id="Notice#noticeFileDelete">
+		<isEqual property="notice_Seq" compareValue="0" >
+			<isNotEqual property="attatch_Seq" compareValue="0" >
+				DELETE FROM multi_Attatch WHERE attatch_Seq = #attatch_Seq#;
+			</isNotEqual>
+		</isEqual>
+		
+		<isNotEqual property="notice_Seq" compareValue="0" >
+			<isEqual property="attatch_Seq" compareValue="0" >
+			DELETE FROM multi_Attatch WHERE attatch_Seq IN (SELECT attatch_Seq FROM notice_Attatch WHERE notice_Seq = #notice_Seq#);
+			DELETE FROM notice_Attatch WHERE notice_Seq = #notice_Seq#;
+			</isEqual>
+		</isNotEqual>
+		
+		<isNotEqual property="notice_Seq" compareValue="0" >
+			<isNotEqual property="attatch_Seq" compareValue="0" >
+				DELETE FROM multi_Attatch WHERE attatch_Seq = #attatch_Seq#;
+				DELETE FROM notice_Attatch WHERE notice_Seq = #notice_Seq# AND attatch_Seq = #attatch_Seq#;
+			</isNotEqual>
+		</isNotEqual>
+	</delete>
+</sqlMap>

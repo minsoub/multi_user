@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Powerstatus">
+	<typeAlias alias="PowerstatusDto" type="kr.co.neodreams.multi_user.dto.PowerstatusDto"/>
+	
+	<select id="Powerstatus#getDeptNameInfo" parameterClass="java.lang.String" resultClass="PowerstatusDto">
+		select dbo.SPLIT_STR(replace(ltrim(dept_name),' ','||'),'||',2) as dept_name_1depth
+       	       ,dbo.SPLIT_STR(replace(ltrim(dept_name),' ','||'),'||',3) as dept_name_2depth
+       	       ,telno
+          from tbSVC_TDMSEMP where empno = '$empno$'
+	</select>
+</sqlMap>

@@ -1,0 +1,20 @@
+{
+	"place_dept": [
+		{ "name" : "ICT인프라처", 
+          "dept_code" : "H593", 
+          "location_code" : ""
+        },
+		{ "name" : "서울지역본부", 
+          "dept_code" : "3970", 
+          "location_code" : "seoul"
+        },
+		{ "name" : "경인건설본부", 
+          "dept_code" : "6220", 
+          "location_code" : "kiconst"
+        },
+        { "name" : "노무처", 
+          "dept_code" : "0493", 
+          "location_code" : ""
+        }
+    ]
+}

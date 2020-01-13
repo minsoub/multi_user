@@ -1,0 +1,2844 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Kube">
+	<typeAlias alias="KubeDto" type="kr.co.neodreams.multi_user.dto.KubeDto"/>
+<!-- kepcn news 는 연도별 역순(0 - kmc.order_num) 이었으나 카테고리 변경으로 사용하지 않음 
+    <select id="Kube#getLeftMenu" resultClass="java.util.HashMap">
+		with kubeLeftMenu(code_seq, p_code_seq, code_desc, sub_code_desc, order_num, link_url, etc_info, sort)
+		as
+		(select code_seq
+	            ,p_code_seq
+			    ,code_desc
+			    ,code_desc as sub_code_desc
+ 			    ,order_num
+			    ,etc_info as link_url
+			    ,etc_info
+				,convert(varchar(255),order_num) as sort
+		  from kube_mgmt_code with (nolock)
+		 where p_code_seq = 0
+		   and code_gubun = 1
+		   and del_flag = 0
+
+		union all
+	
+		select kmc.code_seq
+		       ,kmc.p_code_seq
+			   ,menu.code_desc as code_desc
+			   ,kmc.code_desc as sub_code_desc
+			   ,kmc.order_num
+			   ,menu.link_url
+			   ,kmc.etc_info
+			   ,convert(varchar(255),convert(nvarchar, menu.sort) +'/' + convert(varchar(255), case when kmc.p_code_seq = 1 then (0 - kmc.order_num) else kmc.order_num end)) as sort
+		  from kube_mgmt_code kmc with (nolock)
+		 inner join kubeLeftMenu menu
+		    on kmc.p_code_seq = menu.code_seq
+		       and kmc.del_flag = 0
+		)
+		select ROW_NUMBER() OVER(order by cast('/'+sort+'/' as  HIERARCHYID) ) as sortorder
+		       ,code_seq
+		       ,p_code_seq
+		       ,code_desc
+		       ,sub_code_desc
+		       ,order_num
+		       ,link_url
+		       ,etc_info
+			   ,sort
+			   ,isnull((select count(*) as cnt from kube_mgmt_code b where b.del_flag = 0 and b.p_code_seq = a.code_seq group by b.p_code_seq),0) as sub_cnt
+ 		  from kubeLeftMenu a with (nolock)
+	</select>
+ -->
+ 
+    <select id="Kube#getLeftMenu" resultClass="java.util.HashMap">
+		if (select count(*) as cnt from kube_user_menu where empno = #empno#) = '0' 
+		with kubeLeftMenu(code_seq, p_code_seq, code_desc, sub_code_desc, order_num, link_url, etc_info, use_flag, sort)
+		as
+		(select code_seq
+	            ,p_code_seq
+			    ,code_desc
+			    ,code_desc as sub_code_desc
+ 			    ,order_num
+			    ,etc_info as link_url
+			    ,etc_info
+			    ,9999 as use_flag
+				,convert(varchar(255),order_num * code_gubun) as sort
+		  from kube_mgmt_code with (nolock)
+		 where p_code_seq = 0
+		   and code_gubun in (1, 3)
+		   and del_flag = 0
+
+		union all
+	
+		select kmc.code_seq
+		       ,kmc.p_code_seq
+			   ,menu.code_desc as code_desc
+			   ,kmc.code_desc as sub_code_desc
+			   ,kmc.order_num
+			   ,menu.link_url
+			   ,kmc.etc_info
+			   ,9999 as use_flag
+			   ,convert(varchar(255),convert(nvarchar, menu.sort) +'/' + convert(varchar(255), kmc.order_num)) as sort
+		  from kube_mgmt_code kmc with (nolock)
+		 inner join kubeLeftMenu menu
+		    on kmc.p_code_seq = menu.code_seq
+		       and kmc.del_flag = 0
+		)
+		select 'COMMON_MENU' as m_gubun
+		       ,ROW_NUMBER() OVER(order by cast('/'+sort+'/' as  HIERARCHYID) ) as sortorder
+		       ,code_seq
+		       ,p_code_seq
+		       ,code_desc
+		       ,sub_code_desc
+		       ,order_num
+		       ,link_url
+		       ,etc_info
+		       ,9999 as use_flag
+			   ,sort
+			   ,isnull((select count(*) as cnt from kube_mgmt_code b where b.del_flag = 0 and b.p_code_seq = a.code_seq group by b.p_code_seq),0) as sub_cnt
+ 		  from kubeLeftMenu a with (nolock)
+
+		else
+		   with kubeLeftMenu(code_seq, p_code_seq, code_desc, sub_code_desc, order_num, link_url, etc_info, use_flag, sort)
+				as
+				(select code_seq
+			            ,p_code_seq
+					    ,code_desc
+					    ,code_desc as sub_code_desc
+		 			    ,order_num
+					    ,etc_info as link_url
+					    ,etc_info
+					    ,use_flag
+						,convert(varchar(255),order_num * code_gubun) as sort
+				  from kube_user_menu with (nolock)
+				 where p_code_seq = 0
+				   and code_gubun in (1, 3)
+				   and del_flag = 0
+				   and use_flag = 1
+		           and empno = #empno#
+		           
+				union all
+			
+				select kmc.code_seq
+				       ,kmc.p_code_seq
+					   ,menu.code_desc as code_desc
+					   ,kmc.code_desc as sub_code_desc
+					   ,kmc.order_num
+					   ,menu.link_url
+					   ,kmc.etc_info
+					   ,kmc.use_flag
+					   ,convert(varchar(255),convert(nvarchar, menu.sort) +'/' + convert(varchar(255), kmc.order_num)) as sort
+				  from kube_user_menu kmc with (nolock)
+				 inner join kubeLeftMenu menu
+				    on kmc.p_code_seq = menu.code_seq
+				       and kmc.del_flag = 0
+				       and kmc.use_flag = 1
+				       and empno = #empno#
+				)
+				select 'USER_MENU' as m_gubun
+				       ,ROW_NUMBER() OVER(order by cast('/'+sort+'/' as  HIERARCHYID) ) as sortorder
+				       ,code_seq
+				       ,p_code_seq
+				       ,code_desc
+				       ,sub_code_desc
+				       ,order_num
+				       ,link_url
+				       ,etc_info
+					   ,use_flag
+					   ,sort
+					   ,isnull((select count(*) as cnt from kube_user_menu b where b.del_flag = 0 and b.use_flag = 1 and b.p_code_seq = a.code_seq group by b.p_code_seq),0) as sub_cnt
+		 		  from kubeLeftMenu a with (nolock)
+
+	</select>
+	
+    <select id="Kube#getCodeList" resultClass="java.util.HashMap">
+		select code_seq
+	            ,p_code_seq
+			    ,code_desc
+			    ,code_gubun
+ 			    ,order_num
+			    ,etc_info
+		  from kube_mgmt_code with (nolock)
+		 <dynamic prepend="where">
+		 	code_gubun in ($inQuery$)
+		 	and del_flag = 0
+		 </dynamic>
+		 order by code_gubun, order_num
+	</select>
+	
+    <select id="Kube#getCategoryCode" resultClass="java.util.HashMap">
+		select code_seq
+	            ,p_code_seq
+			    ,code_desc
+			    ,code_gubun
+ 			    ,order_num
+			    ,etc_info
+		  from kube_mgmt_code with (nolock)
+		 where code_gubun = $code_gubun$
+		   and p_code_seq = $p_code_seq$
+		   and del_flag = 0
+		 order by order_num
+	</select>
+	
+	<select id="Kube#getMainLayerInfo" resultClass="java.util.HashMap">
+		select * 
+		  from kube_mgmt_main_layer
+		 order by seq
+	</select>
+	
+	<insert id="Kube#insertMainMgmt" parameterClass="java.util.ArrayList">
+		insert into kube_mgmt_main_layer values
+		<iterate conjunction=", ">
+			(
+				<![CDATA[	
+				    #List[].seq#
+					,#List[].url_info#
+					,#List[].cap_title#
+					,#List[].min_title#
+					,#List[].thumb_file_name#
+					,#List[].thumb_phy_path#
+					,#List[].thumb_log_path#
+					,#List[].reg_date#
+					,#List[].reg_empno#
+				]]>
+			)
+		</iterate> 
+	</insert>
+	
+	<delete id="Kube#deleteMainMgmt" parameterClass="java.util.ArrayList">
+		delete from kube_mgmt_main_layer where seq not in 
+		(
+		<iterate conjunction=", ">
+				<![CDATA[	
+				    #List[].seq#
+				]]>
+		</iterate> 
+		)
+	</delete>
+	
+	<update id="Kube#updateMainMgmt" parameterClass="java.util.HashMap">
+		<iterate property="List" conjunction="; ">
+		<![CDATA[	
+		update kube_mgmt_main_layer
+		   set link_url = #List[].url_info#
+		       ,caption_title = #List[].cap_title#
+		       ,caption_min_title = #List[].min_title#
+		]]>
+	       <isNotEmpty property="thumb_file_name">
+			<![CDATA[	
+		       ,thumb_file_name = #List[].thumb_file_name#
+		       ,thumb_phy_path = #List[].thumb_phy_path#
+		       ,thumb_log_path = #List[].thumb_log_path#
+			]]>
+		   </isNotEmpty>
+		where seq = #List[].seq#
+		</iterate> 
+	</update>
+	
+	<insert id="Kube#insertCode" parameterClass="KubeDto">
+		<selectKey keyProperty="code_seq" resultClass="int">
+		    select isnull(max(code_seq), 0) + 1 from kube_mgmt_code 
+		</selectKey>
+		<![CDATA[
+		insert into kube_mgmt_code (code_seq, p_code_seq, code_gubun, order_num, etc_info, code_desc, del_flag, mod_date, mod_empno, del_date, del_empno)
+		select top 1
+		       #code_seq# as code_seq
+		]]>
+		<isNotEqual property="category" compareValue="2">
+		      ,0 as p_code_seq
+		      ,#category# as code_gubun 
+		      ,(select isnull(max(order_num), 0) + 1 from kube_mgmt_code where code_gubun = #category#) as order_num
+			<isNotEmpty property="etc_info">
+		      ,#etc_info# as etc_info
+		    </isNotEmpty>
+		    <isEmpty property="etc_info"> 
+		      ,(select distinct(etc_info) from kube_mgmt_code where code_gubun = $category$) as etc_info
+		    </isEmpty>
+		</isNotEqual>
+		<isEqual property="category" compareValue="2">
+		      ,$p_code_seq$ as p_code_seq
+		      ,isnull((select distinct(isnull(code_gubun, 2)) from kube_mgmt_code where p_code_seq = $p_code_seq$), 2) as code_gubun
+		      ,(select isnull(max(order_num), 0) + 1 from kube_mgmt_code where p_code_seq = $p_code_seq$) as order_num
+		      ,(select distinct(etc_info) from kube_mgmt_code where p_code_seq = $p_code_seq$) as etc_info
+		</isEqual>
+		<![CDATA[ 
+		      ,#code_desc# as code_desc
+		      ,0 as del_flag
+		      ,#mod_date# as mod_date
+		      ,#mod_empno# as mod_empno
+		      ,null as del_date
+		      ,null as del_empno
+		  FROM kube_mgmt_code
+		 ]]>
+		 
+		 if (select $category$) = '2'
+		 	begin
+		 	 insert into kube_user_menu 
+			 select empno
+					,(select code_seq from kube_mgmt_code where code_seq = #code_seq#)
+					,(select p_code_seq from kube_mgmt_code where code_seq = #code_seq#)
+					,(select code_desc from kube_mgmt_code where code_seq = #code_seq#)
+					,(select code_gubun from kube_mgmt_code where code_seq = #code_seq#)
+					,(select order_num from kube_mgmt_code where code_seq = #code_seq#)
+					,(select etc_info from kube_mgmt_code where code_seq = #code_seq#)
+					,(select del_flag from kube_mgmt_code where code_seq = #code_seq#)
+					,1 as use_flag
+				from kube_user_menu
+			 group by empno
+ 			end
+	</insert>
+	
+	<update id="Kube#updateCode" parameterClass="KubeDto">
+		<![CDATA[ 
+		update kube_mgmt_code
+		   set code_desc = #code_desc#
+		 ]]>
+		   		<isEqual property="category" compareValue="1">
+		       ,etc_info = #etc_info#
+		       </isEqual>
+		       <isEqual property="category" compareValue="2">
+		       ,etc_info = (select distinct(etc_info) from kube_mgmt_code where p_code_seq = #p_code_seq#)
+		       </isEqual>
+		<![CDATA[ 
+		 ]]>
+		 	<isNotEqual property="p_code_seq" compareProperty="ori_p_code_seq">
+				<![CDATA[ 
+		       ,p_code_seq = #p_code_seq#
+		       ,code_gubun = (select distinct(code_gubun) from kube_mgmt_code where p_code_seq = #p_code_seq#)
+		       ,order_num = (select isnull(max(order_num), 0) + 1 from kube_mgmt_code where p_code_seq = #p_code_seq#)
+		         ]]>
+		 	</isNotEqual>
+		 <![CDATA[
+		       ,mod_date = #mod_date#
+		       ,mod_empno = #mod_empno#
+         where code_seq = #code_seq#;
+         ]]>
+         
+		<![CDATA[ 
+		update kube_user_menu
+		   set code_desc = #code_desc#
+		 ]]>
+		   		<isEqual property="category" compareValue="1">
+		       ,etc_info = #etc_info#
+		       </isEqual>
+		       <isEqual property="category" compareValue="2">
+		       ,etc_info = (select distinct(etc_info) from kube_mgmt_code where p_code_seq = #p_code_seq#)
+		       </isEqual>
+		<![CDATA[ 
+		 ]]>
+		 	<isNotEqual property="p_code_seq" compareProperty="ori_p_code_seq">
+				<![CDATA[ 
+		       ,p_code_seq = #p_code_seq#
+		       ,code_gubun = (select distinct(code_gubun) from kube_mgmt_code where p_code_seq = #p_code_seq#)
+		       ,order_num = (select isnull(max(order_num), 0) + 1 from kube_mgmt_code where p_code_seq = #p_code_seq#)
+		         ]]>
+		 	</isNotEqual>
+		 <![CDATA[
+         where code_seq = #code_seq#;
+         ]]>
+	</update>
+	
+	<update id="Kube#deleteCode" parameterClass="KubeDto">
+		<![CDATA[ 
+		update kube_mgmt_code
+		   set del_flag = 1
+		       ,mod_date = #mod_date#
+		       ,mod_empno = #mod_empno#
+		       ,del_date = #mod_date#
+		       ,del_empno = #mod_empno#
+         where code_seq = #code_seq#;
+         
+         update kube_user_menu
+            set del_flag = 1
+          where code_seq = #code_seq#;
+         ]]>
+	</update>
+	
+	<insert id="Kube#insertVideoUpload" parameterClass="KubeDto">
+		<selectKey keyProperty="vi_seq" resultClass="int">
+		    select isnull(max(vi_seq), 0) + 1 as vi_seq from kube_video_info 
+		</selectKey>
+
+		<![CDATA[
+		insert into kube_video_info (vi_seq, title, contents_desc, open_flag, download_flag, code_seq1, code_seq2, writer, dept_code, pds_ori_name, pds_saved_name, pds_ext, pds_size, pds_phy_path, pds_log_path, vi_status, conv_flag, duration, reg_date, reg_empno, f_dept_code)
+		values (#vi_seq#, #title#, #contents_desc#, #open_flag#, #download_flag#, #code_seq1#, #code_seq2#, #writer#, #dept_code#, #pds_ori_name#, #pds_saved_name#, #pds_ext#, #pds_size#, #pds_phy_path#, #pds_log_path#, 0, 9, 0, #reg_date#, #reg_empno#, (select concat(#sel_f_dept_code#, '|' + #sel_s_dept_code#)) );
+			
+		insert into kube_video_sub_info (vi_seq, visit_cnt, down_cnt, like_cnt, unlike_cnt, favor_cnt)
+		values (#vi_seq#, 0, 0, 0, 0, 0)
+		]]>
+	</insert>
+	
+	<insert id="Kube#insertVideoThumb" parameterClass="java.util.ArrayList">
+		insert into kube_video_thumb 
+		values 
+		<iterate conjunction=", ">
+			(
+				<![CDATA[	
+				    #List[].vi_seq#
+				    ,#List[].vit_seq#
+				    ,#List[].main_flag#
+				    ,#List[].thumb_phy_path#
+				    ,#List[].thumb_log_path#
+				]]>
+			)
+		</iterate>
+	</insert>
+	
+	<update id="Kube#updateKubeTVMContents" parameterClass="java.util.HashMap">
+		<![CDATA[
+			update kube_tvm_contents
+	  	       set vi_seq = #vi_seq#
+	  		 where cid = #cid#;
+	  	]]>
+  				 
+		if (select convsts from kube_tvm_contents where cid = #cid#) = 'EN70007' 
+  			begin 
+  				update kube_video_info 
+  				   set duration = (select duration from kube_tvm_contents where cid = #cid#)
+  				       ,conv_flag = '1'
+  				 where vi_seq = #vi_seq#
+  			end
+	</update>
+	
+	<update id="Kube#updateVideoInfo" parameterClass="KubeDto">
+		update kube_video_info
+		   set title = #title#
+		       ,contents_desc = #contents_desc#
+		       ,open_flag = #open_flag#
+		       ,download_flag = #download_flag#
+		       ,code_seq1 = #code_seq1#
+		       ,code_seq2 = #code_seq2#
+		       ,mod_date = #mod_date#
+		 where vi_seq = #vi_seq#
+	</update>
+	
+	<insert id="Kube#insertTagInfo" parameterClass="java.util.ArrayList">
+		delete from kube_video_tag where vi_seq = #List[0].vi_seq#;
+	
+		insert into kube_video_tag 
+		values 
+		<iterate conjunction=", ">
+			(
+				<![CDATA[	
+				    #List[].vi_seq#
+				    ,#List[].kvt_seq#
+				    ,#List[].tag_desc#
+				]]>
+			)
+		</iterate>
+	</insert>
+	
+	<select id="Kube#getCategoryInfo" resultClass="java.util.HashMap">
+		select code_seq
+	           ,p_code_seq
+	     <isEqual property="code_seq" compareValue="999999">
+	           ,(select code_desc from kube_mgmt_code b where a.code_seq = b.code_seq) as p_code_desc
+	     </isEqual>
+	     <isNotEqual property="code_seq" compareValue="999999">
+	           ,(select code_desc from kube_mgmt_code b where a.p_code_seq = b.code_seq) as p_code_desc
+	     </isNotEqual>
+			   ,code_desc
+			   ,code_gubun
+ 			   ,order_num
+			   ,etc_info
+		  from kube_mgmt_code a with (nolock)
+		 <isEqual property="code_seq" compareValue="999999">
+		 	where code_seq = $p_code_seq$
+		 </isEqual>
+		 <isNotEqual property="code_seq" compareValue="999999">
+		    where code_seq = $code_seq$
+		 </isNotEqual>
+	</select>
+	
+	<select id="Kube#getCategoryVideoList" resultClass="java.util.HashMap">
+	    select *
+	      from (select kvi.vi_seq
+				       ,title
+					   ,visit_cnt
+					   ,down_cnt
+					   ,like_cnt
+					   ,unlike_cnt
+					   ,favor_cnt
+					   ,(select thumb_log_path from kube_video_thumb kvt where kvi.vi_seq = kvt.vi_seq and main_flag = 1) as thumb_log_path
+					   ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+					   ,writer
+					   ,kvi.dept_code
+					   ,reg_date
+				       ,duration
+				       ,(select levelnm from tbSVC_TDMSEMP emp where emp.empno = kvi.reg_empno) as levelnm
+				       ,(select code_desc from kube_mgmt_code b where kvi.code_seq2 = b.code_seq) as code_desc 
+					   ,(select isnull((select count(*) from kube_video_comment where vc_status = 0 and vi_seq = kvi.vi_seq group by vi_seq), 0) as comment_cnt) as comment_cnt
+				  from kube_video_info kvi with (nolock)
+				 inner join kube_video_sub_info kvsi with (nolock)
+				    on kvi.vi_seq = kvsi.vi_seq
+				 <isNotEmpty property="dept_code" prepend="">
+				 	inner join (select (dept_code + '|' + (select dept_code from tbSVC_TDMSDEPT with (nolock) where dept_name = (select dbo.SPLIT_STR(dbo.fu_dept_info(#dept_code#, '', ','), ',',2) as dept_name1) and del_flag = '')) as dept_code 
+				 	              from tbSVC_TDMSDEPT with (nolock) 
+				 	             where dept_name = (select dbo.SPLIT_STR(dbo.fu_dept_info(#dept_code#, '', ','), ',',1) as dept_name1) 
+				 	               and del_flag = '') as dept_info
+				 	   on kvi.f_dept_code = dept_info.dept_code
+				 </isNotEmpty>
+				 where code_seq1 = #p_code_seq#
+				 <isNotEqual property="code_seq" compareValue="999999">
+			   		and code_seq2 = #code_seq#
+				 </isNotEqual>
+				 <isEqual property="etc_info" compareValue="sub_none">
+				 	and f_dept_code like '$sel_f_dept_code$%'
+				 </isEqual>
+				 <isEqual property="etc_info" compareValue="sub_use">
+				 	and f_dept_code = '$sel_f_dept_code$|$sel_s_dept_code$'
+				 </isEqual>
+				   and vi_status = 0
+				   and open_flag = 39
+				   and conv_flag = 1
+			) as list
+	   <dynamic prepend="where">
+	   		<isNotEmpty property="srh_keyword">
+	   			title like '%$srh_keyword$%'
+	   			or writer like '%$srh_keyword$%'
+	   			or vi_seq in (select vi_seq from kube_video_tag where tag_desc like '%$srh_keyword$%')
+	   		</isNotEmpty>
+	   </dynamic>
+       order by $selOrder$ desc 
+       OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+       FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="Kube#getCategoryVideoListCnt" resultClass="int">
+	    select count(*) as totCnt 
+	      from (select kvi.vi_seq
+				       ,title
+					   ,visit_cnt
+					   ,down_cnt
+					   ,like_cnt
+					   ,unlike_cnt
+					   ,favor_cnt
+					   ,(select thumb_log_path from kube_video_thumb kvt where kvi.vi_seq = kvt.vi_seq and main_flag = 1) as thumb_log_path
+					   ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+					   ,writer
+					   ,kvi.dept_code
+					   ,(select levelnm from tbSVC_TDMSEMP emp where emp.empno = kvi.reg_empno) as levelnm
+				  from kube_video_info kvi with (nolock)
+				 inner join kube_video_sub_info kvsi with (nolock)
+				    on kvi.vi_seq = kvsi.vi_seq
+				<isNotEmpty property="dept_code" prepend="">
+				 	inner join (select (dept_code + '|' + (select dept_code from tbSVC_TDMSDEPT with (nolock) where dept_name = (select dbo.SPLIT_STR(dbo.fu_dept_info(#dept_code#, '', ','), ',',2) as dept_name1) and del_flag = '')) as dept_code 
+				 	              from tbSVC_TDMSDEPT with (nolock) 
+				 	             where dept_name = (select dbo.SPLIT_STR(dbo.fu_dept_info(#dept_code#, '', ','), ',',1) as dept_name1) 
+				 	               and del_flag = '') as dept_info
+				 	   on kvi.f_dept_code = dept_info.dept_code
+				 </isNotEmpty>
+				 where code_seq1 = #p_code_seq#
+				 <isNotEqual property="code_seq" compareValue="999999">
+				   and code_seq2 = #code_seq#
+				 </isNotEqual>
+				 <isEqual property="etc_info" compareValue="sub_none">
+				 	and f_dept_code like '$sel_f_dept_code$%'
+				 </isEqual>
+				 <isEqual property="etc_info" compareValue="sub_use">
+				 	and f_dept_code = '$sel_f_dept_code$|$sel_s_dept_code$'
+				 </isEqual>
+				   and vi_status = 0
+				   and open_flag = 39
+				   and conv_flag = 1
+			) as list
+		<dynamic prepend="where">
+	   		<isNotEmpty property="srh_keyword">
+	   			title like '%$srh_keyword$%'
+	   			or writer like '%$srh_keyword$%'
+	   			or vi_seq in (select vi_seq from kube_video_tag where tag_desc like '%$srh_keyword$%')
+	   		</isNotEmpty>
+	   </dynamic>
+	</select>
+	
+	<select id="Kube#getVideoDetailInfo" resultClass="java.util.HashMap">
+		<![CDATA[
+		select kvi.vi_seq
+		       ,title
+		       ,contents_desc
+			   ,open_flag
+			   ,download_flag
+			   ,visit_cnt
+			   ,down_cnt
+			   ,like_cnt
+			   ,unlike_cnt
+			   ,favor_cnt
+			   ,code_seq1 as mod_code_seq1
+			   ,code_seq2 as mod_code_seq2
+			   ,(select thumb_log_path from kube_video_thumb kvt where vi_seq = $vi_seq$ and main_flag = 1) as thumb_log_path
+			   ,(select count(*) as comment_cnt from kube_video_comment where vi_seq = $vi_seq$ and vc_status = 0) as comment_cnt
+			   ,writer
+			   ,kvi.reg_empno
+			   ,dept_code
+			   ,duration
+			   ,conv_flag
+			   ,dbo.SPLIT_STR(dbo.fu_dept_info(dept_code, '', ','), ',',2) as dept_name1
+			   ,dbo.SPLIT_STR(dbo.fu_dept_info(dept_code, '', ','), ',',3) as dept_name2
+			   ,(select levelnm from tbSVC_TDMSEMP emp where emp.empno = kvi.reg_empno) as levelnm
+			   ,reg_date
+			   ,(select code_desc from kube_mgmt_code where code_seq = $code_seq$) as code_desc
+			   ,(select code_desc from kube_mgmt_code where code_seq = $p_code_seq$) as p_code_desc
+			   ,(select etc_info from kube_mgmt_code where code_seq = $p_code_seq$) as channel
+			   ,(select isnull(max(va_status), 99) from kube_video_approve where vi_seq = $vi_seq$ and app_empno = '$empno$') as pre_approve
+			   ,pds_ori_name 
+			   ,pds_ext
+			   ,pds_phy_path
+			   ,pds_log_path
+			   ,(select count(*) from kube_my_act_mgmt where vi_seq = $vi_seq$ and empno = '$empno$' and fm_gubun = 2) as v_like_cnt  
+			   ,(select count(*) from kube_my_act_mgmt where vi_seq = $vi_seq$ and empno = '$empno$' and fm_gubun = 4) as v_unlike_cnt 
+			   ,(select count(*) from kube_my_act_mgmt where vi_seq = $vi_seq$ and empno = '$empno$' and fm_gubun = 6) as v_favor_cnt 
+			 from kube_video_info kvi with (nolock)
+			inner join kube_video_sub_info kvsi
+			   on kvi.vi_seq = $vi_seq$
+			      and kvi.vi_seq = kvsi.vi_seq
+			where kvi.vi_seq = $vi_seq$
+		]]>
+	</select>
+	
+	<insert id="Kube#insertApproveReqVideo">
+		<![CDATA[
+		if exists (select * from kube_video_approve where vi_seq = $vi_seq$ and app_empno = #app_empno#)
+			update kube_video_approve
+			   set va_status = #va_status#
+			       ,mod_date = #reg_date#
+			 where vi_seq = $vi_seq$ 
+			   and app_empno = #app_empno#
+		else
+			insert into kube_video_approve (vi_seq, app_empno, va_status, reg_date)
+			values (#vi_seq#, #app_empno#, #va_status#, #reg_date#)
+			
+		]]> 
+	</insert>
+	
+	<select id="Kube#getLastVisitDate" resultClass="java.util.HashMap">
+		select top 1 *
+		  from kube_video_history 
+		 where vi_seq = #vi_seq#
+		   and reg_empno = #empno# 
+		   and vh_gubun = 1
+		 order by reg_date desc
+	</select>
+	 
+	<insert id="Kube#insertVideoHistory">
+		<selectKey keyProperty="vh_seq" resultClass="int">
+		    select isnull(max(vh_seq), 0) + 1 as vh_seq from kube_video_history where vi_seq = $vi_seq$ 
+		</selectKey>
+		 
+		<![CDATA[
+		insert into kube_video_history (vi_seq, vh_seq, vc_seq, vh_gubun, reg_date, reg_empno)
+		values (#vi_seq#, #vh_seq#, #vc_seq#, #vh_gubun#, #reg_date#, #empno#)
+		]]>
+	</insert>
+	
+	<update id="Kube#updateVideoSubInfo">
+		update kube_video_sub_info
+		   set
+		   <isEqual property="vh_gubun" compareValue="1">
+		   visit_cnt = visit_cnt + 1
+		   </isEqual>
+		   <isEqual property="vh_gubun" compareValue="2">
+		   like_cnt = like_cnt + 1
+		   </isEqual>
+		   <isEqual property="vh_gubun" compareValue="3">
+		   like_cnt = like_cnt - 1
+		   </isEqual>
+		   <isEqual property="vh_gubun" compareValue="4">
+		   unlike_cnt = unlike_cnt + 1
+		   </isEqual>
+		   <isEqual property="vh_gubun" compareValue="5">
+		   unlike_cnt = unlike_cnt - 1
+		   </isEqual>
+		   <isEqual property="vh_gubun" compareValue="6">
+		   favor_cnt = favor_cnt + 1
+		   </isEqual>
+		   <isEqual property="vh_gubun" compareValue="7">
+		   favor_cnt = favor_cnt - 1
+		   </isEqual>
+		   <isEqual property="vh_gubun" compareValue="8">
+		   down_cnt = down_cnt + 1
+		   </isEqual>
+		 <![CDATA[
+		 where vi_seq = $vi_seq$
+		 ]]>
+	</update>
+	
+	<insert id="Kube#insertMyActMgmt">
+		<selectKey keyProperty="seq" resultClass="int">
+		    select isnull(max(seq), 0) + 1 as seq from kube_my_act_mgmt where empno = #empno# and vi_seq = $vi_seq$ 
+		</selectKey>
+		
+		<![CDATA[
+			insert into kube_my_act_mgmt (empno, vi_seq, seq, vc_seq, fm_gubun, reg_date)
+			values (#empno#, #vi_seq#, #seq#, #vc_seq#, #vh_gubun#, #reg_date#)
+		]]>  
+	</insert>
+	
+	<delete id="Kube#deleteMyActMgmt">
+		<![CDATA[
+			delete from kube_my_act_mgmt where empno = #empno# and fm_gubun = ($vh_gubun$ - 1) and vi_seq = $vi_seq$
+		]]>
+	</delete>
+	
+	<insert id="Kube#insertUserComment">
+		<selectKey keyProperty="vc_seq" resultClass="int">
+		    select isnull(max(vc_seq), 0) + 1 as vc_seq from kube_video_comment where vi_seq = $vi_seq$ 
+		</selectKey>
+		
+		insert into kube_video_comment (vi_seq, vc_seq, p_vc_seq, comment_desc, like_cnt, unlike_cnt, read_flag, vc_status, reg_date, reg_empno)
+		values (#vi_seq#, #vc_seq#, #p_vc_seq#, #comment_desc#, 0, 0, 0, 0, #reg_date#, #reg_empno#)
+	</insert>
+	
+	<update id="Kube#deleteUserComment">
+		<![CDATA[
+			update kube_video_comment
+			   set vc_status = #vc_status# 
+			 where vi_seq = #vi_seq# 
+			   and vc_seq = #vc_seq# 
+			   
+		]]>
+			<isEqual property="vc_status" compareValue="9" prepend="and">
+			   	   reg_empno = #empno#
+			</isEqual>
+	</update>
+	
+	<select id="Kube#getCommentList" resultClass="java.util.HashMap">
+		with kubeVideoComment (vi_seq, vc_seq, p_vc_seq, comment_desc, p_like_cnt, c_like_cnt, p_unlike_cnt, c_unlike_cnt, p_reg_date, c_reg_date, reg_empno, seq_sort, favor_cnt)
+		as (select vi_seq
+		           ,vc_seq
+				   ,p_vc_seq
+				   ,comment_desc
+				   ,like_cnt as p_like_cnt
+				   ,0 as c_like_cnt
+				   ,unlike_cnt as p_unlike_cnt
+				   ,0 as c_unlike_cnt
+				   ,reg_date as p_reg_date
+				   ,reg_date as c_reg_date
+				   ,reg_empno
+				   ,convert(varchar(255), vc_seq) as seq_sort
+		           ,(like_cnt - unlike_cnt) as favor_cnt
+		      from kube_video_comment kvc with (nolock)
+			 where vi_seq = $vi_seq$
+			   and vc_status = 0
+			   and p_vc_seq = 0
+		
+			 union all
+		
+			 select c.vi_seq
+		           ,c.vc_seq
+				   ,c.p_vc_seq
+				   ,c.comment_desc
+				   ,p_like_cnt
+				   ,c.like_cnt as c_like_cnt
+				   ,p_unlike_cnt
+				   ,c.unlike_cnt as c_unlike_cnt
+				   ,p_reg_date
+				   ,c.reg_date as c_reg_date
+				   ,c.reg_empno
+				   ,convert(varchar(255),convert(nvarchar, p.seq_sort) +'/'+ convert(varchar(255), c.vc_seq)) as seq_sort
+		           ,favor_cnt
+		      from kube_video_comment c with (nolock)
+			 inner join kubeVideoComment p
+			    on p.vi_seq = c.vi_seq 
+			       and p.vc_seq = c.p_vc_seq
+			 where c.vc_status = 0
+		) 
+		 select vi_seq
+		        ,vc_seq
+		        ,p_vc_seq
+		        ,comment_desc
+		        ,(select count(*) from kube_video_comment kvc with (nolock) where vi_seq = $vi_seq$ and kvc.p_vc_seq = a.vc_seq and kvc.vc_status = 0) as c_comment_cnt
+		        ,p_like_cnt
+		        ,c_like_cnt
+		        ,p_unlike_cnt
+		        ,c_unlike_cnt
+		        ,p_reg_date
+		        ,c_reg_date
+		        ,reg_empno
+		        ,b.name
+				,dbo.SPLIT_STR(dbo.fu_dept_info(b.deptno, '', ','), ',',2) as dept_name1
+				,dbo.SPLIT_STR(dbo.fu_dept_info(b.deptno, '', ','), ',',3) as dept_name2
+				,b.levelnm
+			   ,(select count(*) from kube_my_act_mgmt my where vi_seq = $vi_seq$ and empno = '$empno$' and fm_gubun = 11 and my.vc_seq = a.vc_seq) as my_like_cnt  
+			   ,(select count(*) from kube_my_act_mgmt my where vi_seq = $vi_seq$ and empno = '$empno$' and fm_gubun = 13 and my.vc_seq = a.vc_seq) as my_unlike_cnt 
+		   from kubeVideoComment a with (nolock)
+		  inner join tbSVC_TDMSEMP b 
+             on a.reg_empno = b.empno
+		  <isEqual property="selOrder" compareValue="P">
+		  	order by favor_cnt desc, (cast('/'+seq_sort+'/' as  HIERARCHYID) )
+		  </isEqual>
+		  <isEqual property="selOrder" compareValue="R">
+  	      	order by p_reg_date desc, (cast('/'+seq_sort+'/' as  HIERARCHYID) )
+  	      </isEqual>
+	</select>
+	
+	<update id="Kube#updateKube_video_commentCnt">
+		update kube_video_comment
+		   set
+		   <isEqual property="vh_gubun" compareValue="11">
+		   like_cnt = like_cnt + 1
+		   </isEqual>
+		   <isEqual property="vh_gubun" compareValue="12">
+		   like_cnt = like_cnt - 1
+		   </isEqual>
+		   <isEqual property="vh_gubun" compareValue="13">
+		   unlike_cnt = unlike_cnt + 1
+		   </isEqual>
+		   <isEqual property="vh_gubun" compareValue="14">
+		   unlike_cnt = unlike_cnt - 1
+		   </isEqual>
+		 <![CDATA[  
+		 where vi_seq = $vi_seq$
+		   and vc_seq = $vc_seq$
+		 ]]>
+	</update>
+	
+	<select id="Kube#getNewComment" resultClass="java.util.HashMap">
+		<![CDATA[  
+		select vi_seq
+			   ,vc_seq
+			   ,p_vc_seq
+			   ,comment_desc
+			   ,like_cnt
+			   ,unlike_cnt
+			   ,reg_date
+			   ,reg_empno
+			   ,dbo.SPLIT_STR(dbo.fu_dept_info(b.deptno, '', ','), ',',2) as dept_name1
+			   ,dbo.SPLIT_STR(dbo.fu_dept_info(b.deptno, '', ','), ',',3) as dept_name2
+			   ,b.name
+			   ,b.levelnm
+	      from kube_video_comment a with (nolock)
+	     inner join tbSVC_TDMSEMP b 
+            on a.reg_empno = b.empno 
+		 where vi_seq = $vi_seq$
+		   and vc_seq = $vc_seq$
+		]]>
+	</select>
+	
+	<insert id="Kube#insertReportReqV_C" parameterClass="KubeDto">
+		<selectKey keyProperty="re_seq" resultClass="int">
+		    select isnull(max(re_seq), 0) + 1 as re_seq from kube_report_mgmt 
+		</selectKey>
+		
+			insert into kube_report_mgmt (re_seq, vi_seq, vc_seq, re_gubun, code_seq, re_desc, re_status, reg_date, reg_empno)
+		<isEqual property="report_gubun" compareValue="1">
+			values (#re_seq#, #vi_seq#, null, #report_gubun#, #selReport#, #re_desc#, 0, #reg_date#, #reg_empno#)
+		</isEqual>
+		<isEqual property="report_gubun" compareValue="2"> 
+			values (#re_seq#, #vi_seq#, #vc_seq#, #report_gubun#, #selReport#, #re_desc#, 0, #reg_date#, #reg_empno#)
+		</isEqual>
+	</insert>
+	
+	<select id="Kube#getVideoTagList" resultClass="java.util.HashMap">
+		select *
+		  from kube_video_tag
+         where vi_seq = $vi_seq$
+		 order by kvt_seq; 
+	</select>
+	
+	<select id="Kube#getVideoRecommendList" resultClass="java.util.HashMap">
+		<![CDATA[
+			select 1 as order_seq
+		       	   ,list.* 
+				   ,b.thumb_log_path
+				   ,(select levelnm from tbSVC_TDMSEMP emp where emp.empno = list.reg_empno) as levelnm
+		      from (select ROW_NUMBER() OVER(order by popular_cnt desc) as num
+					       ,a.vi_seq
+						   ,a.title
+						   ,a.code_seq1
+						   ,a.code_seq2
+						   ,writer
+						   ,visit_cnt
+						   ,like_cnt
+					       ,popular_cnt
+					       ,conv_flag
+						   ,duration
+						   ,a.reg_empno
+					  from kube_video_info a with (nolock)
+					 inner join (select vi_seq
+					                    ,visit_cnt
+										,like_cnt
+					                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+					               from kube_video_sub_info) as b
+					    on a.vi_seq = b.vi_seq
+					 where a.vi_status = 0
+					   and a.conv_flag = 1
+					   and a.open_flag = 39
+					) as list 
+            inner join kube_video_thumb b with (nolock)
+               on list.vi_seq = b.vi_seq
+                  and b.main_flag = 1
+			where num <= 10
+		]]>
+
+		<!-- 
+			union all  
+		
+		    select 2 as order_seq
+		       	   ,list.* 
+				   ,b.thumb_log_path
+		  	  from (select ROW_NUMBER() OVER(order by popular_cnt desc) as num
+					       ,a.vi_seq
+						   ,a.title
+						   ,a.code_seq1
+						   ,a.code_seq2
+						   ,writer
+						   ,visit_cnt
+						   ,like_cnt
+					       ,popular_cnt
+					       ,conv_flag
+						   ,duration
+					  from kube_video_info a with (nolock)
+					 inner join (select vi_seq
+					                    ,visit_cnt
+										,like_cnt
+					                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+					               from kube_video_sub_info) as b
+					    on a.vi_seq = b.vi_seq
+					 where a.vi_status = 0
+					   and a.conv_flag = 1
+					) as list 
+            inner join kube_video_thumb b with (nolock)
+               on list.vi_seq = b.vi_seq
+                  and b.main_flag = 1
+			where num <= 5
+		 -->
+		 
+		 <![CDATA[
+			union all  
+		
+			select 3 as order_seq
+		       	   ,list.* 
+				   ,b.thumb_log_path
+				   ,(select levelnm from tbSVC_TDMSEMP emp where emp.empno = list.reg_empno) as levelnm
+		  	  from (select ROW_NUMBER() OVER(order by reg_date desc) as num
+					       ,a.vi_seq
+						   ,a.title
+						   ,a.code_seq1
+						   ,a.code_seq2
+						   ,writer
+						   ,visit_cnt
+						   ,like_cnt
+					       ,'0' as popular_cnt
+					       ,conv_flag
+						   ,duration
+						   ,a.reg_empno
+					  from kube_video_info a with (nolock)
+					 inner join (select vi_seq
+					                    ,visit_cnt
+										,like_cnt
+					                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+					               from kube_video_sub_info) as b
+					    on a.vi_seq = b.vi_seq
+				     where a.vi_status = 0
+					   and a.conv_flag = 1
+					   and a.open_flag = 39
+					) as list 
+            inner join kube_video_thumb b with (nolock)
+               on list.vi_seq = b.vi_seq
+                  and b.main_flag = 1
+			where num <= 5
+		]]>
+	</select>
+	
+	<select id="Kube#getMyBookMarkChkList" resultClass="java.util.HashMap">
+			select kmam.seq as kmam_seq
+			       ,kmam.vi_seq
+				   ,kvi.title
+				   ,kvi.code_seq1
+				   ,kvi.code_seq2
+				   ,writer
+				   ,visit_cnt
+			       ,like_cnt
+			       ,popular_cnt
+			       ,kmam.reg_date
+			       ,thumb_log_path
+			       ,conv_flag
+			       ,duration
+				   ,(select isnull((select count(*) from kube_video_comment where vc_status = 0 and vi_seq = a.vi_seq group by vi_seq), 0) as comment_cnt) as comment_cnt
+		      from kube_my_act_mgmt kmam with (nolock)
+		     inner join kube_video_info kvi with (nolock)
+		        on kmam.empno = #empno#
+			       and kmam.fm_gubun = 6
+			       and kmam.vi_seq = kvi.vi_seq
+			       and kvi.vi_status = 0
+				   and kvi.conv_flag = 1
+				   and kvi.open_flag = 39
+			 inner join (select vi_seq
+			                    ,visit_cnt
+			                    ,like_cnt
+							    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+				           from kube_video_sub_info with (nolock)) as kvsi
+                on kvi.vi_seq = kvsi.vi_seq
+			 inner join kube_video_thumb kvt with (nolock)
+		        on kvi.vi_seq = kvt.vi_seq
+		           and kvt.main_flag = 1
+		     where kmam.vi_seq in ($inQuery$)
+		     <isNotEmpty property="orderVal">
+	         	order by $orderVal$ 
+	         </isNotEmpty>
+	</select>
+	
+	<select id="Kube#getHomeList" resultClass="java.util.HashMap">
+		<![CDATA[
+			select top 10 1 as order_seq
+		       	   ,list.* 
+		       	   ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq2) as code_desc
+			       ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq1) as p_code_desc
+			       ,(select etc_info from kube_mgmt_code where code_seq = list.code_seq1) as channel
+				   ,b.thumb_log_path
+				   ,'' as dept_name1
+		      from (select ROW_NUMBER() OVER(order by visit_cnt desc, reg_date desc) as num
+					       ,a.vi_seq
+						   ,a.title
+						   ,a.code_seq1
+						   ,a.code_seq2
+						   ,writer
+						   ,visit_cnt
+						   ,like_cnt
+					       ,popular_cnt
+					       ,conv_flag
+						   ,duration
+						   ,(select isnull((select count(*) from kube_video_comment where vc_status = 0 and vi_seq = a.vi_seq group by vi_seq), 0) as comment_cnt) as comment_cnt
+					  from kube_video_info a with (nolock)
+					 inner join (select vi_seq
+					                    ,visit_cnt
+										,like_cnt
+					                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+					               from kube_video_sub_info) as b
+					    on a.vi_seq = b.vi_seq
+						   and a.vi_status = 0
+					       and a.conv_flag = 1
+					       and a.open_flag = 39
+					 where 1 = 1
+					) as list 
+            inner join kube_video_thumb b with (nolock)
+               on list.vi_seq = b.vi_seq
+                  and b.main_flag = 1
+		
+			union all  
+		
+			select top 10 2 as order_seq
+		       	   ,list.* 
+		       	   ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq2) as code_desc
+			       ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq1) as p_code_desc
+			       ,(select etc_info from kube_mgmt_code where code_seq = list.code_seq1) as channel
+				   ,b.thumb_log_path
+				   ,'' as dept_name1
+		  	  from (select ROW_NUMBER() OVER(order by reg_date desc) as num
+					       ,a.vi_seq
+						   ,a.title
+						   ,a.code_seq1 
+						   ,a.code_seq2
+						   ,writer
+						   ,visit_cnt
+						   ,like_cnt
+					       ,'0' as popular_cnt
+					       ,conv_flag
+						   ,duration
+						   ,(select isnull((select count(*) from kube_video_comment where vc_status = 0 and vi_seq = a.vi_seq group by vi_seq), 0) as comment_cnt) as comment_cnt
+					  from kube_video_info a with (nolock)
+					 inner join kube_video_sub_info as b with (nolock)
+					    on a.vi_seq = b.vi_seq
+						   and a.vi_status = 0
+					       and a.conv_flag = 1
+					       and a.open_flag = 39
+					) as list 
+            inner join kube_video_thumb b with (nolock)
+               on list.vi_seq = b.vi_seq
+                  and b.main_flag = 1
+			
+			union all  
+		
+		    select top 5 3 as order_seq
+		       	   ,list.* 
+		       	   ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq2) as code_desc
+			       ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq1) as p_code_desc
+			       ,(select etc_info from kube_mgmt_code where code_seq = list.code_seq1) as channel
+				   ,b.thumb_log_path
+				   ,'' as dept_name1
+		  	  from (select ROW_NUMBER() OVER(order by popular_cnt desc) as num
+					       ,a.vi_seq
+						   ,a.title
+						   ,a.code_seq1
+						   ,a.code_seq2
+						   ,writer
+						   ,visit_cnt
+						   ,like_cnt
+					       ,popular_cnt
+					       ,conv_flag
+						   ,duration
+						   ,(select isnull((select count(*) from kube_video_comment where vc_status = 0 and vi_seq = a.vi_seq group by vi_seq), 0) as comment_cnt) as comment_cnt
+					  from kube_video_info a with (nolock)
+					 inner join (select vi_seq
+					                    ,visit_cnt
+										,like_cnt
+					                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+					               from kube_video_sub_info) as b
+					    on a.vi_seq = b.vi_seq
+						   and a.vi_status = 0
+					       and a.conv_flag = 1
+					       and a.open_flag = 39
+					) as list 
+            inner join kube_video_thumb b with (nolock)
+               on list.vi_seq = b.vi_seq
+                  and b.main_flag = 1
+			
+			union all  
+		
+		    select top 5 4 as order_seq
+				   ,list.*
+		       	   ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq2) as code_desc
+			       ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq1) as p_code_desc
+			       ,(select etc_info from kube_mgmt_code where code_seq = list.code_seq1) as channel
+				   ,b.thumb_log_path as thumb_log_path
+				   ,dbo.SPLIT_STR(dbo.fu_dept_info(#dept_code#, '', ','), ',',1) as dept_name1
+		  	  from (select ROW_NUMBER() OVER(order by reg_date desc) as num
+					       ,a.vi_seq
+						   ,a.title
+						   ,a.code_seq1
+						   ,a.code_seq2
+						   ,writer
+						   ,visit_cnt
+						   ,like_cnt
+					       ,0 as popular_cnt
+					       ,conv_flag 
+						   ,duration
+						   ,(select isnull((select count(*) from kube_video_comment where vc_status = 0 and vi_seq = a.vi_seq group by vi_seq), 0) as comment_cnt) as comment_cnt
+					  from kube_video_info a with (nolock)
+					 inner join kube_video_sub_info as b with (nolock)
+					    on a.vi_seq = b.vi_seq
+						   and a.vi_status = 0
+						   and a.conv_flag = 1
+						   and a.open_flag = 39
+					 inner join kube_mgmt_code c  with (nolock)
+						on c.etc_info = #dept_code#
+						   and a.vi_status = 0
+					       and a.conv_flag = 1
+						   and a.code_seq1 = c.p_code_seq
+						   and a.code_seq2 = c.code_seq
+					) as list 
+            inner join kube_video_thumb b with (nolock)
+               on list.vi_seq = b.vi_seq
+                  and b.main_flag = 1
+		]]>
+	</select>
+	
+	<select id="Kube#getTotalSrhList" resultClass="java.util.HashMap">
+		<![CDATA[
+			select * , 0 as re_order2
+			  from (select 1 as order_seq
+       						,ROW_NUMBER() OVER(order by visit_cnt desc, reg_date desc) as re_order
+		       	   			,list.* 
+		       	   			,(select code_desc from kube_mgmt_code where code_seq = list.code_seq2) as code_desc
+			       			,(select code_desc from kube_mgmt_code where code_seq = list.code_seq1) as p_code_desc
+			       			,(select etc_info from kube_mgmt_code where code_seq = list.code_seq1) as channel
+				   			,b.thumb_log_path
+				   			,'' as dept_name1
+				      from (select ROW_NUMBER() OVER(order by visit_cnt desc, reg_date desc) as num
+							       ,a.vi_seq
+								   ,a.title
+								   ,a.code_seq1
+								   ,a.code_seq2
+								   ,writer
+								   ,visit_cnt
+								   ,like_cnt
+							       ,popular_cnt
+							       ,reg_date
+							       ,conv_flag
+								   ,duration
+						   		   ,(select isnull((select count(*) from kube_video_comment where vc_status = 0 and vi_seq = a.vi_seq group by vi_seq), 0) as comment_cnt) as comment_cnt
+							  from kube_video_info a with (nolock)
+							 inner join (select vi_seq
+							                    ,visit_cnt
+												,like_cnt
+							                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+							               from kube_video_sub_info) as b
+							    on a.vi_seq = b.vi_seq
+								   and a.vi_status = 0
+					       		   and a.conv_flag = 1
+					       		   and a.open_flag = 39
+							 where 1 = 1
+						 
+		]]>
+						<!-- where reg_date > #reg_date# -->
+							 <isNotEmpty property="srh_keyword" prepend="and">
+	   							(title like '%$srh_keyword$%'
+	   							or writer like '%$srh_keyword$%'
+	   							or a.vi_seq in (select vi_seq from kube_video_tag where tag_desc like '%$srh_keyword$%'))
+	   						 </isNotEmpty>	
+		<![CDATA[
+							) as list 
+		            inner join kube_video_thumb b with (nolock)
+		               on list.vi_seq = b.vi_seq
+		                  and b.main_flag = 1
+		         ) as list
+			where re_order <= 5
+		]]>
+		<!-- 					
+			union all  
+
+		    select *
+		      from (select * ,ROW_NUMBER() OVER(order by popular_cnt desc) as re_order2
+					  from (select 2 as order_seq
+						    		,ROW_NUMBER() OVER(order by popular_cnt desc) as re_order
+						       	   ,list.* 
+						       	   ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq2) as code_desc
+							       ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq1) as p_code_desc
+							       ,(select etc_info from kube_mgmt_code where code_seq = list.code_seq1) as channel
+								   ,b.thumb_log_path
+								   ,'' as dept_name1
+						  	  from (select ROW_NUMBER() OVER(order by popular_cnt desc) as num
+									       ,a.vi_seq
+										   ,a.title
+										   ,a.code_seq1
+										   ,a.code_seq2
+										   ,writer
+										   ,visit_cnt
+										   ,like_cnt
+									       ,popular_cnt
+									       ,reg_date
+									       ,conv_flag
+										   ,duration
+									  from kube_video_info a with (nolock)
+									 inner join (select vi_seq
+									                    ,visit_cnt
+														,like_cnt
+									                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+									               from kube_video_sub_info) as b
+									    on a.vi_seq = b.vi_seq
+										   and a.vi_status = 0
+					       		           and a.conv_flag = 1
+					]]>
+									) as list 
+				            inner join kube_video_thumb b with (nolock)
+				               on list.vi_seq = b.vi_seq
+				                  and b.main_flag = 1
+					<![CDATA[
+				            where num <= 100
+							) as list
+					]]>
+						<isNotEmpty property="srh_keyword" prepend="where">
+							(title like '%$srh_keyword$%'
+							 or writer like '%$srh_keyword$%'
+							 or vi_seq in (select vi_seq from kube_video_tag where tag_desc like '%$srh_keyword$%'))
+						</isNotEmpty>		
+					<![CDATA[
+				) as list
+			where re_order2 <= 5	
+					]]>
+				 -->
+			<![CDATA[
+			
+			union all
+			
+			select * , 0 as re_order2
+			  from (select 3 as order_seq
+			               ,ROW_NUMBER() OVER(partition by code_seq1 order by code_seq1, $selOrder$ desc) as re_order
+				       	   ,list.* 
+				       	   ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq2) as code_desc
+					       ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq1) as p_code_desc
+					       ,(select etc_info from kube_mgmt_code where code_seq = list.code_seq1) as channel
+						   ,b.thumb_log_path
+						   ,'' as dept_name1
+				  	  from (select ROW_NUMBER() OVER(partition by code_seq1 order by code_seq1 desc) as num
+							       ,a.vi_seq
+								   ,a.title
+								   ,a.code_seq1
+								   ,a.code_seq2
+								   ,writer
+								   ,visit_cnt
+								   ,like_cnt
+							       ,popular_cnt
+							       ,reg_date
+							       ,conv_flag
+								   ,duration
+						   		   ,(select isnull((select count(*) from kube_video_comment where vc_status = 0 and vi_seq = a.vi_seq group by vi_seq), 0) as comment_cnt) as comment_cnt
+							  from kube_video_info a with (nolock)
+							 inner join (select vi_seq
+							                    ,visit_cnt
+												,like_cnt
+							                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+							               from kube_video_sub_info) as b
+							    on a.vi_seq = b.vi_seq
+								   and a.vi_status = 0
+					       		   and a.conv_flag = 1
+					       		   and a.open_flag = 39
+			]]>
+						    <isNotEmpty property="srh_keyword" prepend="where">
+					   			(title like '%$srh_keyword$%'
+					   			or writer like '%$srh_keyword$%'
+							 	or a.vi_seq in (select vi_seq from kube_video_tag where tag_desc like '%$srh_keyword$%'))
+					   		</isNotEmpty>		
+							) as list 
+		            inner join kube_video_thumb b with (nolock)
+		               on list.vi_seq = b.vi_seq
+		                  and b.main_flag = 1
+			<![CDATA[
+					) as list
+				where re_order <= 5
+                  and channel != 'saupso'
+                  
+			union all
+			
+			select * , 0 as re_order2
+			  from (select 4 as order_seq
+			               ,ROW_NUMBER() OVER(order by $selOrder$ desc) as re_order
+				       	   ,list.* 
+				       	   ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq2) as code_desc
+					       ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq1) as p_code_desc
+					       ,(select etc_info from kube_mgmt_code where code_seq = list.code_seq1) as channel
+						   ,b.thumb_log_path
+						   ,dbo.SPLIT_STR(dbo.fu_dept_info(#dept_code#, '', ','), ',',1) as dept_name1
+				  	  from (select 0 as num
+							       ,a.vi_seq
+								   ,a.title
+								   ,a.code_seq1
+								   ,a.code_seq2
+								   ,writer
+								   ,visit_cnt
+								   ,like_cnt
+							       ,popular_cnt
+							       ,reg_date
+							       ,conv_flag
+								   ,duration
+						   		   ,(select isnull((select count(*) from kube_video_comment where vc_status = 0 and vi_seq = a.vi_seq group by vi_seq), 0) as comment_cnt) as comment_cnt
+							  from kube_video_info a with (nolock)
+							 inner join (select vi_seq
+							                    ,visit_cnt
+												,like_cnt
+							                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+							               from kube_video_sub_info) as b
+							    on a.vi_seq = b.vi_seq
+								   and a.vi_status = 0
+					       		   and a.conv_flag = 1
+						    inner join kube_mgmt_code c  with (nolock)
+						       on c.etc_info = #dept_code#
+						          and a.vi_status = 0
+					       		  and a.conv_flag = 1
+					       		  and a.open_flag = 39
+						          and a.code_seq1 = c.p_code_seq
+						          and a.code_seq2 = c.code_seq
+			]]>
+						    <isNotEmpty property="srh_keyword" prepend="where">
+					   			(title like '%$srh_keyword$%'
+					   			or writer like '%$srh_keyword$%'
+					   			or a.vi_seq in (select vi_seq from kube_video_tag where tag_desc like '%$srh_keyword$%'))
+					   		</isNotEmpty>		
+							) as list 
+		            inner join kube_video_thumb b with (nolock)
+		               on list.vi_seq = b.vi_seq
+		                  and b.main_flag = 1
+			<![CDATA[
+					) as list
+				where re_order <= 5
+			]]>
+	</select>
+	
+	<select id="Kube#getTotalSrhListCnt" resultClass="java.util.HashMap">
+		select (sum(week_cnt) + sum(top_cnt) + sum(saupso_cnt)) as totCnt, sum(week_cnt) as week_cnt, sum(top_cnt) as top_cnt, sum(saupso_cnt) as saupso_cnt
+		  from (
+		<![CDATA[
+			select count(*) as week_cnt 
+			       ,0 as top_cnt
+			       ,0 as saupso_cnt 
+			  from (select 1 as order_seq
+       						,list.* 
+		       	   			,(select code_desc from kube_mgmt_code where code_seq = list.code_seq2) as code_desc
+			       			,(select code_desc from kube_mgmt_code where code_seq = list.code_seq1) as p_code_desc
+			       			,(select etc_info from kube_mgmt_code where code_seq = list.code_seq1) as channel
+				   			,b.thumb_log_path
+				   			,'' as dept_name1
+				      from (select ROW_NUMBER() OVER(order by visit_cnt desc, reg_date desc) as num
+							       ,a.vi_seq
+								   ,a.title
+								   ,a.code_seq1
+								   ,a.code_seq2
+								   ,writer
+								   ,visit_cnt
+								   ,like_cnt
+							       ,popular_cnt
+							       ,reg_date
+							  from kube_video_info a with (nolock)
+							 inner join (select vi_seq
+							                    ,visit_cnt
+												,like_cnt
+							                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+							               from kube_video_sub_info) as b
+							    on a.vi_seq = b.vi_seq
+								   and a.vi_status = 0
+					       		   and a.conv_flag = 1
+					       		   and a.open_flag = 39
+							 where 1 = 1
+						 
+		]]>
+						<!-- where reg_date > #reg_date# -->
+							 <isNotEmpty property="srh_keyword" prepend="and">
+	   							(title like '%$srh_keyword$%'
+	   							or writer like '%$srh_keyword$%'
+	   							or a.vi_seq in (select vi_seq from kube_video_tag where tag_desc like '%$srh_keyword$%'))
+	   						 </isNotEmpty>	
+		<![CDATA[
+							) as list 
+		            inner join kube_video_thumb b with (nolock)
+		               on list.vi_seq = b.vi_seq
+		                  and b.main_flag = 1
+		         ) as list
+		]]>
+		<!-- 					
+		
+			union all  
+		
+			select  0 as week_cnt 
+			       ,count(*) as top_cnt
+			       ,0 as saupso_cnt 
+			  from (select 2 as order_seq
+				    		,ROW_NUMBER() OVER(order by popular_cnt desc) as re_order
+				       	   ,list.* 
+				       	   ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq2) as code_desc
+					       ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq1) as p_code_desc
+					       ,(select etc_info from kube_mgmt_code where code_seq = list.code_seq1) as channel
+						   ,b.thumb_log_path
+						   ,'' as dept_name1
+				  	  from (select ROW_NUMBER() OVER(order by popular_cnt desc) as num
+							       ,a.vi_seq
+								   ,a.title
+								   ,a.code_seq1
+								   ,a.code_seq2
+								   ,writer
+								   ,visit_cnt
+								   ,like_cnt
+							       ,popular_cnt
+							       ,reg_date
+							  from kube_video_info a with (nolock)
+							 inner join (select vi_seq
+							                    ,visit_cnt
+												,like_cnt
+							                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+							               from kube_video_sub_info) as b 
+							    on a.vi_seq = b.vi_seq
+								   and a.vi_status = 0
+					       		   and a.conv_flag = 1
+			]]>
+							) as list 
+		            inner join kube_video_thumb b with (nolock)
+		               on list.vi_seq = b.vi_seq
+		                  and b.main_flag = 1
+			<![CDATA[
+		            where num <= 100
+					) as list
+			]]>
+				<isNotEmpty property="srh_keyword" prepend="where">
+					(title like '%$srh_keyword$%'
+					 or writer like '%$srh_keyword$%'
+					 or vi_seq in (select vi_seq from kube_video_tag where tag_desc like '%$srh_keyword$%'))
+				</isNotEmpty>		
+				 -->
+				
+			<![CDATA[
+			
+			union all
+			
+			select 0 as week_cnt 
+			       ,0 as top_cnt
+			       ,count(*) as saupso_cnt
+			  from (select 3 as order_seq
+			               ,list.* 
+				       	   ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq2) as code_desc
+					       ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq1) as p_code_desc
+					       ,(select etc_info from kube_mgmt_code where code_seq = list.code_seq1) as channel
+						   ,b.thumb_log_path
+						   ,'' as dept_name1
+				  	  from (select 0 as num
+							       ,a.vi_seq
+								   ,a.title
+								   ,a.code_seq1
+								   ,a.code_seq2
+								   ,writer
+								   ,visit_cnt
+								   ,like_cnt
+							       ,popular_cnt
+							       ,reg_date
+							  from kube_video_info a with (nolock)
+							 inner join (select vi_seq
+							                    ,visit_cnt
+												,like_cnt
+							                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+							               from kube_video_sub_info) as b
+							    on a.vi_seq = b.vi_seq
+								   and a.vi_status = 0
+					       		   and a.conv_flag = 1
+					       		   and a.open_flag = 39
+						    inner join kube_mgmt_code c  with (nolock)
+						       on c.etc_info = #dept_code#
+						          and a.vi_status = 0
+					       		  and a.conv_flag = 1
+					       		  and a.open_flag = 39
+						          and a.code_seq1 = c.p_code_seq
+						          and a.code_seq2 = c.code_seq
+			]]>
+						    <isNotEmpty property="srh_keyword" prepend="where">
+					   			(title like '%$srh_keyword$%'
+					   			or writer like '%$srh_keyword$%'
+					   			or a.vi_seq in (select vi_seq from kube_video_tag where tag_desc like '%$srh_keyword$%'))
+					   		</isNotEmpty>		
+							) as list 
+		            inner join kube_video_thumb b with (nolock)
+		               on list.vi_seq = b.vi_seq
+		                  and b.main_flag = 1
+			<![CDATA[
+					) as list
+			]]>
+			) as list
+	</select>
+	
+	<select id="Kube#getSrhCategoryCnt" resultClass="java.util.HashMap">
+		<![CDATA[
+		select code_seq1, count(*) as cnt
+			  from (select 3 as order_seq
+			               ,list.* 
+				       	   ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq2) as code_desc
+					       ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq1) as p_code_desc
+					       ,(select etc_info from kube_mgmt_code where code_seq = list.code_seq1) as channel
+						   ,b.thumb_log_path
+						   ,'' as dept_name1
+				  	  from (select a.vi_seq
+								   ,a.title
+								   ,a.code_seq1
+								   ,a.code_seq2
+								   ,writer
+								   ,visit_cnt
+								   ,like_cnt
+							       ,popular_cnt
+							       ,reg_date
+							  from kube_video_info a with (nolock)
+							 inner join (select vi_seq
+							                    ,visit_cnt
+												,like_cnt
+							                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+							               from kube_video_sub_info) as b
+							    on a.vi_seq = b.vi_seq
+								   and a.vi_status = 0
+					       		   and a.conv_flag = 1
+					       		   and a.open_flag = 39
+			]]>
+						    <isNotEmpty property="srh_keyword" prepend="where">
+					   			(title like '%$srh_keyword$%'
+					   			or writer like '%$srh_keyword$%'
+					   			or a.vi_seq in (select vi_seq from kube_video_tag where tag_desc like '%$srh_keyword$%'))
+					   		</isNotEmpty>		
+							) as list 
+		            inner join kube_video_thumb b with (nolock)
+		               on list.vi_seq = b.vi_seq
+		                  and b.main_flag = 1
+			<![CDATA[
+					) as list
+				where channel != 'saupso'
+                group by code_seq1
+                order by code_seq1
+			]]>
+	</select>
+	
+	<select id="Kube#getWeeklyList" resultClass="java.util.HashMap">
+		<![CDATA[
+			select list.* 
+	       	   			,(select code_desc from kube_mgmt_code where code_seq = list.code_seq2) as code_desc
+		       			,(select code_desc from kube_mgmt_code where code_seq = list.code_seq1) as p_code_desc
+		       			,(select etc_info from kube_mgmt_code where code_seq = list.code_seq1) as channel
+			   			,b.thumb_log_path
+			   			,'' as dept_name1
+			      from (select ROW_NUMBER() OVER(order by popular_cnt desc) as num
+						       ,a.vi_seq
+							   ,a.title
+							   ,a.code_seq1
+							   ,a.code_seq2
+							   ,writer
+							   ,visit_cnt
+							   ,like_cnt
+						       ,popular_cnt
+						       ,reg_date
+						       ,conv_flag
+						       ,duration
+						       ,(select isnull((select count(*) from kube_video_comment where vc_status = 0 and vi_seq = a.vi_seq group by vi_seq), 0) as comment_cnt) as comment_cnt
+						  from kube_video_info a with (nolock)
+						 inner join (select vi_seq
+						                    ,visit_cnt
+											,like_cnt
+						                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+						               from kube_video_sub_info) as b
+						    on a.vi_seq = b.vi_seq
+							   and a.vi_status = 0
+					       	   and a.conv_flag = 1
+					       	   and a.open_flag = 39
+						 where 1 = 1
+						 
+		]]>
+						<!-- where reg_date > #reg_date# -->
+						 <isNotEmpty property="srh_keyword" prepend="and">
+   							(title like '%$srh_keyword$%'
+   							or writer like '%$srh_keyword$%'
+   							or a.vi_seq in (select vi_seq from kube_video_tag where tag_desc like '%$srh_keyword$%'))
+   						 </isNotEmpty>	
+		<![CDATA[
+						) as list 
+	            inner join kube_video_thumb b with (nolock)
+	               on list.vi_seq = b.vi_seq
+	                  and b.main_flag = 1
+		]]>
+			order by $selOrder$ desc, reg_date desc
+			OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+       		FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="Kube#getWeeklyListCnt" resultClass="int">
+		<![CDATA[
+			select count(*) as totCnt
+			      from (select ROW_NUMBER() OVER(order by popular_cnt desc) as num
+						       ,a.vi_seq
+							   ,a.title
+							   ,a.code_seq1
+							   ,a.code_seq2
+							   ,writer
+							   ,visit_cnt
+							   ,like_cnt
+						       ,popular_cnt
+						       ,reg_date
+						  from kube_video_info a with (nolock)
+						 inner join (select vi_seq
+						                    ,visit_cnt
+											,like_cnt
+						                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+						               from kube_video_sub_info) as b
+						    on a.vi_seq = b.vi_seq
+							   and a.vi_status = 0
+					       	   and a.conv_flag = 1
+					       	   and a.open_flag = 39
+						 where 1 = 1
+						 
+		]]>
+						<!-- where reg_date > #reg_date# -->
+						 <isNotEmpty property="srh_keyword" prepend="and">
+   							(title like '%$srh_keyword$%'
+   							or writer like '%$srh_keyword$%'
+   							or a.vi_seq in (select vi_seq from kube_video_tag where tag_desc like '%$srh_keyword$%'))
+   						 </isNotEmpty>	
+		<![CDATA[
+						) as list 
+	            inner join kube_video_thumb b with (nolock)
+	               on list.vi_seq = b.vi_seq
+	                  and b.main_flag = 1
+		]]>
+	</select>
+	
+	<select id="Kube#getRecentlyList" resultClass="java.util.HashMap">
+		<![CDATA[
+			select * 
+			  from (select ROW_NUMBER() OVER(order by reg_date desc) as order_num
+			               ,* 
+					  from (select list.* 
+						       	   ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq2) as code_desc
+							       ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq1) as p_code_desc
+							       ,(select etc_info from kube_mgmt_code where code_seq = list.code_seq1) as channel
+								   ,b.thumb_log_path
+								   ,'' as dept_name1
+						  	  from (select a.vi_seq
+										   ,a.title
+										   ,a.code_seq1
+										   ,a.code_seq2
+										   ,writer
+										   ,visit_cnt
+										   ,like_cnt
+									       ,'0' as popular_cnt
+									       ,reg_date
+									       ,conv_flag
+									       ,duration
+						                   ,(select isnull((select count(*) from kube_video_comment where vc_status = 0 and vi_seq = a.vi_seq group by vi_seq), 0) as comment_cnt) as comment_cnt
+									  from kube_video_info a with (nolock)
+									 inner join kube_video_sub_info as b with (nolock)
+									    on a.vi_seq = b.vi_seq
+										   and a.vi_status = 0
+									       and a.conv_flag = 1
+									       and a.open_flag = 39
+									) as list 
+				            inner join kube_video_thumb b with (nolock)
+				               on list.vi_seq = b.vi_seq
+				                  and b.main_flag = 1
+							) as list
+		            where 1 = 1
+				]]>
+		            <isNotEmpty property="srh_keyword" prepend="and">
+						(title like '%$srh_keyword$%'
+						 or writer like '%$srh_keyword$%'
+						 or list.vi_seq in (select vi_seq from kube_video_tag where tag_desc like '%$srh_keyword$%'))
+		   		    </isNotEmpty>
+				) as list
+
+		<![CDATA[   
+		    where order_num <= 200
+		]]>   		    
+            order by reg_date desc      
+            OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+       		FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="Kube#getRecentlyListCnt" resultClass="int">
+			<![CDATA[
+			select count(*) as totCnt
+		  	  from (select ROW_NUMBER() OVER(order by reg_date desc) as order_num
+				  	       ,list.* 
+		  	         from (select a.vi_seq
+								   ,a.title
+								   ,a.code_seq1
+								   ,a.code_seq2
+								   ,writer
+								   ,visit_cnt
+								   ,like_cnt
+							       ,'0' as popular_cnt
+							       ,reg_date
+							  from kube_video_info a with (nolock)
+							 inner join kube_video_sub_info as b with (nolock)
+							    on a.vi_seq = b.vi_seq
+								   and a.vi_status = 0
+							       and a.conv_flag = 1
+							       and a.open_flag = 39
+							) as list 
+		            inner join kube_video_thumb b with (nolock)
+		               on list.vi_seq = b.vi_seq
+		                  and b.main_flag = 1
+		            where 1 = 1
+				]]>
+				<isNotEmpty property="srh_keyword" prepend="and">
+						(title like '%$srh_keyword$%'
+						 or writer like '%$srh_keyword$%'
+						 or list.vi_seq in (select vi_seq from kube_video_tag where tag_desc like '%$srh_keyword$%'))
+				</isNotEmpty>
+				) as list
+		<![CDATA[
+		    where order_num <= 200
+		]]>
+	</select>
+	
+	<select id="Kube#getTopList" resultClass="java.util.HashMap">
+		<![CDATA[
+		    select *
+			  from (select ROW_NUMBER() OVER(order by $selOrder$ desc) as re_order
+				       	   ,list.* 
+				       	   ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq2) as code_desc
+					       ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq1) as p_code_desc
+					       ,(select etc_info from kube_mgmt_code where code_seq = list.code_seq1) as channel
+						   ,b.thumb_log_path
+						   ,'' as dept_name1
+				  	  from (select ROW_NUMBER() OVER(order by popular_cnt desc) as num
+							       ,a.vi_seq
+								   ,a.title
+								   ,a.code_seq1
+								   ,a.code_seq2
+								   ,writer
+								   ,visit_cnt
+								   ,like_cnt
+							       ,popular_cnt
+							       ,reg_date
+							       ,conv_flag
+							       ,duration
+						           ,(select isnull((select count(*) from kube_video_comment where vc_status = 0 and vi_seq = a.vi_seq group by vi_seq), 0) as comment_cnt) as comment_cnt
+							  from kube_video_info a with (nolock)
+							 inner join (select vi_seq
+							                    ,visit_cnt
+												,like_cnt
+							                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+							               from kube_video_sub_info) as b
+							    on a.vi_seq = b.vi_seq
+								   and a.vi_status = 0
+					       		   and a.conv_flag = 1
+					       		   and a.open_flag = 39
+			]]>
+							) as list 
+		            inner join kube_video_thumb b with (nolock)
+		               on list.vi_seq = b.vi_seq
+		                  and b.main_flag = 1
+			<![CDATA[
+		            where num <= 100
+					) as list
+			]]>
+				<isNotEmpty property="srh_keyword" prepend="where">
+					(title like '%$srh_keyword$%'
+					 or writer like '%$srh_keyword$%'
+					 or vi_seq in (select vi_seq from kube_video_tag where tag_desc like '%$srh_keyword$%'))
+				</isNotEmpty>		
+			<![CDATA[
+		order by $selOrder$ desc
+		OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+        FETCH NEXT #perPageCnt# ROWS ONLY
+		]]>
+	</select>
+	
+	<select id="Kube#getTopListCnt" resultClass="int">
+		<![CDATA[
+		    select count(*) as totCnt
+			  from (select ROW_NUMBER() OVER(order by $selOrder$ desc) as re_order
+				       	   ,list.* 
+				       	   ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq2) as code_desc
+					       ,(select code_desc from kube_mgmt_code where code_seq = list.code_seq1) as p_code_desc
+					       ,(select etc_info from kube_mgmt_code where code_seq = list.code_seq1) as channel
+						   ,b.thumb_log_path
+						   ,'' as dept_name1
+				  	  from (select ROW_NUMBER() OVER(order by popular_cnt desc) as num
+							       ,a.vi_seq
+								   ,a.title
+								   ,a.code_seq1
+								   ,a.code_seq2
+								   ,writer
+								   ,visit_cnt
+								   ,like_cnt
+							       ,popular_cnt
+							       ,reg_date
+							  from kube_video_info a with (nolock)
+							 inner join (select vi_seq
+							                    ,visit_cnt
+												,like_cnt
+							                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+							               from kube_video_sub_info) as b
+							    on a.vi_seq = b.vi_seq
+								   and a.vi_status = 0
+					               and a.conv_flag = 1
+					               and a.open_flag = 39
+			]]>
+							) as list 
+		            inner join kube_video_thumb b with (nolock)
+		               on list.vi_seq = b.vi_seq
+		                  and b.main_flag = 1
+			<![CDATA[
+		            where num <= 100
+					) as list
+			]]>
+				<isNotEmpty property="srh_keyword" prepend="where">
+					(title like '%$srh_keyword$%'
+					 or writer like '%$srh_keyword$%'
+					 or vi_seq in (select vi_seq from kube_video_tag where tag_desc like '%$srh_keyword$%'))
+				</isNotEmpty>		
+	</select>
+	
+	<select id="Kube#getMyBookMarkList" resultClass="java.util.HashMap">
+			select kmam.seq as kmam_seq
+			       ,kmam.vi_seq
+				   ,kvi.title
+				   ,kvi.code_seq1
+				   ,kvi.code_seq2
+				   ,writer
+				   ,visit_cnt
+			       ,like_cnt
+			       ,popular_cnt
+			       ,kmam.reg_date
+			       ,thumb_log_path
+			       ,conv_flag
+			       ,duration
+			       ,(select code_desc from kube_mgmt_code where code_seq = kvi.code_seq2) as p_code_desc
+		      from kube_my_act_mgmt kmam with (nolock)
+		     inner join kube_video_info kvi with (nolock)
+		        on kmam.empno = #empno#
+			       and kmam.fm_gubun = 6
+			       and kmam.vi_seq = kvi.vi_seq
+			       and kvi.vi_status = 0
+				   and kvi.conv_flag = 1
+				   and kvi.open_flag = 39
+			 inner join (select vi_seq
+			                    ,visit_cnt
+			                    ,like_cnt
+							    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+				           from kube_video_sub_info with (nolock)) as kvsi
+                on kvi.vi_seq = kvsi.vi_seq
+			 inner join kube_video_thumb kvt with (nolock)
+		        on kvi.vi_seq = kvt.vi_seq
+		           and kvt.main_flag = 1
+	         order by $selOrder$ desc 
+	        OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+	        FETCH NEXT #perPageCnt# ROWS ONLY 
+	</select>
+	
+	<select id="Kube#getMyBookMarkListCnt" resultClass="int">
+			select count(*) as totCnt
+		      from kube_my_act_mgmt kmam with (nolock)
+		     inner join kube_video_info kvi with (nolock)
+		        on kmam.empno = #empno#
+			       and kmam.fm_gubun = 6
+			       and kmam.vi_seq = kvi.vi_seq
+			       and kvi.vi_status = 0
+				   and kvi.conv_flag = 1
+				   and kvi.open_flag = 39
+			 inner join kube_video_sub_info as kvsi with (nolock)
+                on kvi.vi_seq = kvsi.vi_seq
+			 inner join kube_video_thumb kvt with (nolock)
+		        on kvi.vi_seq = kvt.vi_seq
+		           and kvt.main_flag = 1
+	</select>
+	
+	<select id="Kube#getMyDownLoadReqList" resultClass="java.util.HashMap">
+		select kva.vi_seq
+		       ,kva.app_empno
+			   ,kva.va_status
+			   ,kva.reg_date
+			   ,kva.mod_date 
+			   ,code_desc
+			   ,kvi.title
+			   ,(select code_desc from kube_mgmt_code where code_seq = kvi.code_seq2) as p_code_desc
+			   ,kvi.code_seq1
+			   ,kvi.code_seq2
+			   ,writer
+			   ,thumb_log_path
+		  from kube_video_approve kva with (nolock)
+		 inner join kube_mgmt_code kmc
+		    on kva.va_status = kmc.code_seq
+		 inner join kube_video_info kvi with (nolock)
+	        on kva.app_empno = #empno#
+			   and kva.vi_seq = kvi.vi_seq
+		       and kvi.vi_status = 0
+		 inner join kube_video_thumb kvt with (nolock)
+		    on kvi.vi_seq = kvt.vi_seq
+		       and kvt.main_flag = 1
+		 where kvi.download_flag = 42
+		 <isNotEqual property="selOrder" compareValue="0" prepend="and">
+		 	   kva.va_status = $selOrder$
+		 </isNotEqual>
+		 order by kva.reg_date desc
+		 OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY 
+	</select>
+	
+	<select id="Kube#getMyDownLoadReqListCnt" resultClass="int">
+		select count(*) as totCnt
+		  from kube_video_approve kva with (nolock)
+		 inner join kube_mgmt_code kmc
+		    on kva.va_status = kmc.code_seq
+		 inner join kube_video_info kvi with (nolock)
+	        on kva.app_empno = #empno#
+			   and kva.vi_seq = kvi.vi_seq
+		       and kvi.vi_status = 0
+		 inner join kube_video_thumb kvt with (nolock)
+		    on kvi.vi_seq = kvt.vi_seq
+		       and kvt.main_flag = 1
+		 where kvi.download_flag = 42
+		 <isNotEqual property="selOrder" compareValue="0" prepend="and">
+		 	   kva.va_status = $selOrder$
+		 </isNotEqual>
+	</select>
+	
+	<select id="Kube#getMyVideoMgmtList" resultClass="java.util.HashMap">
+		select kvi.vi_seq
+		       ,title
+			   ,code_seq1
+			   ,code_seq2
+			   ,open_flag
+			   ,download_flag
+			   ,visit_cnt
+			   ,like_cnt
+			   ,unlike_cnt
+			   ,down_cnt
+			   ,thumb_log_path
+			   ,(select code_desc from kube_mgmt_code where code_seq = kvi.code_seq2) as p_code_desc
+			   ,(select count(*) as cnt from kube_video_comment kvc where kvc.vi_seq = kvi.vi_seq and vc_status = 0) as comment_cnt
+			   ,(select count(*) as cnt from kube_video_approve kva where kva.vi_seq = kvi.vi_seq and kva.va_status = 44) as approve_cnt
+			   ,(select count(*) as cnt from kube_video_approve kva2 where kva2.vi_seq = kvi.vi_seq and kva2.va_status != 47) as tot_approve_cnt
+			   ,kvi.reg_date
+			   ,conv_flag
+			   ,duration
+		  from kube_video_info kvi with (nolock)
+		 inner join kube_video_sub_info kvsi with (nolock)
+		    on kvi.vi_seq = kvsi.vi_seq
+		 inner join kube_video_thumb kvt with (nolock)
+		    on kvi.vi_seq = kvt.vi_seq
+		       and kvt.main_flag = 1
+		 where kvi.reg_empno = #empno#
+		   and kvi.vi_status = '0'
+		 order by $selOrder$ desc
+		 OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="Kube#getMyVideoMgmtListCnt" resultClass="int">
+		select count(*) as totCnt
+		  from kube_video_info kvi with (nolock)
+		 inner join kube_video_sub_info kvsi with (nolock)
+		    on kvi.vi_seq = kvsi.vi_seq
+		 inner join kube_video_thumb kvt with (nolock)
+		    on kvi.vi_seq = kvt.vi_seq
+		       and kvt.main_flag = 1
+		 where reg_empno = #empno#
+		   and kvi.vi_status = '0'
+	</select>
+	
+	<update id="Kube#updateVideoStatus">
+		update kube_video_info
+		   set mod_date = #mod_date#
+		<isNotEqual property="open_flag" compareValue="0">
+		       ,open_flag = #open_flag#
+		</isNotEqual>
+		<isNotEqual property="download_flag" compareValue="0">
+		       ,download_flag = #download_flag#
+		</isNotEqual>
+		<isNotEqual property="vi_status" compareValue="0">
+		       ,vi_status = #vi_status#
+		</isNotEqual>
+	     where vi_seq = #vi_seq#
+	</update>
+	
+	<update id="Kube#updateApproveStatus">
+		update kube_video_approve
+		   set mod_date = #mod_date#
+		       ,va_status = #va_status#
+	     where vi_seq = #vi_seq#
+	     <isNotEmpty property="app_empno" prepend="and">
+	     	app_empno = #app_empno#
+	     </isNotEmpty>
+	</update>
+
+	<select id="Kube#getTargetPageNum" resultClass="int">
+		select case when num % #perPageCnt# != 0 then num / #perPageCnt# + 1
+                    else num / #perPageCnt#
+         	    end target_num
+		  from (select ROW_NUMBER() OVER(order by $selOrder$ desc) as num, vi_seq
+			      from kube_video_info kvin with (nolock)
+			     where kvin.reg_empno = #empno#
+		           and kvin.vi_status = 0
+		           and kvin.download_flag = 42
+			   ) as vi_list
+		where vi_seq = $vi_seq$
+	</select>	
+	
+	<select id="Kube#getMyApproveMgmtList" resultClass="java.util.HashMap">
+		select kvi.vi_seq
+		       ,title
+			   ,code_seq1
+			   ,code_seq2
+			   ,open_flag
+			   ,download_flag
+			   ,visit_cnt
+			   ,like_cnt
+			   ,unlike_cnt
+			   ,down_cnt
+			   ,thumb_log_path
+			   ,(select code_desc from kube_mgmt_code where code_seq = kvi.code_seq2) as p_code_desc
+			   ,(select count(*) as cnt from kube_video_comment kvc where kvc.vi_seq = kvi.vi_seq and vc_status = 0) as comment_cnt
+			   ,(select count(*) as cnt from kube_video_approve kva where kva.vi_seq = kvi.vi_seq and kva.va_status = 44) as approve_cnt
+			   ,(select count(*) as cnt from kube_video_approve kva2 where kva2.vi_seq = kvi.vi_seq and kva2.va_status != 47) as tot_approve_cnt
+			   ,kvi.reg_date
+			   ,approve_date
+		  from kube_video_info kvi with (nolock)
+		 inner join kube_video_sub_info kvsi with (nolock)
+		    on kvi.vi_seq = kvsi.vi_seq
+		 inner join kube_video_thumb kvt with (nolock)
+		    on kvi.vi_seq = kvt.vi_seq
+		       and kvt.main_flag = 1
+          left join (select vi_seq, isnull(max(mod_date), max(reg_date)) as approve_date 
+                       from kube_video_approve 
+                      where va_status != 47
+                      group by vi_seq
+                    ) as va
+		    on kvi.vi_seq = va.vi_seq
+		 where kvi.reg_empno = #empno#
+		   and kvi.vi_status = 0
+		   and kvi.download_flag = 42
+		   and approve_date is not null
+		 order by $selOrder$ desc
+		 OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="Kube#getMyApproveMgmtListCnt" resultClass="int">
+		select count(*) as totCnt
+		  from kube_video_info kvi with (nolock)
+		 inner join kube_video_sub_info kvsi with (nolock)
+		    on kvi.vi_seq = kvsi.vi_seq
+		 inner join kube_video_thumb kvt with (nolock)
+		    on kvi.vi_seq = kvt.vi_seq
+		       and kvt.main_flag = 1
+		 left join (select vi_seq, isnull(max(mod_date), max(reg_date)) as approve_date 
+                      from kube_video_approve 
+                     where va_status != 47
+                     group by vi_seq
+                   ) as va		      
+			on kvi.vi_seq = va.vi_seq 
+		 where reg_empno = #empno#
+		   and kvi.vi_status = '0'
+		   and kvi.download_flag = 42
+		   and approve_date is not null
+	</select>
+	
+	<select id="Kube#getMyVideoApproveSubList" resultClass="java.util.HashMap">
+		 select kva.vi_seq
+                ,app_empno 
+			    ,tt.name
+			    ,va_status
+                ,dbo.SPLIT_STR(dbo.fu_dept_info(tt.deptno, '', ','), ',',2) as dept_name1
+                ,dbo.SPLIT_STR(dbo.fu_dept_info(tt.deptno, '', ','), ',',3) as dept_name2
+			    ,isnull(kva.mod_date, kva.reg_date) as approve_date
+                ,tt.levelnm
+           from kube_video_approve kva
+          inner join kube_video_info kvi
+             on kvi.vi_seq = kva.vi_seq
+                and kvi.reg_empno = #empno#
+                and kvi.download_flag = 42
+                and kvi.vi_status = 0
+	      inner join tbSVC_TDMSEMP tt
+	         on kva.app_empno = tt.empno
+	      where va_status != 47
+	</select>
+	
+	<select id="Kube#getMyCommentMgmtList" resultClass="java.util.HashMap">
+		select kvi.vi_seq
+		       ,title
+			   ,code_seq1
+			   ,code_seq2
+			   ,open_flag
+			   ,download_flag
+			   ,visit_cnt
+			   ,like_cnt
+			   ,unlike_cnt
+			   ,down_cnt
+			   ,thumb_log_path
+			   ,(select code_desc from kube_mgmt_code where code_seq = kvi.code_seq2) as p_code_desc
+			   ,(select count(*) as cnt from kube_video_comment kvc where kvc.vi_seq = kvi.vi_seq and vc_status = 0) as comment_cnt
+			   ,kvi.reg_date
+			   ,comment_date
+			   ,popular_cnt
+		  from kube_video_info kvi with (nolock)
+		 inner join (select vi_seq
+		                    ,visit_cnt
+							,like_cnt
+							,unlike_cnt
+							,down_cnt
+		                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+		               from kube_video_sub_info) as kvsi
+		    on kvi.vi_seq = kvsi.vi_seq
+		 inner join kube_video_thumb kvt with (nolock)
+		    on kvi.vi_seq = kvt.vi_seq
+		       and kvt.main_flag = 1
+          left join (select vi_seq, max(reg_date) as comment_date 
+                       from kube_video_comment with (nolock)
+                      where vc_status = 0
+                      group by vi_seq
+                    ) as vc
+		    on kvi.reg_empno = #empno#
+		       and kvi.vi_seq = vc.vi_seq
+		 where kvi.reg_empno = #empno#
+		   and kvi.vi_status = 0
+		   and comment_date is not null
+		 order by $selOrder$ desc
+		 OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="Kube#getMyCommentMgmtListCnt" resultClass="int">
+		select count(*) as totCnt
+		  from kube_video_info kvi with (nolock)
+		 inner join (select vi_seq
+		                    ,visit_cnt
+							,like_cnt
+		                    ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+		               from kube_video_sub_info) as kvsi
+		    on kvi.vi_seq = kvsi.vi_seq
+		 inner join kube_video_thumb kvt with (nolock)
+		    on kvi.vi_seq = kvt.vi_seq
+		       and kvt.main_flag = 1
+		  left join (select vi_seq, max(reg_date) as comment_date 
+                       from kube_video_comment with (nolock)
+                      where vc_status = 0
+                      group by vi_seq
+                    ) as vc
+		    on kvi.reg_empno = #empno#
+		       and kvi.vi_seq = vc.vi_seq
+		 where reg_empno = #empno#
+		   and kvi.vi_status = '0'
+		   and comment_date is not null
+	</select>
+	
+	<select id="Kube#getReportList" resultClass="java.util.HashMap">
+		select re_seq
+		       ,krm.vi_seq
+		       ,0 as vc_seq
+			   ,re_gubun
+			   ,code_seq
+			   ,krm.re_desc
+			   ,(select code_desc from kube_mgmt_code kmc where kmc.code_seq = krm.code_seq) as code_desc
+			   ,re_status
+			   ,krm.reg_date
+			   ,krm.reg_empno
+			   ,tt.name
+			   ,kvi.code_seq1
+			   ,kvi.code_seq2
+			   ,kvi.title as target_desc
+			   ,tt.levelnm
+		  from kube_report_mgmt krm
+		 inner join kube_video_info kvi
+		    on krm.vi_seq = kvi.vi_seq
+		 inner join tbSVC_TDMSEMP tt
+		    on tt.empno = krm.reg_empno
+		 where krm.re_gubun = 1
+		  
+		union all
+		
+		select re_seq
+		       ,krm.vi_seq
+		       ,krm.vc_seq
+			   ,re_gubun
+			   ,code_seq
+			   ,krm.re_desc
+			   ,(select code_desc from kube_mgmt_code kmc where kmc.code_seq = krm.code_seq) as code_desc
+			   ,re_status
+			   ,krm.reg_date
+			   ,krm.reg_empno
+			   ,tt.name
+			   ,0 as code_seq1
+			   ,0 as code_seq2
+			   ,comment_desc as target_desc
+			   ,tt.levelnm
+		  from kube_report_mgmt krm
+		 inner join kube_video_comment kvc
+		    on krm.vi_seq = kvc.vi_seq
+			   and krm.vc_seq = kvc.vc_seq
+		 inner join tbSVC_TDMSEMP tt
+		    on tt.empno = krm.reg_empno
+		 where krm.re_gubun = 2
+		 order by reg_date desc
+		 OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="Kube#getReportListCnt" resultClass="int">
+		select count(*) as totCnt
+		  from (select re_seq
+				       ,krm.vi_seq
+				       ,0 as vc_seq
+					   ,re_gubun
+					   ,code_seq
+					   ,krm.re_desc
+					   ,(select code_desc from kube_mgmt_code kmc where kmc.code_seq = krm.code_seq) as code_desc
+					   ,re_status
+					   ,krm.reg_date
+					   ,krm.reg_empno
+					   ,tt.name
+					   ,kvi.code_seq1
+					   ,kvi.code_seq2
+					   ,kvi.title as target_desc
+				  from kube_report_mgmt krm
+				 inner join kube_video_info kvi
+				    on krm.vi_seq = kvi.vi_seq
+				 inner join tbSVC_TDMSEMP tt
+				    on tt.empno = krm.reg_empno
+				 where krm.re_gubun = 1
+				  
+				union all
+				
+				select re_seq
+				       ,krm.vi_seq
+				       ,krm.vc_seq
+					   ,re_gubun
+					   ,code_seq
+					   ,krm.re_desc
+					   ,(select code_desc from kube_mgmt_code kmc where kmc.code_seq = krm.code_seq) as code_desc
+					   ,re_status
+					   ,krm.reg_date
+					   ,krm.reg_empno
+					   ,tt.name
+					   ,0 as code_seq1
+					   ,0 as code_seq2
+					   ,comment_desc as target_desc
+				  from kube_report_mgmt krm
+				 inner join kube_video_comment kvc
+				    on krm.vi_seq = kvc.vi_seq
+					   and krm.vc_seq = kvc.vc_seq
+				 inner join tbSVC_TDMSEMP tt
+				    on tt.empno = krm.reg_empno
+				 where krm.re_gubun = 2
+			) as cnt
+	</select>
+	
+	<select id="Kube#getVideoList" resultClass="java.util.HashMap">
+		select kvi.vi_seq
+		       ,title
+		       ,writer
+			   ,code_seq1
+			   ,code_seq2
+			   ,open_flag
+			   ,download_flag
+			   ,visit_cnt
+			   ,like_cnt
+			   ,unlike_cnt
+			   ,down_cnt
+			   ,dbo.SPLIT_STR(dbo.fu_dept_info(kvi.dept_code, '', ','), ',',2) as dept_name1
+			   ,dbo.SPLIT_STR(dbo.fu_dept_info(kvi.dept_code, '', ','), ',',3) as dept_name2
+			   ,(select levelnm from tbSVC_TDMSEMP emp where emp.empno = kvi.reg_empno) as levelnm
+			   ,(select code_desc from kube_mgmt_code where code_seq = kvi.code_seq1) as p_code_desc
+			   ,(select code_desc from kube_mgmt_code where code_seq = kvi.code_seq2) as code_desc
+			   ,(select count(*) as cnt from kube_video_comment kvc where kvc.vi_seq = kvi.vi_seq and vc_status = 0) as comment_cnt
+			   ,(select count(*) as cnt from kube_video_approve kva where kva.vi_seq = kvi.vi_seq and kva.va_status = 44) as approve_cnt
+			   ,(select count(*) as cnt from kube_video_approve kva2 where kva2.vi_seq = kvi.vi_seq and kva2.va_status != 47) as tot_approve_cnt
+			   ,kvi.reg_date
+			   ,conv_flag
+			   ,duration
+		  from kube_video_info kvi with (nolock)     
+		 inner join kube_video_sub_info kvsi with (nolock)
+		    on kvi.vi_seq = kvsi.vi_seq
+		 where kvi.vi_status = '0'
+		   and kvi.reg_date between '$start_date$000000' and '$end_date$235959'
+		 order by $selOrder$ desc
+		 OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="Kube#getVideoListCnt" resultClass="int">
+		select count(*) as totCnt
+		  from kube_video_info kvi with (nolock)
+		 inner join kube_video_sub_info kvsi with (nolock)
+		    on kvi.vi_seq = kvsi.vi_seq
+		 inner join kube_video_thumb kvt with (nolock)
+		    on kvi.vi_seq = kvt.vi_seq
+		       and kvt.main_flag = 1
+		 where kvi.vi_status = '0'
+		   and kvi.reg_date between '$start_date$000000' and '$end_date$235959'
+	</select>
+	     
+	<select id="Kube#getVideoListXls" resultClass="java.util.HashMap">
+		select *
+		       ,concat(concat(dept_name1, ' ' + dept_name2), concat(' ' + writer, '(' + levelnm + ')')) as '게시자'
+		       ,concat(p_code_desc, ' ' + code_desc) as '카테고리'
+		  from (select title as '제목'
+					   ,writer
+					   ,dbo.SPLIT_STR(dbo.fu_dept_info(kvi.dept_code, '', ','), ',',2) as dept_name1
+					   ,dbo.SPLIT_STR(dbo.fu_dept_info(kvi.dept_code, '', ','), ',',3) as dept_name2
+					   ,visit_cnt as '조회'
+					   ,visit_cnt
+					   ,like_cnt as '좋아요'
+					   ,like_cnt
+					   ,down_cnt as '다운로드'      
+					   ,down_cnt
+					   ,(select code_desc from kube_mgmt_code where code_seq = kvi.code_seq1) as p_code_desc
+			   		   ,(select code_desc from kube_mgmt_code where code_seq = kvi.code_seq2) as code_desc
+					   ,(select count(*) as cnt from kube_video_comment kvc where kvc.vi_seq = kvi.vi_seq and vc_status = 0) as '댓글'
+					   ,kvi.reg_date as '게시일시'
+					   ,kvi.reg_date
+					   ,(select levelnm from tbSVC_TDMSEMP emp where emp.empno = kvi.reg_empno) as levelnm
+				  from kube_video_info kvi with (nolock)     
+				 inner join kube_video_sub_info kvsi with (nolock)
+				    on kvi.vi_seq = kvsi.vi_seq
+				 where kvi.vi_status = '0'
+				   and kvi.reg_date between '$start_date$000000' and '$end_date$235959'
+				) as list
+		 order by $selOrder$ desc
+	</select>
+	 
+	<update id="Kube#updateReport">
+		<isEqual property="re_status" compareValue="2">
+			update kube_report_mgmt 
+			   set re_status = #re_status#
+			       ,mod_date = #mod_date#
+			 where re_seq = #re_seq#;
+		</isEqual>
+		<isEqual property="re_status" compareValue="3">
+			 <isEqual property="re_gubun" compareValue="1">
+				update kube_video_info 
+			   	   set vi_status = 3
+			   	       ,mod_date = #mod_date#
+			 	 where vi_seq = (select vi_seq from kube_report_mgmt where re_seq = #re_seq#);
+			 	 
+			 	update kube_report_mgmt 
+			       set re_status = #re_status#
+			           ,mod_date = #mod_date#
+			     where vi_seq = (select vi_seq from kube_report_mgmt where re_seq = #re_seq#);
+			 </isEqual> 
+      
+			 <isEqual property="re_gubun" compareValue="2">
+			    update kvc 
+			   	   set kvc.vc_status = 3
+			   	       ,kvc.mod_date = #mod_date#
+			   	  from kube_video_comment kvc 
+			   	 inner join kube_report_mgmt krm
+			   	    on krm.vi_seq = kvc.vi_seq
+			   	       and krm.vc_seq = kvc.vc_seq
+			   	 where krm.re_seq = #re_seq#;
+			 	 
+			    update kvc 
+			   	   set kvc.vc_status = 3
+			   	       ,kvc.mod_date = #mod_date#
+			   	  from kube_video_comment kvc 
+			   	 inner join kube_report_mgmt krm
+			   	    on krm.vi_seq = kvc.vi_seq
+			   	       and krm.vc_seq = kvc.p_vc_seq
+			   	 where krm.re_seq = #re_seq#;
+			 	 
+			 	update kube_report_mgmt 
+			       set re_status = #re_status#
+			           ,mod_date = #mod_date#
+			     where re_seq = #re_seq#;
+			 </isEqual>
+		</isEqual>
+	</update>
+	
+	<select id="Kube#getUserStatisticsList" resultClass="java.util.HashMap">
+		select * 
+		  from (select reg_empno
+				       ,upload_cnt
+				       ,download_cnt
+				       ,comment_cnt
+				       ,tt.name
+				       ,tt.jikyee
+				       ,dbo.SPLIT_STR(dbo.fu_dept_info(tt.deptno, '', ','), ',',2) as dept_name1
+				       ,dbo.SPLIT_STR(dbo.fu_dept_info(tt.deptno, '', ','), ',',3) as dept_name2
+				       ,(select levelnm from tbSVC_TDMSEMP emp where emp.empno = user_data.reg_empno) as levelnm
+			      from (select reg_empno as reg_empno
+						       ,sum(upload_cnt) as upload_cnt
+						       ,sum(download_cnt) as download_cnt
+						       ,sum(comment_cnt) as comment_cnt
+						  from (select reg_empno
+								       ,count(*) as upload_cnt
+								       ,0 as download_cnt
+								       ,0 as comment_cnt       
+								  from kube_video_info kvi with (nolock)
+								 where vi_status = 0
+								 group by reg_empno
+								  
+								union all
+								
+								select reg_empno
+								       ,0 as upload_cnt
+								       ,count(*) as download_cnt
+								       ,0 as comment_cnt
+								  from kube_video_history kvh with (nolock)
+								 where vh_gubun = 8
+								 group by reg_empno
+								
+								union all
+								  
+								select reg_empno
+								       ,0 as upload_cnt
+								       ,0 as download_cnt
+								       ,count(*) as comment_cnt
+								  from kube_video_comment kvc with (nolock)
+								 where vc_status = 0
+								 group by reg_empno
+							) as cnt
+						group by reg_empno
+					) user_data
+			  inner join tbSVC_TDMSEMP tt with (nolock)
+			     on reg_empno = tt.empno
+		) as list
+	  <isNotEmpty property="srh_keyword" prepend="where">
+	  		name like '%$srh_keyword$%'
+	  		or dept_name1 like '%$srh_keyword$%'
+	  		or dept_name2 like '%$srh_keyword$%'
+	  </isNotEmpty>
+	  order by $selOrder$
+	 OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+     FETCH NEXT #perPageCnt# ROWS ONLY	     
+	</select>
+	
+	<select id="Kube#getUserStatisticsListCnt" resultClass="int">
+		select count(*) as totCnt
+		  from (select reg_empno 
+		               ,name
+				       ,dbo.SPLIT_STR(dbo.fu_dept_info(tt.deptno, '', ','), ',',2) as dept_name1
+				       ,dbo.SPLIT_STR(dbo.fu_dept_info(tt.deptno, '', ','), ',',3) as dept_name2
+			      from (select reg_empno as reg_empno
+						  from (select reg_empno
+								  from kube_video_info kvi with (nolock)
+								 where vi_status = 0
+								 group by reg_empno
+								  
+								union all
+								
+								select reg_empno
+								  from kube_video_history kvh with (nolock)
+								 where vh_gubun = 8
+								 group by reg_empno
+								
+								union all
+								  
+								select reg_empno
+								  from kube_video_comment kvc with (nolock)
+								 where vc_status = 0
+								 group by reg_empno
+							) as cnt
+						group by reg_empno
+					) user_data
+			  inner join tbSVC_TDMSEMP tt with (nolock)
+			     on reg_empno = tt.empno
+	  ) list 
+	  <isNotEmpty property="srh_keyword" prepend="where">
+	  		name like '%$srh_keyword$%'
+	  		or dept_name1 like '%$srh_keyword$%'
+	  		or dept_name2 like '%$srh_keyword$%'
+	  </isNotEmpty>	
+	</select>
+	
+	<select id="Kube#getSaList" resultClass="java.util.HashMap">
+		select kma.empno
+		       ,name
+		       ,jikyee
+		       ,telno
+		       ,adm_gubun
+		       ,mailno
+		       ,hp
+		       ,dbo.SPLIT_STR(dbo.fu_dept_info(tt.deptno, '', ','), ',',2) as dept_name1
+		       ,dbo.SPLIT_STR(dbo.fu_dept_info(tt.deptno, '', ','), ',',3) as dept_name2
+		       ,tt.levelnm
+		  from kube_mgmt_admin kma
+		 inner join tbSVC_TDMSEMP tt
+		    on kma.empno = tt.empno
+		 order by name asc
+	</select>
+	
+	<delete id="Kube#deleteKubeSa">
+		delete kube_mgmt_admin where empno = #empno#
+	</delete>
+	
+	<insert id="Kube#insertKubeSa">
+		insert into kube_mgmt_admin
+		values (#empno#, #reg_date#, #reg_empno#, #adm_gubun#)
+	</insert>
+	
+	<select id="Kube#getUserList" resultClass="java.util.HashMap">
+		select * 
+		       ,dbo.Split_str(dbo.Fu_dept_info(deptno, '', ','), ',',2) as dept_name1
+			   ,dbo.Split_str(dbo.Fu_dept_info(deptno, '', ','), ',',3) as dept_name2 
+		  from (select tt.empno
+				       ,name
+				       ,jikyee
+				       ,telno
+				       ,deptno
+				       ,levelnm
+				  from tbSVC_TDMSEMP tt with (nolock)
+				 where empno not in (select empno from kube_mgmt_admin with (nolock))
+			   ) as list
+	  <isNotEmpty property="srh_keyword" prepend="where">
+	  		name like '%$srh_keyword$%'
+	  </isNotEmpty>		
+	  order by name asc
+	  OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+      FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="Kube#getUserListCnt" resultClass="int">
+		select count(*) as totCnt
+		  from (select empno
+				       ,name
+				       ,jikyee
+				       ,telno
+				  from tbSVC_TDMSEMP tt with (nolock)
+				 where empno not in (select empno from kube_mgmt_admin with (nolock))
+			   ) as list
+	  <isNotEmpty property="srh_keyword" prepend="where">
+	  		name like '%$srh_keyword$%'
+	  </isNotEmpty>			  
+	</select>
+	
+	<select id="Kube#getCustomtMenu" resultClass="java.util.HashMap">
+		if (select count(*) as cnt from kube_user_menu where empno = #empno#) = '0' 
+		with kubeLeftMenu(code_seq, p_code_seq, code_desc, sub_code_desc, order_num, link_url, etc_info, use_flag, sort)
+		as
+		(select code_seq
+	            ,p_code_seq
+			    ,code_desc
+			    ,code_desc as sub_code_desc
+ 			    ,order_num
+			    ,etc_info as link_url
+			    ,etc_info
+			    ,9999 as use_flag
+				,convert(varchar(255),order_num * code_gubun) as sort
+		  from kube_mgmt_code with (nolock)
+		 where p_code_seq = 0
+		   and code_gubun in (1, 3)
+		   and del_flag = 0
+
+		union all
+	
+		select kmc.code_seq
+		       ,kmc.p_code_seq
+			   ,menu.code_desc as code_desc
+			   ,kmc.code_desc as sub_code_desc
+			   ,kmc.order_num
+			   ,menu.link_url
+			   ,kmc.etc_info
+			   ,9999 as use_flag
+			   ,convert(varchar(255),convert(nvarchar, menu.sort) +'/' + convert(varchar(255), kmc.order_num)) as sort
+		  from kube_mgmt_code kmc with (nolock)
+		 inner join kubeLeftMenu menu
+		    on kmc.p_code_seq = menu.code_seq
+		       and kmc.del_flag = 0
+		)
+		select 'COMMON_MENU' as m_gubun
+		       ,ROW_NUMBER() OVER(order by cast('/'+sort+'/' as  HIERARCHYID) ) as sortorder
+		       ,code_seq
+		       ,p_code_seq
+		       ,code_desc
+		       ,sub_code_desc
+		       ,order_num
+		       ,link_url
+		       ,etc_info
+		       ,9999 as use_flag
+			   ,sort
+			   ,isnull((select count(*) as cnt from kube_mgmt_code b where b.del_flag = 0 and b.p_code_seq = a.code_seq group by b.p_code_seq),0) as sub_cnt
+ 		  from kubeLeftMenu a with (nolock)
+
+		else
+		   with kubeLeftMenu(code_seq, p_code_seq, code_desc, sub_code_desc, order_num, link_url, etc_info, use_flag, sort)
+				as
+				(select code_seq
+			            ,p_code_seq
+					    ,code_desc
+					    ,code_desc as sub_code_desc
+		 			    ,order_num
+					    ,etc_info as link_url
+					    ,etc_info
+					    ,use_flag
+						,convert(varchar(255),order_num * code_gubun) as sort
+				  from kube_user_menu with (nolock)
+				 where p_code_seq = 0
+				   and code_gubun in (1, 3)
+				   and del_flag = 0
+		           and empno = #empno#
+		           
+				union all
+			
+				select kmc.code_seq
+				       ,kmc.p_code_seq
+					   ,menu.code_desc as code_desc
+					   ,kmc.code_desc as sub_code_desc
+					   ,kmc.order_num
+					   ,menu.link_url
+					   ,kmc.etc_info
+					   ,kmc.use_flag
+					   ,convert(varchar(255),convert(nvarchar, menu.sort) +'/' + convert(varchar(255), kmc.order_num)) as sort
+				  from kube_user_menu kmc with (nolock)
+				 inner join kubeLeftMenu menu
+				    on kmc.p_code_seq = menu.code_seq
+				       and kmc.del_flag = 0
+				       and empno = #empno#
+				)
+				select 'USER_MENU' as m_gubun
+				       ,ROW_NUMBER() OVER(order by cast('/'+sort+'/' as  HIERARCHYID) ) as sortorder
+				       ,code_seq
+				       ,p_code_seq
+				       ,code_desc
+				       ,sub_code_desc
+				       ,order_num
+				       ,link_url
+				       ,etc_info
+					   ,use_flag
+					   ,sort
+					   ,isnull((select count(*) as cnt from kube_user_menu b where b.del_flag = 0 and b.p_code_seq = a.code_seq group by b.p_code_seq),0) as sub_cnt
+		 		  from kubeLeftMenu a with (nolock)
+
+	</select>
+	
+	<delete id="Kube#deleteUserMenuInfo">
+		delete from kube_user_menu where empno = #empno#
+	</delete>
+	
+	<insert id="Kube#insertUserMenuInfo">
+		insert into kube_user_menu
+		select #empno#
+		       ,code_seq
+			   ,p_code_seq
+			   ,code_desc
+			   ,code_gubun
+			   ,order_num
+			   ,etc_info
+			   ,del_flag
+			   ,1
+		   from kube_mgmt_code
+		  where code_gubun in (1, 2)
+	</insert>
+	
+	<update id="Kube#updateUserMenuInfo">
+		update kube_user_menu
+		   set use_flag = 0
+		 where empno = #empno# 
+		   and code_seq not in ($code_seq$)
+		   and code_gubun = 2
+	</update>
+	
+	<select id="Kube#getRecommendedList" resultClass="java.util.HashMap">
+		select *
+		       ,((visit_cnt * 1) + (like_cnt * 10) - (unlike_cnt * 5) + (favor_cnt * 20) + (down_cnt * 40)) as popular_cnt
+		       ,(select levelnm from tbSVC_TDMSEMP emp where emp.empno = a.reg_empno) as levelnm
+		       ,(select code_desc from kube_mgmt_code where code_seq = a.code_seq2) as code_desc
+		       ,(select isnull((select count(*) from kube_video_comment where vc_status = 0 and vi_seq = a.vi_seq group by vi_seq), 0) as comment_cnt) as comment_cnt
+		  from kube_video_info a with (nolock)
+		 inner join kube_video_sub_info kvsi with (nolock)
+			   on a.vi_seq = kvsi.vi_seq
+		 inner join kube_video_thumb b with (nolock)
+               on a.vi_seq = b.vi_seq
+                  and b.main_flag = 1
+		 where code_seq2 in (select top 5 code_seq2
+                               from (select *
+                                       from kube_video_history with (nolock)
+                                      where vh_gubun = 1
+                                        and reg_empno = #empno#
+                                    ) as visit
+				              inner join kube_video_info kvi with (nolock) 
+						         on visit.vi_seq = kvi.vi_seq
+		                      group by code_seq2
+		                      order by count(*) desc
+		                     )
+		  and vi_status = 0
+		  and open_flag = 39
+		  and conv_flag = 1 
+		order by reg_date desc
+        OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+        FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	 
+	<select id="Kube#getRecommendedListCnt" resultClass="int">
+		select count(*) as totCnt
+		  from kube_video_info a 
+		 inner join kube_video_sub_info kvsi with (nolock)
+		    on a.vi_seq = kvsi.vi_seq		  
+		 inner join kube_video_thumb b with (nolock)
+            on a.vi_seq = b.vi_seq
+               and b.main_flag = 1
+		 where code_seq2 in (select top 5 code_seq2
+                               from (select *
+                                       from kube_video_history
+                                      where vh_gubun = 1
+                                        and reg_empno = #empno#
+                                    ) as visit
+				              inner join kube_video_info kvi 
+						         on visit.vi_seq = kvi.vi_seq
+		                      group by code_seq2
+		                      order by count(*) desc
+		                     )
+		  and vi_status = 0
+		  and open_flag = 39
+		  and conv_flag = 1 
+	</select> 
+	
+	<select id="Kube#getDeptInfo" resultClass="java.util.HashMap">
+			select * 
+			  from tbSVC_TDMSDEPT
+		<isEmpty property="etc_info">
+			 where dept_code = up_code
+		</isEmpty>
+		<isNotEmpty property="etc_info">
+			 where up_code = #sel_f_dept_code#
+			   and up_code != dept_code
+		</isNotEmpty>
+			   and del_flag = ''
+	</select>
+	
+	<insert id="Kube#insertUpdateElearnVideoUserMap" parameterClass="java.util.HashMap">
+		if (select count(*) as cnt from kube_eleaning_user_map where empno = #empno# and vi_seq = #vi_seq#) = '0' 
+			insert into kube_eleaning_user_map
+			values (#empno#, #vi_seq#, getdate(), 0, null, 0, 0)
+		else
+			update kube_eleaning_user_map
+			   set play_cnt = play_cnt + 1
+			   <isNotEmpty property="play_duration_sec">
+			   		<![CDATA[
+			   		,play_duration_sec = case when play_duration_sec < #play_duration_sec# then #play_duration_sec# 
+			   		                          else play_duration_sec end
+					]]>
+			   </isNotEmpty>
+			   <isEqual property="complete_flag" compareValue="1">
+			   		,complete_flag = #complete_flag#
+			   		,complete_datetime = getdate()
+			   </isEqual>
+			 where empno = #empno#
+			   and vi_seq = #vi_seq#
+	</insert>
+	
+	<select id="Kube#getElearnVideoUserInfo" resultClass="java.util.HashMap">
+		select *
+		  from kube_eleaning_user_map
+		 where empno = #empno#
+		   and vi_seq = #vi_seq#
+	</select>
+	
+	<select id="Kube#getElearnStatList" resultClass="java.util.HashMap">
+		select *
+		  from (select keu.* 
+				       ,(select title from kube_video_info where vi_seq = keu.vi_seq) as title
+					   ,(select dept_name from tbSVC_TDMSDEPT where dept_code = te.deptno) as dept_name
+					   ,(select duration from kube_video_info where vi_seq = keu.vi_seq) as totDuration
+					   ,te.name
+				  from kube_eleaning_user_map keu
+				 inner join  tbSVC_TDMSEMP te
+				    on keu.empno = te.empno
+				 <dynamic prepend="where">
+				 	<isNotEmpty property="complete_flag" prepend="and">
+				 		complete_flag = #complete_flag#
+				 	</isNotEmpty>
+				 	<isNotEmpty property="srh_date" prepend="and">
+				 		($srh_date$ between #start_date# and #end_date#) 
+				 	</isNotEmpty>
+				 </dynamic>
+				) as data
+		<dynamic prepend="where">
+			<isNotEmpty property="srh_keyword">
+				(title like '%$srh_keyword$%'
+				 	or name  like '%$srh_keyword$%')
+			</isNotEmpty>
+		</dynamic>
+		 order by start_datetime desc
+		 OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="Kube#getElearnStatListCnt" resultClass="int">
+		select count(*) as totCnt
+		  from (select keu.* 
+				       ,(select title from kube_video_info where vi_seq = keu.vi_seq) as title
+					   ,te.name
+				  from kube_eleaning_user_map keu
+				 inner join  tbSVC_TDMSEMP te
+				    on keu.empno = te.empno
+				 <dynamic prepend="where">
+				 	<isNotEmpty property="complete_flag" prepend="and">
+				 		complete_flag = #complete_flag#
+				 	</isNotEmpty>
+				 	<isNotEmpty property="srh_date" prepend="and">
+				 		($srh_date$ between #start_date# and #end_date#) 
+				 	</isNotEmpty>
+				 </dynamic>
+				) as data
+		<dynamic prepend="where">
+			<isNotEmpty property="srh_keyword">
+				(title like '%$srh_keyword$%'
+				 	or name  like '%$srh_keyword$%')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<select id="Kube#getElearnStatListXls" resultClass="java.util.HashMap">
+		select * 
+		  from (select keu.empno as '사번'
+				       ,te.name as '이름'
+					   ,(select dept_name from tbSVC_TDMSDEPT where dept_code = te.deptno) as '소속'
+				       ,(select title from kube_video_info where vi_seq = keu.vi_seq) as '과정명'
+					   ,case keu.complete_flag when 0 then '미완료'
+					                           when 1 then '완료'
+					     end as '수료여부'
+					   ,keu.play_duration_sec as play_duration_sec 
+		               ,(select duration from kube_video_info where vi_seq = keu.vi_seq) as totDuration
+		               ,keu.start_datetime as '시작일시'
+		               ,keu.complete_datetime as '수료일시'
+				  from kube_eleaning_user_map keu
+				 inner join  tbSVC_TDMSEMP te
+				    on keu.empno = te.empno
+				 <dynamic prepend="where">
+				 	<isNotEmpty property="complete_flag" prepend="and">
+				 		complete_flag = #complete_flag#
+				 	</isNotEmpty>
+				 	<isNotEmpty property="srh_date" prepend="and">
+				 		($srh_date$ between #start_date# and #end_date#) 
+				 	</isNotEmpty>
+				 </dynamic>
+				) data
+		<dynamic prepend="where">
+			<isNotEmpty property="srh_keyword">
+				(과정명 like '%$srh_keyword$%'
+				 	or 이름  like '%$srh_keyword$%')
+			</isNotEmpty>
+		</dynamic>				
+		 order by 시작일시 desc
+	</select>
+	
+	<select id="Kube#getElearnVideoViSeq" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select vi_seq from kube_video_info where pds_saved_name = #pds_saved_name#
+	</select>
+</sqlMap>

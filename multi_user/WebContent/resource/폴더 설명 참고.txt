@@ -1,0 +1,20 @@
+﻿C:\2009media\resource 관리 내용
+
+멀티미디어 사용자 홈페이지 resoucre 폴더임. 삭제하지 말것
+
+원본 소스 경로
+D:\workspace\multi_user\WebContent\ 
+
+
+
+=====================================================================================
+D:\workspace\multi_user\WebContent\resource 관리 내용
+
+멀티미디어 사용자 홈페이지는 iis-tomcat 연동으로 서비스 진행중
+
+■ http://media.hq/main.do 로 진행시 resource 적용하려면 아래 경로에 복사해줘야 반영됨. 
+C:\2009media\resource
+
+
+■ http://100.1.48.50:8091 or http://media.hq:8091 로 진행시엔 아래 경로를 참조한다 
+D:\workspace\multi_user\WebContent\resource\

@@ -1,0 +1,790 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Contents">
+	<typeAlias alias="ContentsDto" type="kr.co.neodreams.multi_user.dto.ContentsDto"/>
+	<typeAlias alias="Tbsetcd2Dto" type="kr.co.neodreams.multi_user.dto.Tbsetcd2Dto"/>
+	<typeAlias alias="ImgBoardDto" type="kr.co.neodreams.multi_user.dto.ImgBoardDto"/>
+	<typeAlias alias="Tbsvc_tdmsempDto" type="kr.co.neodreams.multi_user.dto.Tbsvc_tdmsempDto"/>
+	<!-- 20190610 강정우 추가 -->	
+	<typeAlias alias="Tbsetcd1Dto" type="kr.co.neodreams.multi_user.dto.Tbsetcd1Dto"/>
+	<select id="Contents#getContentsList" resultClass="ContentsDto">
+  		SELECT
+  			OM.SM_SEQ,		OM.SM_NO,		OM.SM_DATE,			OM.SM_SVC2,			OM.SM_MEMPNO, 			OM.SM_MCNAME,
+  			OM.SM_MDNAME,	OM.SM_MNAME, 	OM.SM_TITLE, 		OM.SM_LSTATE, 		OM.SM_FSTATE, 			OM.SM_ISSIGN,
+  			OM.SM_SIGNNO, 	OM.SM_WDATE,	OM.MULTITIMEOUT,	OM.SM_TEXT,			CT.SCT_worker,			OM.SM_AMOUNT,
+  			OM.SSTART,		OM.SM_MC1NAME,	OM.SM_MC2NAME,		OM.SM_MDNAME,
+  			NULLIF(convert(date, (left(CT.SCT_TDATE, 8)), 8),'')AS SCT_TDATE,
+			NULLIF(convert(date, (left(CT.SCT_RDATE, 8)), 8),'')AS SCT_RDATE,
+			isnull(CT.SCT_ORIGQTY, 0) AS SCT_ORIGQTY
+		FROM tbSVC_ORDMASTER AS OM
+		INNER JOIN tbSVC_CONTENTS AS CT ON OM.SM_NO = CT.SM_NO
+		WHERE (OM.SM_SVC1 = '1003')
+		AND (OM.SM_TITLE LIKE '%$s4$%'
+		     OR OM.SM_TEXT LIKE '%$s4$%'
+		     OR OM.SM_MNAME LIKE '%$s4$%'
+		     OR OM.SM_NO LIKE '%$s4$%')
+		<isNotEmpty property="s2">     
+			AND (OM.SM_SVC2 LIKE '$s2$')
+		</isNotEmpty>
+		<isNotEmpty property="lists3" prepend="AND">
+			OM.SM_LSTATE 
+			<iterate prepend="in" property="lists3" open="(" close=")" conjunction="," >
+				#lists3[]#
+			</iterate>
+		</isNotEmpty>
+  		 <isNotEmpty property="SM_WDATE_FROM" >
+        	AND convert(VARCHAR(10), OM.SM_WDATE, 23) >= '$SM_WDATE_FROM$'
+       	 </isNotEmpty>
+         <isNotEmpty property="SM_WDATE_TO">
+         <![CDATA[
+            AND convert(VARCHAR(10), OM.SM_WDATE, 23) <= '$SM_WDATE_TO$'
+             ]]>
+        </isNotEmpty>
+		ORDER BY OM.SM_SEQ DESC
+		<isNotEqual property="xmlGubun" compareValue="excelDown">
+		OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+        FETCH NEXT #perPageCnt# ROWS ONLY
+        </isNotEqual>
+        
+ 	</select>
+	
+	<select id="Contents#getContentsListCnt" resultClass="int">
+  		SELECT COUNT(*)
+			FROM tbSVC_ORDMASTER AS OM INNER JOIN
+			tbSVC_CONTENTS AS CT ON OM.SM_NO = CT.SM_NO
+		WHERE (OM.SM_SVC1 = '1003')
+		AND (OM.SM_TITLE LIKE '%$s4$%'
+		     OR OM.SM_TEXT LIKE '%$s4$%'
+		     OR OM.SM_MNAME LIKE '%$s4$%'
+		     OR OM.SM_NO LIKE '%$s4$%')
+		<isNotEmpty property="s2">     
+			AND (OM.SM_SVC2 LIKE '$s2$')
+  		</isNotEmpty>
+		<isNotEmpty property="lists3" prepend="AND">
+			OM.SM_LSTATE 
+			<iterate prepend="in" property="lists3" open="(" close=")" conjunction="," >
+				#lists3[]#
+			</iterate>
+		</isNotEmpty>
+  		  <isNotEmpty property="SM_WDATE_FROM" >
+        	AND convert(VARCHAR(10), OM.SM_WDATE, 23) >= '$SM_WDATE_FROM$'
+       	 </isNotEmpty>
+         <isNotEmpty property="SM_WDATE_TO">
+         <![CDATA[
+            AND convert(VARCHAR(10), OM.SM_WDATE, 23) <= '$SM_WDATE_TO$'
+             ]]>
+         </isNotEmpty>
+ 	</select>
+
+ 	
+ 	<!-- select################################################################  -->
+ 	<select id="Contents#select_categorey" resultClass="Tbsetcd2Dto">
+ 		SELECT CD2_CODE, CD2_NAME FROM tbSET_CD2
+		WHERE (CD2_CD1 = '1003') AND (CD2_STATE = '1')
+		ORDER BY CD2_SORT, CD2_NAME
+ 	</select>
+ 	<!-- select 끝################################################################  -->
+
+
+	<select id="Contents#getMypageContentsList" resultClass="ContentsDto">
+		SELECT
+            OM.SM_SEQ
+            , OM.SM_NO
+            , OM.SM_DATE
+            , OM.SM_SVC2
+            , OM.SM_MDNAME
+            , OM.SM_TITLE
+            , OM.SM_LSTATE
+            , SC.CD2_NAME
+            , OM.SM_FSTATE
+            , OM.SM_ISSIGN
+            , OM.SM_WDATE
+            , OM.MULTITIMEOUT
+            , CT.SCT_SEQ
+            , CT.SCT_RDATE
+            , CT.SCT_TDATE
+        FROM
+            tbSVC_ORDMASTER AS OM
+        INNER JOIN tbSVC_CONTENTS AS CT
+    	    ON OM.SM_NO = CT.SM_NO
+    	INNER JOIN tbSET_CD2 AS SC 
+    		ON OM.SM_LSTATE = SC.CD2_CODE
+		<![CDATA[
+        WHERE (
+    	    (OM.SM_SVC1 = '1003')
+    	    AND (OM.SM_MCCD = '1133')
+    	    AND (OM.SM_MEMPNO = '$SM_MEMPNO$')
+    	     )
+    	]]>
+    	<isNotEmpty property="SM_WDATE_FROM" >
+        	AND convert(VARCHAR(10), OM.SM_WDATE, 23) >= '$SM_WDATE_FROM$'
+       	 </isNotEmpty>
+         <isNotEmpty property="SM_WDATE_TO">
+         <![CDATA[
+            AND convert(VARCHAR(10), OM.SM_WDATE, 23) <= '$SM_WDATE_TO$'
+             ]]>
+         </isNotEmpty>
+        ORDER BY OM.SM_SEQ DESC
+        <isNotEmpty property="pageNo">
+        	<![CDATA[
+        	OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+        	FETCH NEXT #perPageCnt# ROWS ONLY
+        	]]>
+        </isNotEmpty>
+ 	</select>
+
+ 	
+	<select id="Contents#getMypageContentsListCount" resultClass="int">
+		SELECT
+            count(*) as totalCnt 
+        FROM
+            tbSVC_ORDMASTER AS OM
+        INNER JOIN tbSVC_CONTENTS AS CT
+    	    ON OM.SM_NO = CT.SM_NO
+    	INNER JOIN tbSET_CD2 AS SC 
+    		ON OM.SM_LSTATE = SC.CD2_CODE
+		<![CDATA[
+        WHERE (
+    	    (OM.SM_SVC1 = '1003')
+    	    AND (OM.SM_MCCD = '1133')
+    	    AND (OM.SM_MEMPNO = '$SM_MEMPNO$')
+    	     )
+    	]]>
+        <isNotEmpty property="SM_WDATE_FROM" >
+        	AND convert(VARCHAR(10), OM.SM_WDATE, 23) >= '$SM_WDATE_FROM$'
+       	 </isNotEmpty>
+         <isNotEmpty property="SM_WDATE_TO">
+         <![CDATA[
+            AND convert(VARCHAR(10), OM.SM_WDATE, 23) <= '$SM_WDATE_TO$'
+             ]]>
+         </isNotEmpty>
+ 	</select>
+ 	
+ 	<!-- 저장################################################################  -->
+ 	<select id="Contents#select_maxnum" resultClass="ContentsDto">
+  		SELECT MAX(CONVERT(INT,SUBSTRING(SM_NO, 9, LEN(SM_NO)-8))) AS N_SM_NO FROM tbSVC_ORDMASTER
+ 	</select>
+ 	<select id="Contents#select_tbsetcd1" resultClass="ContentsDto">
+  		SELECT CD1_NAME FROM tbSET_CD1 WHERE (CD1_MDIV = '118') AND (CD1_CODE = '$SM_MCCD$') 
+ 	</select>
+	<insert id="Contents#insert" parameterClass="ContentsDto">
+	<![CDATA[
+	  INSERT INTO tbSVC_ORDMASTER
+	  		(SM_NO, SM_DATE, SM_SVC1, SM_SVC2, SM_MEMPNO, SM_MCCD, SM_MCNAME, 
+			SM_MC1CD, SM_MC1NAME, SM_MC2CD, SM_MC2NAME, SM_MDCD, SM_MDNAME, SM_MTCD, SM_MTNAME, 
+			SM_MNAME, SM_MTEL, SM_MCEL, SM_MEMAIL, SM_TITLE, SM_TEXT, SM_FDATE, 
+			SM_LSTATE, SM_FSTATE, SM_ISSIGN, SM_IPADDR, SM_WDATE,
+			SSTART, MULTIPAGE, MULTITIME, MULTITIMEOUT, SM_REGDATE, SM_AMOUNT, AC_SEQ, AC_STATUS
+			) VALUES (
+			  #SM_NO#,
+			  #SM_DATE#,
+			  #SM_SVC1#,
+			  #SM_SVC2#,
+			  #SM_MEMPNO#,
+			  #SM_MCCD#,
+			  #SM_MCNAME#,
+			  #SM_MC1CD#,
+			  #SM_MC1NAME#,
+			  #SM_MC2CD#,
+			  #SM_MC2NAME#,
+			  #SM_MDCD#,
+			  #SM_MDNAME#,
+			  #SM_MTCD#,
+			  #SM_MTNAME#,
+			  #SM_MNAME#,
+			  #SM_MTEL#,
+			  #SM_MCEL#,
+			  #SM_MEMAIL#,
+			  #SM_TITLE#,
+			  #SM_TEXT#,
+			  #SM_FDATE#,
+			  #SM_LSTATE#,
+			  #SM_FSTATE#,
+			  #SM_ISSIGN#,
+			  #SM_IPADDR#,
+			  #SM_WDATE#,
+			  #SSTART#,
+			  #MULTIPAGE#,
+			  #MULTITIME#,
+			  #MULTITIMEOUT#,
+			  getdate(),
+			  #SM_AMOUNT#,
+			  #AC_SEQ#,
+			  #AC_STATUS#
+			 )
+		]]>
+	 </insert>
+
+	<insert id="Contents#insert_file" parameterClass="ContentsDto">
+	<![CDATA[
+	  INSERT INTO tbSVC_CONTENTS
+			(SM_NO, SCT_SMDATE, SCT_RDATE, SCT_SUBJECT, SCT_TEXT, 
+			SCT_ORIGTYPE, SCT_ORIGQTY, SCT_ORIGTEXT,
+			SCT_FNAME1,SCT_FNAME2, SCT_FNAME3,
+			SCT_CHANGETYPE1, SCT_CHANGETYPE2, SCT_CHANGEQTY
+			) VALUES ( 
+				#SM_NO#,
+				#SM_DATE#,
+				#SCT_RDATE#,
+				#SM_TITLE#,
+				#SM_TEXT#,
+				#SCT_ORIGTYPE#,
+				#SCT_ORIGQTY#,
+				#SCT_ORIGTEXT#,
+				#SCT_FNAME1#,
+				#SCT_FNAME2#,
+				#SCT_FNAME3#,
+				#SCT_CHANGETYPE1#,
+				#SCT_CHANGETYPE2#,
+				#SCT_CHANGEQTY# 
+				)
+		]]>
+	 </insert>
+	 
+	 <update id="Contents#Contents_fileUpdate" parameterClass="ContentsDto">
+		update tbSVC_CONTENTS_FILE
+		SET SM_NO = #SM_NO#
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="fileSeq_1" prepend="OR">
+				SCF_SEQ = #fileSeq_1#
+			</isNotEmpty>
+			<isNotEmpty property="fileSeq_2" prepend="OR">
+				SCF_SEQ = #fileSeq_2#
+			</isNotEmpty>
+			<isNotEmpty property="fileSeq_3" prepend="OR">
+				SCF_SEQ = #fileSeq_3#
+			</isNotEmpty>
+			<isNotEmpty property="fileSeq_4" prepend="OR">
+				SCF_SEQ = #fileSeq_4#
+			</isNotEmpty>
+		</dynamic>
+	 </update>
+	 
+	 <update id="Contents#contentsApprove" parameterClass="ContentsDto">
+	 	UPDATE tbSVC_CONTENTS
+		SET
+			<isEqual property="allow" compareValue="allow1EMP">
+				SCT_allow1REGDATE = GETDATE()
+			</isEqual>
+			<isEqual property="allow" compareValue="allow2EMP">
+				SCT_allow2REGDATE = GETDATE()
+			</isEqual>
+		WHERE SM_NO =  #SM_NO#;
+		
+		<isEqual property="allow" compareValue="allow2EMP">
+		UPDATE tbSVC_ORDMASTER 
+		SET
+			SM_LSTATE = #SM_LSTATE#
+		WHERE
+			SM_NO = #SM_NO#;
+	</isEqual>
+	 </update>
+	 
+	 
+	 <!-- 트랜젝션 테스트용-->
+	 <!-- <insert id="Contents#insert_file" parameterClass="ContentsDto">
+	 	<![CDATA[
+	 	INSERT INTO test
+			(SM_NO) VALUES ( #SM_NO# )
+		]]>
+	 </insert>  -->
+	<!-- 저장끝################################################################ -->
+	
+	<select id="Contents#getContentsDetail" resultClass="ContentsDto">
+		SELECT OM.SM_SEQ, OM.SM_NO, OM.SM_DATE, OM.SM_SVC2, OM.SM_MEMPNO, OM.SM_MCCD, OM.SM_MCNAME, OM.SM_MC1CD, OM.SM_MC1NAME, OM.SM_MC2CD,
+		OM.SM_MC2NAME, OM.SM_MDCD, OM.SM_MDNAME, OM.SM_MTCD, OM.SM_MTNAME, OM.SM_MNAME, OM.SM_MTEL, OM.SM_MCEL,
+		OM.SM_MEMAIL, OM.SM_TITLE, OM.SM_TEXT, OM.SM_LSTATE, OM.SM_FSTATE, OM.SM_ISSIGN, OM.SM_WDATE, OM.SM_UDATE,
+		CT.SCT_SEQ, CT.SCT_RDATE, CT.SCT_FNAME1, CT.SCT_FNAME2, CT.SCT_FNAME3 ,OM.SSTART,OM.MULTIPAGE,OM.MULTITIME,OM.MULTITIMEOUT
+		,OM.AC_STATUS, TA.AC_CONTENTS, OM.SM_AMOUNT,
+		CT.SCT_allow1EMP,	CT.SCT_allow1NM,		CT.SCT_allow1DEPT,		CT.SCT_allow1DEPTNM,
+		CT.SCT_allow2EMP,	CT.SCT_allow2NM,		CT.SCT_allow2DEPT,		CT.SCT_allow2DEPTNM, 		nullif(convert(date, (left(CT.SCT_TDATE, 8)), 8),'')AS SCT_TDATE,
+		isnull(CT.SCT_ORIGQTY, 0) AS SCT_ORIGQTY,		CT.SCT_allow1REGDATE,	CT.SCT_allow2REGDATE,	CT.SCT_ORIGTEXT, 	CT.SCT_worker
+		FROM tbSVC_ORDMASTER AS OM INNER JOIN
+		tbSVC_CONTENTS AS CT ON OM.SM_NO = CT.SM_NO
+		LEFT JOIN tbSVC_ACCEPT AS TA ON TA.AC_SEQ = OM.AC_SEQ 
+		WHERE OM.SM_SEQ = #SHSEQNUM#
+	</select>
+	
+	<select id="Contents#contentFileList" resultClass="ContentsDto">
+		select 
+			TCF.SCF_SEQ, TCF.SCF_orgFileName, TCF.SCF_status
+		from tbSVC_ORDMASTER AS OM
+		LEFT JOIN tbSVC_CONTENTS_FILE TCF ON TCF.SM_NO = OM.SM_NO
+		WHERE OM.SM_SEQ = #SHSEQNUM#
+		AND SCF_status = #searchStatus#
+	</select>
+	
+	<select id="Contents#removeContentsFile" resultClass="ContentsDto">
+		select SCF_SEQ,
+				 SM_NO, SCF_orgFileName, SCF_phycalPath
+		from tbSVC_CONTENTS_FILE WHERE SCF_SEQ = #SCF_SEQ#
+	</select>
+	
+	<select id="Contents#delfileChk" resultClass="ContentsDto">
+		<![CDATA[
+			SELECT
+		 		SCF_SEQ
+		 		,SCF_phycalPath
+		 		,SCF_orgFileName
+			from 
+				tbSVC_CONTENTS_FILE
+			WHERE (DATALENGTH(SM_NO) = '1' or SM_NO is null)
+			AND CONVERT(VARCHAR , regDate, 23) < CONVERT(date , GETDATE()-1, 23)
+			order by SCF_SEQ DESC
+		]]>
+	</select>
+	
+	<delete id="Contents#ContentsFileAjax" parameterClass="int">
+		delete from tbSVC_CONTENTS_FILE WHERE SCF_SEQ = #SCF_SEQ#
+	</delete>
+	
+	<select id="Contents#getContentsCount" resultClass="ContentsDto">
+	SELECT 
+		(SELECT COUNT(*) FROM tbSVC_ORDMASTER where SM_SVC2 like'%3079%'and SM_LSTATE = '3094') AS CON1_ING,
+		(SELECT COUNT(*) FROM tbSVC_ORDMASTER where SM_SVC2 like'%3079%'and SM_LSTATE = '3275') AS CON1_WAIT,
+		(SELECT COUNT(*) FROM tbSVC_ORDMASTER where SM_SVC2 like'%3080%'and SM_LSTATE = '3094') AS CON2_ING,
+		(SELECT COUNT(*) FROM tbSVC_ORDMASTER where SM_SVC2 like'%3080%'and SM_LSTATE = '3275') AS CON2_WAIT,
+		(SELECT COUNT(*) FROM tbSVC_ORDMASTER where SM_SVC2 like'%3081%'and SM_LSTATE = '3094') AS CON3_ING,
+		(SELECT COUNT(*) FROM tbSVC_ORDMASTER where SM_SVC2 like'%3081%'and SM_LSTATE = '3275') AS CON3_WAIT,
+		(SELECT COUNT(*) FROM tbSVC_ORDMASTER where SM_SVC2 like'%3082%'and SM_LSTATE = '3094') AS CON4_ING,
+		(SELECT COUNT(*) FROM tbSVC_ORDMASTER where SM_SVC2 like'%3082%'and SM_LSTATE = '3275') AS CON4_WAIT,
+		(SELECT COUNT(*) FROM tbSVC_ORDMASTER where SM_SVC2 like'%3083%'and SM_LSTATE = '3094') AS CON5_ING,
+		(SELECT COUNT(*) FROM tbSVC_ORDMASTER where SM_SVC2 like'%3083%'and SM_LSTATE = '3275') AS CON5_WAIT,
+		(SELECT COUNT(*) FROM tbSVC_ORDMASTER where SM_SVC2 like'%3092%'and SM_LSTATE = '3094') AS CON6_ING,
+		(SELECT COUNT(*) FROM tbSVC_ORDMASTER where SM_SVC2 like'%3092%'and SM_LSTATE = '3275') AS CON6_WAIT
+		FROM tbSVC_ORDMASTER 
+		where SM_SVC1 = '1003' 
+		GROUP BY SM_SVC1
+	</select>
+	
+	<update id="Contents#update" parameterClass="ContentsDto">
+	UPDATE tbSVC_ORDMASTER
+	SET
+		<isNotNull property="SM_DATE">SM_DATE = #SM_DATE#,</isNotNull>
+	  	<isNotNull property="SM_SVC1">SM_SVC1 = #SM_SVC1#,</isNotNull>
+	  	<isNotNull property="SM_SVC2">SM_SVC2 = #SM_SVC2#,</isNotNull> 
+	  	<isNotNull property="SM_MCCD">SM_MCCD = #SM_MCCD#,</isNotNull>
+	  	<isNotNull property="SM_MCNAME">SM_MCNAME = #SM_MCNAME#,</isNotNull>
+		<isNotNull property="SM_MC1CD">SM_MC1CD = #SM_MC1CD#,</isNotNull>
+		<isNotNull property="SM_MC1NAME">SM_MC1NAME = #SM_MC1NAME#,</isNotNull>
+		<isNotNull property="SM_MC2CD">SM_MC2CD = #SM_MC2CD#,</isNotNull>
+		<isNotNull property="SM_MC2NAME">SM_MC2NAME = #SM_MC2NAME#,</isNotNull>
+		<isNotNull property="SM_MDCD">SM_MDCD = #SM_MDCD#,</isNotNull>
+		<isNotNull property="SM_MDNAME">SM_MDNAME = #SM_MDNAME#,</isNotNull>
+		<isNotNull property="SM_MTCD">SM_MTCD =  #SM_MTCD#,</isNotNull>
+		<isNotNull property="SM_MTNAME">SM_MTNAME = #SM_MTNAME#,</isNotNull>
+		<isNotNull property="SM_MNAME">SM_MNAME = #SM_MNAME#,</isNotNull>
+		<isNotNull property="SM_MTEL">SM_MTEL = #SM_MTEL#,</isNotNull>
+		<isNotNull property="SM_MCEL">SM_MCEL = #SM_MCEL#,</isNotNull>
+		<isNotNull property="SM_MEMAIL">SM_MEMAIL = #SM_MEMAIL#,</isNotNull>
+		<isNotNull property="SM_TITLE">SM_TITLE = #SM_TITLE#,</isNotNull>
+		<isNotNull property="SM_TEXT">SM_TEXT = #SM_TEXT#,</isNotNull>
+		<isNotNull property="SM_FDATE">SM_FDATE = #SM_FDATE#,</isNotNull>
+		<isNotNull property="SM_LSTATE">SM_LSTATE = #SM_LSTATE#,</isNotNull>
+		<isNotNull property="SM_FSTATE">SM_FSTATE = #SM_FSTATE#,</isNotNull>
+		<isNotNull property="SM_ISSIGN">SM_ISSIGN = #SM_ISSIGN#,</isNotNull>
+		<isNotNull property="SM_IPADDR">SM_IPADDR = #SM_IPADDR#,</isNotNull>
+		<isNotNull property="SM_WDATE">SM_WDATE #SM_WDATE#,</isNotNull>
+		<isNotNull property="SSTART">SSTART = #SSTART#,</isNotNull>
+		<isNotNull property="MULTIPAGE">MULTIPAGE = #MULTIPAGE#,</isNotNull>
+		<isNotNull property="MULTITIME">MULTITIME = #MULTITIME#,</isNotNull>
+		<isNotNull property="MULTITIMEOUT">MULTITIMEOUT = #MULTITIMEOUT#,</isNotNull>
+		<isNotNull property="SM_AMOUNT">SM_AMOUNT = #SM_AMOUNT#,</isNotNull>
+		SM_MEMPNO = #SM_MEMPNO#
+	WHERE SM_NO = #SM_NO#
+	</update>
+	
+	<update id="Contents#update_file" parameterClass="ContentsDto">
+	UPDATE tbSVC_CONTENTS 
+	SET
+		<isNotNull property="SCT_SMDATE">SCT_SMDATE = #SM_DATE#,</isNotNull>
+		<isNotNull property="SCT_RDATE">SCT_RDATE = #SCT_RDATE#,</isNotNull>
+		<isNotNull property="SCT_TDATE">SCT_TDATE = #SCT_TDATE#,</isNotNull>
+		<isNotNull property="SCT_SUBJECT">SCT_SUBJECT = #SM_TITLE#,</isNotNull>
+		<isNotNull property="SCT_TEXT">SCT_TEXT = #SM_TEXT#,</isNotNull>
+		<isNotNull property="SCT_ORIGTYPE">SCT_ORIGTYPE = #SCT_ORIGTYPE#,</isNotNull>
+		<isNotNull property="SCT_ORIGQTY">SCT_ORIGQTY = #SCT_ORIGQTY#,</isNotNull>
+		<isNotNull property="SCT_FNAME1">SCT_FNAME1 = #SCT_FNAME1#,</isNotNull>
+		<isNotNull property="SCT_FNAME2">SCT_FNAME2 = #SCT_FNAME2#,</isNotNull>
+		<isNotNull property="SCT_FNAME3">SCT_FNAME3 = #SCT_FNAME3#,</isNotNull>
+		<isNotNull property="SCT_CHANGETYPE1">SCT_CHANGETYPE1 = #SCT_CHANGETYPE1#,</isNotNull>
+		<isNotNull property="SCT_CHANGEQTY">SCT_CHANGEQTY = #SCT_CHANGEQTY#,</isNotNull>
+		
+		<isNotNull property="SCT_allow1EMP">SCT_allow1EMP 			= #SCT_allow1EMP#,</isNotNull>
+		<isNotNull property="SCT_allow1NM">SCT_allow1NM 			= #SCT_allow1NM#,</isNotNull>
+		<isNotNull property="SCT_allow1DEPT">SCT_allow1DEPT 		= #SCT_allow1DEPT#,</isNotNull>
+		<isNotNull property="SCT_allow1DEPTNM">SCT_allow1DEPTNM 	= #SCT_allow1DEPTNM#,</isNotNull>
+		<isNotNull property="SCT_allow2EMP">SCT_allow2EMP 			= #SCT_allow2EMP#,</isNotNull>
+		<isNotNull property="SCT_allow2NM">SCT_allow2NM 			= #SCT_allow2NM#,</isNotNull>
+		<isNotNull property="SCT_allow2DEPT">SCT_allow2DEPT 		= #SCT_allow2DEPT#,</isNotNull>
+		<isNotNull property="SCT_allow2DEPTNM">SCT_allow2DEPTNM 	= #SCT_allow2DEPTNM#,</isNotNull>
+		<isNotNull property="SCT_ORIGTEXT">SCT_ORIGTEXT 			= #SCT_ORIGTEXT#,</isNotNull>
+		<isNotNull property="SCT_worker">SCT_worker 					= #SCT_worker#,</isNotNull>
+		SCT_CHANGETYPE2 = #SCT_CHANGETYPE2#
+	WHERE SM_NO = #SM_NO#
+	</update>
+	
+	<update id="Contents#del" parameterClass="ContentsDto">
+	UPDATE tbSVC_ORDMASTER
+	SET
+		SM_LSTATE = '3097'
+	WHERE SM_SEQ = '$SHSEQNUM$'
+	</update>
+	
+	
+	<!-- 이미지 자료실 -->
+	<select id="Contents#getImgBrdList" resultClass="ImgBoardDto">
+		SELECT
+			img_Board_Seq,
+			img_Board_Secret,
+			img_Board_Title,
+			img_Board_Content,
+			write_User,
+			write_User_Name,
+			CONVERT(char(10), write_Date,126) AS write_Date
+		FROM
+			multi_Img_Board
+		
+		<isEmpty property="searchText" prepend="WHERE">
+			<isNotEqual property="secretChk" compareValue="O">
+				img_Board_Secret = 'O'
+				OR write_User = #write_User#
+			</isNotEqual>
+		</isEmpty>
+		
+		<isNotEmpty property="searchText" prepend="WHERE">
+			(
+				img_Board_Title LIKE '%$searchText$%' 
+				OR img_Board_Content LIKE '%$searchText$%'
+				OR write_User LIKE '%$searchText$%'
+				OR CONVERT(char(10), write_Date,126) LIKE '%$searchText$%'
+			)
+			<isNotEqual property="secretChk" compareValue="O" prepend="AND">
+				img_Board_Secret = 'O'
+				OR write_User = #write_User#
+			</isNotEqual>
+		</isNotEmpty>
+		
+		ORDER BY write_Date DESC
+		OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+		FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="Contents#getImgBrdListCnt" resultClass="int">
+		SELECT
+			COUNT(*)
+		FROM
+			multi_Img_Board
+		
+		<isEmpty property="searchText" prepend="WHERE">
+			<isNotEqual property="secretChk" compareValue="O">
+				img_Board_Secret = 'O'
+				OR write_User = #write_User#
+			</isNotEqual>
+		</isEmpty>
+		
+		<isNotEmpty property="searchText" prepend="WHERE">
+			(
+				img_Board_Title LIKE '%$searchText$%' 
+				OR img_Board_Content LIKE '%$searchText$%'
+				OR write_User LIKE '%$searchText$%'
+				OR CONVERT(char(10), write_Date,126) LIKE '%$searchText$%'
+			)
+			<isNotEqual property="secretChk" compareValue="O" prepend="AND">
+				img_Board_Secret = 'O'
+				OR write_User = #write_User#
+			</isNotEqual>
+		</isNotEmpty>
+	</select>
+	
+	<resultMap class="kr.co.neodreams.multi_user.dto.ImgBoardDto" id="imgBrdResult">
+		<result property="img_Board_Seq" 		column="img_Board_Seq"/>
+		<result property="img_Board_Secret" 	column="img_Board_Secret"/>
+		<result property="img_Board_Title" 		column="img_Board_Title"/>
+		<result property="img_Board_Content" 	column="img_Board_Content"/>
+		<result property="write_User" 			column="write_User"/>
+		<result property="write_User_Name" 		column="write_User_Name"/>
+		<result property="write_Date" 			column="write_Date"/>
+		<result property="attatch_Seq" 		column="attatch_Seq"/>
+		<result property="attatchList" 		column="{img_Board_Seq=img_Board_Seq, attatch_Seq=attatch_Seq}" select="Contents#getAttatchList" />
+	</resultMap>
+	
+	<resultMap class="kr.co.neodreams.multi_user.dto.ImgBoardDto" id="attatchResult" >
+		<result property="img_Board_Seq" 		column="img_Board_Seq"/>
+		<result property="attatch_Seq" 			column="attatch_Seq"/>
+		<result property="attatch_OrgName" 		column="attatch_OrgName"/>
+		<result property="attatch_PhyPath"		column="attatch_PhyPath"/>
+		<result property="attatch_LogPath"		column="attatch_LogPath"/>
+	</resultMap>
+	
+	<select id="Contents#getImgBrd" resultMap="imgBrdResult">
+		SELECT
+			img_Board_Seq,
+			img_Board_Secret,
+			img_Board_Title,
+			img_Board_Content,
+			write_User,
+			write_User_Name,
+			write_Date,
+			'0' AS attatch_Seq
+		FROM
+			multi_Img_Board
+		WHERE 
+			img_Board_Seq = #img_Board_Seq#
+	</select>
+	
+	<select id="Contents#getAttatchList" resultMap="attatchResult">
+		SELECT
+			a.img_Board_Seq,
+			b.attatch_Seq, 
+			b.attatch_OrgName, 
+			b.attatch_PhyPath, 
+			b.attatch_LogPath
+		FROM
+			img_Board_Attatch a
+		INNER JOIN multi_Img_Board_Attatch b ON a.attatch_Seq = b.attatch_Seq
+		WHERE
+			a.img_Board_Seq = #img_Board_Seq#
+		<isNotNull property="attatch_Seq">
+			<isNotEqual property="attatch_Seq" compareValue="0" prepend="AND">
+			b.attatch_Seq = #attatch_Seq#
+			</isNotEqual>
+		</isNotNull>
+	</select>
+	
+	<select id="Contents#garbageAttatch" resultClass="ImgBoardDto">
+		SELECT
+			ISNULL(b.img_Board_Seq, 0) AS img_Board_Seq,
+			a.attatch_Seq, 
+			a.attatch_OrgName, 
+			a.attatch_PhyPath, 
+			a.attatch_LogPath
+		FROM 
+			multi_Img_Board_Attatch a
+		LEFT JOIN img_Board_Attatch b ON a.attatch_Seq = b.attatch_Seq
+		WHERE
+			<isNotEqual property="img_Board_Seq" compareValue="0" >
+			b.img_Board_Seq = #img_Board_Seq#
+				<isNotEqual property="attatch_Seq" compareValue="0" prepend="AND" >
+				a.attatch_Seq = #attatch_Seq#
+				</isNotEqual>
+			</isNotEqual>
+			<isEqual property="img_Board_Seq" compareValue="0" >
+				<isNotEqual property="attatch_Seq" compareValue="0" >
+					a.attatch_Seq = #attatch_Seq#
+				</isNotEqual>
+				<isEqual property="attatch_Seq" compareValue="0" >
+				b.img_Board_Seq IS NULL
+				</isEqual>
+			</isEqual>
+	</select>
+	
+	<insert id="Contents#imgBrdInsert">
+		<selectKey keyProperty="img_Board_Seq" resultClass="int">
+			SELECT COALESCE(max(img_Board_Seq), 0)+1 FROM multi_Img_Board
+		</selectKey>
+		INSERT INTO multi_Img_Board(
+			img_Board_Seq,		img_Board_Secret,		img_Board_Title,		img_Board_Content,
+			write_User,			write_User_Name,		write_Date
+		)VALUES(
+			#img_Board_Seq#,	#img_Board_Secret#,		#img_Board_Title#,		#img_Board_Content#,
+			#write_User#,	#write_User_Name#,	getDate()
+		)
+	</insert>
+	
+	<update id="Contents#imgBrdUpdate">
+		UPDATE 
+			multi_Img_Board 
+		SET
+			img_Board_Secret = #img_Board_Secret#,
+			img_Board_Title = #img_Board_Title#,
+			img_Board_Content = #img_Board_Content#
+		WHERE
+			img_Board_Seq = #img_Board_Seq#
+	</update>
+	
+	<delete id="Contents#imgBrdDelete">
+		DELETE FROM multi_Img_Board WHERE img_Board_Seq = #img_Board_Seq#
+	</delete>
+	
+	<delete id="Contents#imgBrdFileDelete">
+		<isEqual property="img_Board_Seq" compareValue="0" >
+			<isNotEqual property="attatch_Seq" compareValue="0" >
+				DELETE FROM multi_Img_Board_Attatch WHERE attatch_Seq = #attatch_Seq#;
+			</isNotEqual>
+		</isEqual>
+		
+		<isNotEqual property="img_Board_Seq" compareValue="0" >
+			<isEqual property="attatch_Seq" compareValue="0" >
+			DELETE FROM multi_Img_Board_Attatch WHERE attatch_Seq IN (SELECT attatch_Seq FROM img_Board_Attatch WHERE img_Board_Seq = #img_Board_Seq#);
+			DELETE FROM img_Board_Attatch WHERE img_Board_Seq = #img_Board_Seq#;
+			</isEqual>
+		</isNotEqual>
+		
+		<isNotEqual property="img_Board_Seq" compareValue="0" >
+			<isNotEqual property="attatch_Seq" compareValue="0" >
+				DELETE FROM multi_Img_Board_Attatch WHERE attatch_Seq = #attatch_Seq#;
+				DELETE FROM img_Board_Attatch WHERE img_Board_Seq = #img_Board_Seq# AND attatch_Seq = #attatch_Seq#;
+			</isNotEqual>
+		</isNotEqual>
+	</delete>
+	
+	<insert id="Contents#imgBrdAttatchInsert" parameterClass="java.util.ArrayList">
+		INSERT INTO img_Board_Attatch(
+			img_Board_Seq,				attatch_Seq
+		)VALUES
+		<iterate conjunction=",">
+		(
+			#List[].img_Board_Seq#,		#List[].attatch_Seq#
+		)
+		</iterate>
+	</insert>
+	
+	<select id="Contents#svc2Cnt" resultClass="Tbsetcd2Dto">
+		select 
+			CD2.CD2_CODE,
+			CD2.CD2_NAME,
+			COUNT(ORD.SM_NO) AS LISTCNT,
+			SUM(ISNULL(tc.SCT_ORIGQTY, 0)) AS LISTSUM
+		from 
+			tbSET_CD2 CD2
+		LEFT JOIN tbsvc_ordmaster ORD ON CD2.CD2_CODE = ORD.SM_SVC2 AND ORD.SM_LSTATE in ('3093','3094','3099')
+		LEFT JOIN tbSVC_CONTENTS tc on tc.SM_NO = ORD.SM_NO
+		WHERE
+			CD2.CD2_CD1 = 1003 AND CD2.CD2_STATE = 1
+		GROUP by CD2.CD2_CODE, CD2.CD2_NAME
+		ORDER BY CD2.CD2_CODE ASC
+	</select>
+	
+	<select id="Contents#acceptList" resultClass="ContentsDto">
+		SELECT
+			AC_SEQ
+			,AC_DEPT
+			,AC_REG_USER
+			,AC_REG_NAME
+			,CONVERT(CHAR(10), AC_REG_DATE, 23)AS AC_REG_DATE
+			,AC_TITLE
+			,AC_CONTENTS
+			,AC_STATUS
+		FROM tbSVC_ACCEPT
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="SM_WDATE_FROM" prepend="AND">
+				convert(VARCHAR(10), AC_REG_DATE, 23) >= '$SM_WDATE_FROM$'
+			</isNotEmpty>
+			<isNotEmpty property="SM_WDATE_TO" prepend="AND">
+				<![CDATA[
+				convert(VARCHAR(10), AC_REG_DATE, 23) <= '$SM_WDATE_TO$'
+				]]>
+			</isNotEmpty>
+			<isNotEmpty property="s4" prepend="AND">
+				AC_TITLE like '%$s4$%'
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY AC_STATUS DESC, AC_SEQ DESC
+		OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+		FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="Contents#acceptListCnt" resultClass="int">
+		SELECT
+			COUNT(*)
+		FROM tbSVC_ACCEPT
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="SM_WDATE_FROM" prepend="AND">
+				convert(VARCHAR(10), AC_REG_DATE, 23) >= '$SM_WDATE_FROM$'
+			</isNotEmpty>
+			<isNotEmpty property="SM_WDATE_TO" prepend="AND">
+				<![CDATA[
+				convert(VARCHAR(10), AC_REG_DATE, 23) <= '$SM_WDATE_TO$'
+				]]>
+			</isNotEmpty>
+			<isNotEmpty property="s4" prepend="AND">
+				AC_TITLE like '%$s4$%'
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="Contents#userImp" resultClass="Tbsvc_tdmsempDto">
+		select * from tbSVC_TDMSEMP WHERE empno = #strEmpNo#
+	</select>
+	
+	<insert id="Contents#registAcceptAjax" parameterClass="ContentsDto">
+		<selectKey keyProperty="AC_SEQ" resultClass="int"> 
+			select isnull(max(AC_SEQ),0) + 1 as AC_SEQ from tbSVC_ACCEPT
+		</selectKey>
+		insert into tbSVC_ACCEPT 
+		( 	AC_SEQ,				AC_DEPT, 			AC_REG_USER, 			AC_REG_NAME, 			AC_REG_DATE, 
+			AC_TITLE, 			AC_CONTENTS, 		AC_STATUS
+		)VALUES
+		(	#AC_SEQ#,			#AC_DEPT#, 			#AC_REG_USER#, 			#AC_REG_NAME#, 			getdate(),				
+			#AC_TITLE#,			#AC_CONTENTS#, 		#AC_STATUS#
+		)
+		
+	</insert>
+	
+	<select id="Contents#acceptUpdate" resultClass="ContentsDto">
+		select 
+			AC_SEQ
+			,AC_REG_USER
+			,AC_REG_NAME
+			,CONVERT(CHAR(10), AC_REG_DATE, 23)AS AC_REG_DATE
+			,AC_TITLE
+			,AC_CONTENTS
+			,AC_STATUS 
+		from tbSVC_ACCEPT WHERE AC_SEQ = #AC_SEQ#
+	</select>
+	
+	<update id="Contents#statusUpdate" parameterClass="int">
+		<![CDATA[
+		UPDATE tbSVC_ACCEPT
+		SET AC_STATUS = 'H'
+		FROM tbSVC_ACCEPT WHERE AC_STATUS = 'S' AND AC_SEQ <> #AC_SEQ#
+		]]>
+	</update>
+	
+	<update id="Contents#updateAcceptAjax" parameterClass="ContentsDto">
+		UPDATE tbSVC_ACCEPT
+		SET
+			AC_TITLE 		= #AC_TITLE#
+			,AC_CONTENTS 	= #AC_CONTENTS#
+			,AC_STATUS 		= #AC_STATUS#
+			,AC_MOD_DATE	= getdate()
+			,AC_MOD_USER	= #AC_REG_USER#
+		WHERE AC_SEQ = #AC_SEQ#
+	</update>
+	
+	<select id="Contents#accptContents" resultClass="ContentsDto">
+		select AC_CONTENTS, AC_SEQ, AC_STATUS from tbSVC_ACCEPT where AC_STATUS = 'S'
+	</select>
+
+	<select id="Contents#companyList" resultClass="Tbsetcd1Dto">
+		SELECT CD1_CODE,
+		CD1_NAME FROM tbSET_CD1
+		WHERE (CD1_MDIV = '118') AND (CD1_STATE = '1')
+		ORDER BY CD1_SORT, CD1_NAME --소속회사
+	</select>
+
+	<select id="Contents#serviceList" resultClass="Tbsetcd2Dto">
+		SELECT CD2_CODE, CD2_NAME FROM tbSET_CD2
+		WHERE (CD2_CD1 = '1161') AND (CD2_STATE = '1')
+		ORDER BY CD2_SORT, CD2_NAME --서비스상태
+	</select>
+
+	<select id="Contents#confrimList" resultClass="Tbsetcd2Dto">
+		SELECT CD2_CODE, CD2_NAME FROM tbSET_CD2
+		WHERE (CD2_CD1 = '1166') AND (CD2_STATE = '1')
+		ORDER BY CD2_SORT, CD2_NAME --승인상태
+	</select>
+
+	<select id="Contents#serviceEndList" resultClass="Tbsetcd2Dto">
+		SELECT CD2_CODE, CD2_NAME FROM tbSET_CD2
+		WHERE (CD2_CD1 = '1163') AND (CD2_STATE = '1')
+		ORDER BY CD2_SORT, CD2_NAME --서비스 종료 상태
+	</select>
+
+	<select id="Contents#dataList" resultClass="Tbsetcd1Dto">
+		SELECT CD1_CODE, CD1_NAME FROM tbSET_CD1
+		WHERE (CD1_MDIV = '121') AND (CD1_STATE = '1')
+		ORDER BY CD1_SORT, CD1_NAME --원시자료 형태
+	</select>
+</sqlMap>

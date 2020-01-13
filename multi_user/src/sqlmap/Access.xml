@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Access">
+    <typeAlias alias="AccessDto" type="kr.co.neodreams.multi_user.dto.AccessDto"/>
+    
+	<select id="Access#accessList" resultClass="AccessDto">
+		<![CDATA[
+			SELECT ACCENM, ACCSS, ACCUSEOBJ, APPNO, REGDT FROM ONESTOP_RENT_ACCESS
+			WHERE convert(int, convert(char(8), REGDT, 112)) between #STDT# and #EDDT#
+		]]>
+	</select>
+	
+	<insert id="Access#accessEnter" parameterClass="AccessDto">
+        <![CDATA[
+            INSERT INTO
+            ONESTOP_RENT_ACCESS (
+                ACCENO, ACCENM, ACCSS, ACCUSEOBJ, APPNO
+            ) VALUES (
+                #ACCENO#,
+                #ACCENM#,
+                #ACCSS#,
+                #ACCUSEOBJ#,
+                $APPNO$
+            )
+        ]]>
+    </insert>
+    
+</sqlMap>

@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="LongTermUser">
+    <typeAlias alias="LongTermUserDto" type="kr.co.neodreams.multi_user.dto.LongTermUserDto"/>
+
+	<select id="LongTermUser#codeList" resultClass="LongTermUserDto">
+	        <![CDATA[
+	        SELECT GBCD, GBNM, GBYN, EQHNO
+	        FROM ONESTOP_RENT_CODE
+	        WHERE GBLEV = '1'
+	        AND DELYN = 'N'
+	        ]]>
+	</select>
+	<select id="LongTermUser#equipRentListNew" resultClass="LongTermUserDto">
+			<![CDATA[	
+			   SELECT
+					ROW_NUMBER()OVER(ORDER BY convert(char, $SRH_ORDER$)) AS NUM 
+					,ORE.EQMST
+					,case when ORE.EQMST = '1' then '사용가능'
+						  when ORE.EQMST = '2' then '고장'
+						  when ORE.EQMST = '3' then '수리중'
+						  when ORE.EQMST = '4' then '폐기'
+						  when ORE.EQMST = '6' then '임시보관'
+						  else '해지'
+					end AS EQMSTNM
+			        ,ORE.EQNO
+					,ISNULL(IMP.STATUSNM, 0) AS STATUSNM
+					,ORE.EQCDT
+					,ORE.EQRDT
+					,RC.GBNM
+					,ORM.MDNM
+					,ORE.EQALIAS
+					,ORE.EQSN
+					,ORE.EQNM
+					,CASE WHEN Substring(appss, Charindex(' ', appss, 1) + 1, Len(appss)) IS NULL THEN Substring(appss, 1, Len(appss)) 
+						ELSE Substring(appss, Charindex(' ', appss, 1) + 1, Len(appss)) 
+						END APPSS
+					,(
+						select 
+							dbo.SPLIT_STR(replace(ltrim(dept_name),' ','||'),'||',2) as dept_name_1depth
+						from 
+							tbsvc_tdmsemp
+						where 
+							empno = appeno) as APPE_DEPTNM
+					,DEPT1NM
+					,APPENM
+					,APPENO
+					,APPUENO
+					,APPUENM
+					,STRDT
+					,ENDDT
+					,IMP.REGENM
+					,STATUS
+					,APPNO
+					,ORE.EQASSETSNO
+					,ORE.ETC2
+				FROM
+					ONESTOP_RENT_EQUIP ORE
+				LEFT JOIN onestop_rent_model_sub ORMS ON ORE.MDSEQ = ORMS.MDSEQ AND ORMS.GBCD = ORE.GBCD +'001'
+				LEFT JOIN ONESTOP_RENT_CODE RC ON RC.GBCD = ORMS.ITEM
+				LEFT JOIN ONESTOP_RENT_MODEL ORM ON ORM.mdseq = ORE.mdseq
+				LEFT JOIN (
+							SELECT
+								CASE
+									WHEN UIMP.status = 4 AND UIMP.BANPFLAG = 1 AND (Datediff(day, UIMP.STRDT, UIMP.ENDDT) < 30 AND Datediff(day, GETDATE(), UIMP.ENDDT) >= 0) THEN 4
+									WHEN UIMP.status = 4 AND UIMP.BANPFLAG = 1 AND (Datediff(day, UIMP.STRDT, UIMP.ENDDT) >= 30 AND Datediff(day, GETDATE(), UIMP.ENDDT) >= 0 ) THEN 5
+									WHEN UIMP.status = 4 AND UIMP.BANPFLAG = 1 AND (Datediff(day, GETDATE(), UIMP.ENDDT) < 0 ) THEN 2
+									WHEN UIMP.status = 3 AND ( (SELECT Datediff(day, GETDATE(), UIMP.STRDT)) <= 0 ) THEN 3
+								ELSE 0 END AS STATUSNM,
+								UIMP.MDSEQ,
+								UIMP.EQNO,
+								UIMP.EUSEQ,
+								UIMP.APPUENM,
+								UIMP.DEPTNO,
+								UIMP.APPUENO,
+								UIMP.DEPT1NM,
+								UIMP.STRDT,
+								UIMP.ENDDT,
+								UIMP.APPENM,
+								UIMP.APPSS,
+								UIMP.INSUDT,
+								UIMP.REGDT,
+								UIMP.REGENM,
+								UIMP.APPENO,
+								UIMP.STATUS,
+								UIMP.APPNO
+							FROM (
+									SELECT 
+										ROW_NUMBER() OVER(PARTITION BY ORAE.EQNO ORDER BY ORA.STATUS DESC, ORA.STRDT) AS rowNum,
+										ORAE.APPNO,
+										ORAE.MDSEQ,
+										ORAE.EQNO,
+										ORAEU.EUSEQ,
+										ORAE.BANPFLAG,
+										ORAE.BANPDT,
+										ORAE.BANPNM,
+										ORAEU.APPUENM,
+										ORAEU.APPUENO,
+										ORAEU.deptno,
+										ORAEU.DEPT1NM,
+										ORA.STRDT,
+										ORA.ENDDT,
+										ORA.APPENM,
+										ORA.APPSS,
+										ORA.INSUDT,
+										ORA.REGDT,
+										ORA.REGENM,
+										ORA.APPENO,
+										ORA.STATUS
+									FROM 
+										ONESTOP_RENT_APP_EQUIP ORAE
+									LEFT JOIN ONESTOP_RENT_APP_EQUIP_USER ORAEU ON ORAE.APPNO = ORAEU.APPNO  AND ORAE.EQNO = ORAEU.EQNO AND ORAE.MDSEQ = ORAEU.MDSEQ
+									LEFT JOIN ONESTOP_RENT_APP ORA ON ORAE.APPNO = ORA.APPNO AND ORA.STATUS != '6' AND ORA.DELYN = 'N'
+									WHERE 
+										ORAEU.EQNO IS NOT NULL  AND ORAE.BANPFLAG = 1
+								)UIMP
+								WHERE UIMP.rowNum = 1
+							)IMP ON ORE.MDSEQ = IMP.MDSEQ AND ORE.EQNO = IMP.EQNO AND IMP.STATUSNM != 0
+							WHERE ORE.DELYN = 'N' AND ORE.GBCD = #GBCD#
+			]]>
+				<isNotEmpty property="schEQST">
+					AND EQMST = #schEQST#
+				</isNotEmpty>
+				<isNotEmpty property="schStatus">
+					<isEqual property="schStatus" compareValue="1">
+					AND STATUSNM in ('5', '4')
+					</isEqual>
+					<isNotEqual property="schStatus" compareValue="1">
+						<isEqual property="schStatus" compareValue="0">
+						AND ISNULL(IMP.statusnm, 0) = #schStatus#
+						</isEqual>
+						<isNotEqual property="schStatus" compareValue="0">
+						AND STATUSNM = #schStatus#
+						</isNotEqual>
+					</isNotEqual>
+				</isNotEmpty>
+		        <isNotEmpty property="SCHTEXT">
+		        	AND (APPENM LIKE '%$SCHTEXT$%'
+		        	or APPUENM LIKE '%$SCHTEXT$%'
+		        	or Substring(APPSS, CHARINDEX(' ', APPSS, 1) + 1, LEN(APPSS)) LIKE '%$SCHTEXT$%'
+		        	or DEPT1NM LIKE '%$SCHTEXT$%'
+		        	or MDNM like '%$SCHTEXT$%'
+		        	or ORE.ETC2 LIKE UPPER('$SCHTEXT$%')
+		        	or ORE.EQSN LIKE UPPER('%$SCHTEXT$%')
+					or ORE.EQNM LIKE UPPER('%$SCHTEXT$%')
+					or ORE.EQALIAS LIKE UPPER('%$SCHTEXT$%')
+					or ORE.EQASSETSNO LIKE UPPER('%$SCHTEXT$%')
+		        	)
+		        </isNotEmpty>
+		        <isEqual property="SRH_ORDER" compareValue="MDNM">
+		        	ORDER BY STATUSNM, GBNM, MDNM
+		        </isEqual>
+		        <isEqual property="SRH_ORDER" compareValue="EQALIAS">
+			        ORDER BY STATUSNM, GBNM, EQALIAS
+		        </isEqual>
+		        <isEqual property="SRH_ORDER" compareValue="ENDDT">
+		        	ORDER BY STATUSNM DESC, ENDDT
+		        </isEqual>
+	</select>
+	 
+	<select id="LongTermUser#equipRentList" resultClass="LongTermUserDto">
+	        <![CDATA[
+			SELECT ROW_NUMBER()OVER(ORDER BY EQNO) AS NUM, GBCD, GBNM, MDNM, MDSEQ, EQNO, EQSN, EQNM, EQLST, EQMST, EQDET, EQALIAS,
+			APPSS, APPENM, REGENM, APPENO, STATUS, STATUSNM, STRDT, ENDDT, APPNO FROM (
+			SELECT ROW_NUMBER()OVER(ORDER BY EQ.EQNO) AS NUM, MAX(EQ.GBCD) AS GBCD, MAX(ORC.GBNM) AS GBNM, MAX(ORM.MDNM) AS MDNM, MAX(EQ.MDSEQ) AS MDSEQ, EQ.EQNO, MAX(EQ.EQSN) AS EQSN, MAX(EQ.EQNM) AS EQNM, MAX(EQ.EQLST) AS EQLST, MAX(EQ.EQMST) AS EQMST, MAX(EQ.EQDET) AS EQDET, MAX(EQ.EQALIAS) AS EQALIAS,
+			MAX(ora.APPSS) AS APPSS, MAX(ora.APPENM) AS APPENM, MAX(ora.REGENM) AS REGENM, MAX(ora.APPENO) AS APPENO, MAX(ora.STATUS) AS STATUS,
+			(CASE WHEN ((select DATEDIFF(day, MAX(ora.STRDT), MAX(ora.ENDDT))) >= 30) THEN '장기대여'
+			WHEN ((select DATEDIFF(day, MAX(ora.STRDT), MAX(ora.ENDDT))) IS NULL) THEN '대여가능' ELSE '단기대여' END) AS STATUSNM, 
+			MAX(ora.STRDT) AS STRDT, MAX(ora.ENDDT) AS ENDDT, MAX(ora.APPNO) AS APPNO
+			FROM ONESTOP_RENT_EQUIP EQ
+			LEFT JOIN ONESTOP_RENT_MODEL_SUB MS
+			ON MS.MDSEQ = EQ.MDSEQ
+			LEFT JOIN ONESTOP_RENT_CODE ORC
+			ON ORC.GBCD = MS.ITEM
+			AND ORC.GBUP = #GBCD#+'001'
+			LEFT JOIN ONESTOP_RENT_MODEL ORM
+			ON MS.MDSEQ = ORM.MDSEQ
+			LEFT JOIN ONESTOP_RENT_APP_EQUIP_USER oraeu
+			ON EQ.EQNO = oraeu.EQNO
+			LEFT JOIN ONESTOP_RENT_APP ora
+			ON oraeu.APPNO = ora.APPNO
+			WHERE EQ.DELYN = 'N'
+			AND EQ.GBCD = #GBCD#
+			GROUP BY EQ.EQNO
+			) SHOW			
+	        ]]>
+			<isNotEmpty property="STATUSNM">
+        	<![CDATA[
+            WHERE STATUSNM = #STATUSNM#
+            ]]>
+	        </isNotEmpty>
+	        <![CDATA[
+	        ORDER BY EQNO ASC
+	        ]]>
+	</select>
+	
+	<select id="LongTermUser#NofityUserInfo" resultClass="LongTermUserDto">
+	        <![CDATA[
+	        SELECT APPENO, APPENM, STRDT, ENDDT FROM ONESTOP_RENT_APP WHERE APPNO = #APPNO#
+	        ]]>
+	</select>
+	
+	<select id="LongTermUser#notebookCheckList" resultClass="java.util.HashMap">
+	        <![CDATA[
+	        select *
+	          from (select replace(convert(varchar, e.banpdt, 23), '-', '') as enddt
+					       ,d.strdt
+						   ,d.appenm
+						   ,e.banpnm
+						   ,c.mdnm
+						   ,b.eqalias
+						   ,a.*
+						   ,b.gbcd
+					  from onestop_rent_check a
+					 inner join onestop_rent_app_equip e
+					    on a.appno = e.appno
+						   and a.eqno = e.eqno
+					 inner join onestop_rent_equip b
+					    on a.eqno = b.eqno
+					 inner join onestop_rent_model c
+					    on b.mdseq = c.mdseq
+					 inner join onestop_rent_app d
+					    on a.appno = d.appno
+					) as list
+			]]>
+			<dynamic prepend="WHERE">
+				<isNotEmpty property="GBCD" prepend="AND">
+					gbcd = #GBCD#
+				</isNotEmpty>
+		        <isNotEmpty property="STRDT" prepend="AND">
+		        	<![CDATA[
+		            strdt >= #STRDT#
+		            ]]>
+		        </isNotEmpty>
+				<isNotEmpty property="ENDDT" prepend="AND">
+		        	<![CDATA[
+		            enddt <= #ENDDT#
+		            ]]>
+		        </isNotEmpty>
+		        <isNotEmpty property="SCHTEXT" prepend="AND">
+		        	<![CDATA[
+		            (appenm LIKE '%$SCHTEXT$%' OR banpnm LIKE '%$SCHTEXT$%' OR eqalias LIKE '%$SCHTEXT$%')
+		            ]]>
+		        </isNotEmpty>
+		     </dynamic>
+			 order by enddt desc, appno, eqno
+			 OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+             FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="LongTermUser#notebookCheckListCnt" resultClass="int">
+	        <![CDATA[
+	        select count(*) as totCnt
+	          from (select replace(convert(varchar, e.banpdt, 23), '-', '') as enddt
+					       ,d.strdt
+						   ,d.appenm
+						   ,e.banpnm
+						   ,c.mdnm
+						   ,b.eqalias
+						   ,a.*
+						   ,b.gbcd
+					  from onestop_rent_check a
+					 inner join onestop_rent_app_equip e
+					    on a.appno = e.appno
+						   and a.eqno = e.eqno
+					 inner join onestop_rent_equip b
+					    on a.eqno = b.eqno
+					 inner join onestop_rent_model c
+					    on b.mdseq = c.mdseq
+					 inner join onestop_rent_app d
+					    on a.appno = d.appno
+					) as list
+			]]>
+			<dynamic prepend="WHERE">
+				<isNotEmpty property="GBCD" prepend="AND">
+					gbcd = #GBCD#
+				</isNotEmpty>
+		        <isNotEmpty property="STRDT" prepend="AND">
+		        	<![CDATA[
+		            strdt >= #STRDT#
+		            ]]>
+		        </isNotEmpty>
+				<isNotEmpty property="ENDDT" prepend="AND">
+		        	<![CDATA[
+		            enddt <= #ENDDT#
+		            ]]>
+		        </isNotEmpty>
+		        <isNotEmpty property="SCHTEXT" prepend="AND">
+		        	<![CDATA[
+		            (appenm LIKE '%$SCHTEXT$%' OR banpnm LIKE '%$SCHTEXT$%' OR eqalias LIKE '%$SCHTEXT$%')
+		            ]]>
+		        </isNotEmpty>
+		     </dynamic>
+	</select>
+	
+	<select id="LongTermUser#notebookCheckView" resultClass="java.util.HashMap">
+	        select *
+	          from (select replace(convert(varchar, e.banpdt, 23), '-', '') as enddt
+					       ,d.strdt
+						   ,d.appenm
+						   ,e.banpnm
+						   ,c.mdnm
+						   ,b.eqalias
+						   ,a.*
+						   ,b.gbcd
+					  from onestop_rent_check a
+					 inner join onestop_rent_app_equip e
+					    on a.appno = e.appno
+						   and a.eqno = e.eqno
+					 inner join onestop_rent_equip b
+					    on a.eqno = b.eqno
+					 inner join onestop_rent_model c
+					    on b.mdseq = c.mdseq
+					 inner join onestop_rent_app d
+					    on a.appno = d.appno
+					) as list
+            WHERE APPNO = #APPNO#
+              AND EQNO = #EQNO#
+	</select>
+	
+	<update id="LongTermUser#notebookCheckUpdate">
+        <![CDATA[
+         update onestop_rent_check
+            set cmospwyn = #cmospwyn#
+                ,logonpwyn = #logonpwyn#
+                ,sharefolderdelyn = #sharefolderdelyn#
+                ,documentdelyn = #documentdelyn#
+                ,osupdateyn = #osupdateyn#
+                ,v3updateyn = #v3updateyn#
+                ,managernm = #managernm#
+                ,managerno = #managerno#
+                ,upmanagernm = #upmanagernm#
+                ,upmanagerno = #upmanagerno#
+                ,partmanagernm = #partmanagernm#
+                ,partmanagerno = #partmanagerno#
+                ,bigo = #bigo#
+                ,lastmoddate = getDate()
+          where appno = #appno#
+            and eqno = #eqno#
+        ]]>
+    </update>
+    
+    <update id="LongTermUser#notebookPartsUpdate" parameterClass="LongTermUserDto">
+    	update onestop_rent_check
+    	SET
+    			cmospwyn = 'Y'
+                ,logonpwyn = 'Y'
+                ,sharefolderdelyn = 'Y'
+                ,documentdelyn = 'Y'
+                ,osupdateyn = 'Y'
+                ,v3updateyn = 'Y'
+    			,MANAGERNM = #MANAGERNM#
+                ,MANAGERNO = #MANAGERNO#
+                <isNotEmpty property="UPMANAGERNM">,UPMANAGERNM = #UPMANAGERNM#</isNotEmpty>
+                <isNotEmpty property="UPMANAGERNO">,UPMANAGERNO = #UPMANAGERNO#</isNotEmpty>
+                <isNotEmpty property="PARTMANAGERNM">,PARTMANAGERNM = #PARTMANAGERNM#</isNotEmpty>
+                <isNotEmpty property="PARTMANAGERNO">,PARTMANAGERNO = #PARTMANAGERNO#</isNotEmpty>
+                ,lastmoddate = getDate()
+    	WHERE
+    		APPNO = #APPNO#
+    		AND EQNO = #EQNO#
+    </update>
+    
+    
+    <select id="LongTermUser#notebookCheckListXls" resultClass="java.util.HashMap">
+	        <![CDATA[
+	        select ROW_NUMBER() OVER(ORDER BY enddt desc, appno, eqno) AS 'NO'
+	               ,case gbcd when '001' then 'NB'
+	                          when '018' then 'EB'
+	                end as '구분'
+	               ,strdt as '대여일'
+	               ,appenm as '대여자'
+	               ,enddt as '반납일'
+	               ,banpnm as '반납자'
+	               ,mdnm as '제조사/모델명'
+	               ,eqalias as '관리번호'
+	               ,CMOSPWYN as 'CMOS PW 설정여부'
+	               ,LOGONPWYN as '로그온 PW 설정여부'
+	               ,SHAREFOLDERDELYN as '공유폴더 삭제여부'
+	               ,DOCUMENTDELYN as '주요문서 삭제여부'
+	               ,OSUPDATEYN as '운영체제 업데이트 여부'
+	               ,V3UPDATEYN as 'V3백신 업데이트 여부'
+	               ,MANAGERNM as '대여관리자'
+	               ,UPMANAGERNM as '한전담당자'
+	               ,PARTMANAGERNM AS '한전파트장'
+	               ,BIGO as '비고'
+	               ,convert(varchar, lastmoddate, 23) + ' ' + convert(varchar, lastmoddate, 24) as '수정일시'
+	          from (select replace(convert(varchar, e.banpdt, 23), '-', '') as enddt
+					       ,d.strdt
+						   ,d.appenm
+						   ,e.banpnm
+						   ,c.mdnm
+						   ,b.eqalias
+						   ,a.*
+						   ,b.gbcd
+					  from onestop_rent_check a
+					 inner join onestop_rent_app_equip e
+					    on a.appno = e.appno
+						   and a.eqno = e.eqno
+					 inner join onestop_rent_equip b
+					    on a.eqno = b.eqno
+					 inner join onestop_rent_model c
+					    on b.mdseq = c.mdseq
+					 inner join onestop_rent_app d
+					    on a.appno = d.appno
+					) as list
+			]]>
+			<dynamic prepend="WHERE">
+				<isNotEmpty property="GBCD" prepend="AND">
+					gbcd = #GBCD#
+				</isNotEmpty>
+		        <isNotEmpty property="STRDT" prepend="AND">
+		        	<![CDATA[
+		            strdt >= #STRDT#
+		            ]]>
+		        </isNotEmpty>
+				<isNotEmpty property="ENDDT" prepend="AND">
+		        	<![CDATA[
+		            enddt <= #ENDDT#
+		            ]]>
+		        </isNotEmpty>
+		        <isNotEmpty property="SCHTEXT" prepend="AND">
+		        	<![CDATA[
+		            (appenm LIKE '%$SCHTEXT$%' OR banpnm LIKE '%$SCHTEXT$%' OR eqalias LIKE '%$SCHTEXT$%')
+		            ]]>
+		        </isNotEmpty>
+		     </dynamic>
+	</select>
+</sqlMap>

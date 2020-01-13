@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="UserDetailInformation">
+
+	<typeAlias alias="Tdmsemp" type="kr.co.neodreams.multi_user.dto.Tbsvc_tdmsempDto"/>
+	
+ 	
+ 	<select id="Udi#select_tdmsemp" resultClass="Tdmsemp">
+ 		SELECT empno, name, mailno, dept_name, deptno, telno 
+		FROM tbSVC_TDMSEMP
+		WHERE (empno = '$EMPNO$')
+ 	</select>
+ 	
+ 	
+ 	<select id="Udi#select_tbmsdept" resultClass="Tdmsemp">
+ 		SELECT (CASE WHEN DEPT1.dept_code = DEPT1.up_code THEN DEPT1.dept_name ELSE DEPT1.dept_name END) AS de1,
+				(CASE WHEN DEPT1.dept_code = DEPT1.up_code THEN DEPT1.dept_code END) AS de_code1,
+		 		(CASE WHEN DEPT1.dept_code = DEPT1.UP_CODE THEN DEPT1.dept_order ELSE '' END) AS de_order1,
+				(CASE WHEN DEPT2.dept_code = DEPT2.up_code THEN '' ELSE DEPT2.dept_name END) AS de2,
+			 	(CASE WHEN DEPT2.dept_code = DEPT2.up_code THEN '' ELSE DEPT2.dept_code END) AS de_code2,
+				(CASE WHEN DEPT2.dept_code = DEPT2.UP_CODE THEN DEPT2.dept_order ELSE '' END) AS de_order2,
+				(CASE WHEN DEPT3.dept_code = DEPT3.up_code THEN '' ELSE DEPT3.dept_name END) AS de3,
+				(CASE WHEN DEPT3.dept_code = DEPT3.up_code THEN '' ELSE DEPT3.dept_code END) AS de_code3,
+				(CASE WHEN DEPT3.dept_code != DEPT3.UP_CODE THEN DEPT3.dept_order ELSE '' END) AS de_order3,
+				(CASE WHEN DEPT4.dept_code = DEPT4.up_code THEN '' ELSE DEPT4.dept_name END) AS de4,
+				(CASE WHEN DEPT4.dept_code = DEPT4.up_code THEN '' ELSE DEPT4.dept_code END) AS de_code4, DEPT4.dept_order AS de_order4
+				FROM tbSVC_TDMSDEPT AS DEPT1 INNER JOIN
+			 	tbSVC_TDMSDEPT AS DEPT4 ON DEPT1.up_code != DEPT4.dept_code AND DEPT1.up_code != DEPT4.dept_code INNER JOIN
+				tbSVC_TDMSDEPT AS DEPT3 ON DEPT4.up_code = DEPT3.dept_code AND DEPT4.up_code = DEPT3.dept_code INNER JOIN
+				tbSVC_TDMSDEPT AS DEPT2 ON DEPT3.up_code = DEPT2.dept_code AND DEPT1.dept_code = DEPT2.up_code AND
+				DEPT3.up_code = DEPT2.dept_code AND DEPT1.dept_code = DEPT2.up_code
+				WHERE (DEPT4.dept_code = '$DEPTNO$')
+				ORDER BY de_order1, de_order2, de_order3, de_order4
+ 	</select>
+ 	
+</sqlMap>

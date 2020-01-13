@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Home">
+	<typeAlias alias="HomeDto" type="kr.co.neodreams.multi_user.dto.HomeDto"/>
+	
+	<procedure id="Home#getTodayUpdate" parameterClass="java.lang.String" resultClass="HomeDto">
+		<![CDATA[
+		   {call _07_Proc_mainList(#val#)}
+		]]>
+	</procedure>
+	
+	<select id="Home#getTodayUpdateList" resultClass="HomeDto">
+		<![CDATA[
+			SELECT num,re_form,subject,R_date,Re_Step,visited 
+		  	  FROM vod_s1 	
+		 	 WHERE Re_step <> 0 
+		 	   and Re_step <> 12 
+		 	   and (Re_step<>15 and Re_level <> 4)
+		 	   AND (DATEDIFF(dd, R_date, GETDATE()) >= 0)  
+			 ORDER BY R_date DESC, num DESC
+			 OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         	 FETCH NEXT #perPageCnt# ROWS ONLY
+		]]>	
+	</select>
+	
+	<select id="Home#getTodayUpdateListCnt" resultClass="int">
+		<![CDATA[
+			SELECT count(*) as totalCnt 
+		  	  FROM vod_s1 	
+		 	 WHERE Re_step <> 0 
+		 	   and Re_step <> 12
+		 	   and (Re_step<>15 and Re_level <> 4) 
+		 	   AND (DATEDIFF(dd, R_date, GETDATE()) >= 0)  
+		]]>	
+	</select>
+</sqlMap>

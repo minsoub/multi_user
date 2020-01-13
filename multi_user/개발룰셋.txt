@@ -1,0 +1,64 @@
+1. 개발환경
+spring 3.0
+ibatis 2.3.4
+mssql 개발(2012). 한전(2014)
+java 1.7
+tomcat 7.0
+
+2. SVN (https://svn.neodreams.co.kr/svn/KEPCO/MULTI)
+참고ASP : multi_user_asp
+JSP : multi_user
+---추후---
+관리자 프로젝트 추가 예정
+---추후--- 
+
+3. 프로젝트 세부
+프로젝트 인코딩 : UTF-8
+탭 : general / editors / text editors : displayed tab width - '4'
+
+-소스폴더 
+상속용 : /src/kr/co/neodreams/multi_user/base/*
+공통util : /src/kr/co/neodreams/multi_user/common/
+controller : /src/kr/co/neodreams/multi_user/controller/
+dao : /src/kr/co/neodreams/multi_user/dao/
+dto : /src/kr/co/neodreams/multi_user/dto/
+service : /src/kr/co/neodreams/multi_user/service/
+쿼리xml : /src/sqlmap/
+
+-웹소스
+jsp : WebContent/jsp/메뉴영문명/
+js :  WebContent/resource/common/js/
+image : WebContent/resource/images/ 
+
+-jquery 
+기본 : jquery.1.9.1.js 
+※ 특정 소스 필요시 해당 페이지 1.10 버전 사용
+
+-파일 및 메소드 명명. MVC_DAO 메소드명은 되도록 통일
+리스트 : *List.jsp
+뷰 : *Detail.jsp
+팝업 : *Pop.jsp
+액션 : insert*.do
+      update*.do
+	  delete*.do
+	  modify*.do
+	  
+	  
+	  
+-mssql 컬럼 추가 스키마
+ALTER TABLE tbSVC_ORDMASTER ADD SSTART VARCHAR(10) NULL;   서비스 요청일
+ALTER TABLE tbSVC_ORDMASTER ADD MULTIPAGE VARCHAR(50) NULL; 매체원본추정시간/세부내용
+ALTER TABLE tbSVC_ORDMASTER ADD MULTITIME VARCHAR(50) NULL;  작업예상시간
+ALTER TABLE tbSVC_ORDMASTER ADD MULTITIMEOUT VARCHAR(30) NULL;  예상작업 완료일
+
+
+3093 = 신청
+3094 = 접수/제작중   => 진행중
+3095 = 정상완료 => 완료
+3096 = 미처리종료  => 완료
+3097 = 사용자취소  => 유지
+3098 = 미승인종료  => 완료
+
+3275 = 검수중
+
+     

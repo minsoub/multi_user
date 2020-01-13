@@ -1,0 +1,76 @@
+{
+	"location": [
+		{ "name" : "전국", 
+          "dept_code" : "", 
+          "url" : "view",
+          "location_code" : "",
+          "depth" : "0"
+        },
+        { "name" : "강원본부", 
+          "dept_code" : "4200", 
+          "url" : "viewGangwon",
+          "location_code" : "gangwon",
+          "depth" : "1"
+        },
+        { "name" : "경기북부본부", 
+          "dept_code" : "3420", 
+          "url" : "viewGyungiB",
+          "location_code" : "kyeonggibukbu",
+          "depth" : "1"
+        },
+        { "name" : "광주전남본부", 
+          "dept_code" : "5000", 
+          "url" : "viewGwangju",
+          "location_code" : "gwangju",
+          "depth" : "1"
+        },
+        { "name" : "대전세종충남본부", 
+          "dept_code" : "4600", 
+          "url" : "viewDaejeon",
+          "location_code" : "chungnam",
+          "depth" : "1"
+        },
+        { "name" : "부산울산본부", 
+          "dept_code" : "5500", 
+          "url" : "viewBusan",
+          "location_code" : "busan2",
+          "depth" : "1"
+        },
+        { "name" : "아산전력지사", 
+          "dept_code" : "2670", 
+          "url" : "viewAsan",
+          "location_code" : "asan",
+          "depth" : "2"
+        },
+        { "name" : "인천본부", 
+          "dept_code" : "4000", 
+          "url" : "viewIncheon",
+          "location_code" : "incheon",
+          "depth" : "1"
+        },
+        { "name" : "전북본부", 
+          "dept_code" : "4800", 
+          "url" : "viewJeonbuk",
+          "location_code" : "jeonbuk",
+          "depth" : "1"
+        },
+        { "name" : "제주본부", 
+          "dept_code" : "5900", 
+          "url" : "viewJeju",
+          "location_code" : "jeju",
+          "depth" : "1"
+        },
+        { "name" : "충북본부", 
+          "dept_code" : "4500", 
+          "url" : "viewChungbuk",
+          "location_code" : "chungbuk",
+          "depth" : "1"
+        },
+        { "name" : "서울본부", 
+          "dept_code" : "3970", 
+          "url" : "viewSeoul",
+          "location_code" : "seoul",
+          "depth" : "1"
+        }
+    ]
+}

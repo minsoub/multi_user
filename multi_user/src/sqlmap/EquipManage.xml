@@ -1,0 +1,1510 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="EquipManage">
+    <typeAlias alias="EquipManageDto" type="kr.co.neodreams.multi_user.dto.EquipManageDto"/>
+
+    <select id="EquipManage#getCodeList" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT GBCD, GBNM
+            FROM ONESTOP_RENT_CODE
+            WHERE GBLEV =  '1'
+            AND GBYN = 'Y'
+            AND (GBCD != '011' AND GBCD != '018')
+            ORDER BY GBCD ASC
+        ]]>
+    </select>
+
+    <select id="EquipManage#getAllCodeList" resultClass="EquipManageDto">
+        <![CDATA[
+        	select case when re_order >= 2 and re_order <= 17 then re_order + 1
+			            when re_order = 18 then 2
+						else re_order
+						end as re_order
+			       ,gbcd
+				   ,gbnm
+			  from (SELECT ROW_NUMBER() OVER (ORDER BY GBCD ASC) as re_order
+			               ,GBCD, GBNM
+			         FROM ONESTOP_RENT_CODE
+			        WHERE GBLEV =  '1') as list
+			  order by re_order
+        ]]>
+		 <!-- 
+            SELECT GBCD, GBNM
+            FROM ONESTOP_RENT_CODE
+            WHERE GBLEV =  '1'
+            ORDER BY GBCD ASC
+             -->
+    </select>
+
+    <!-- 모델 상세정보 코드가져오기 -->
+    <select id="EquipManage#getSubTree" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT DISTINCT(GBCD), GBNM, GBYN, GBLEV
+            FROM ONESTOP_RENT_CODE ORC1
+            WHERE DELYN = 'N'
+            AND GBCD != #code#
+            AND GBCD like #code# + '%'
+            AND GBCD like GBUP + '%'
+            ORDER BY GBCD ASC
+        ]]>
+    </select>
+
+    <select id="EquipManage#getEquipManageList" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT M.MDSEQ, MAX(M.MDNM) MDNM, MAX(M.LCHDT) LCHDT,
+                DATEDIFF (
+                month, GETDATE(),
+                 CONVERT(varchar, MAX(M.LCHDT) + '01', 112)
+              ) betMonth
+            FROM ONESTOP_RENT_MODEL M
+            LEFT JOIN ONESTOP_RENT_MODEL_SUB MS ON MS.MDSEQ = M.MDSEQ
+        ]]>
+        <isNotEmpty property="searchVal">
+            <![CDATA[
+                AND (
+                    $searchVal$
+                    )
+            ]]>
+        </isNotEmpty>
+        <![CDATA[
+            WHERE M.DELYN =  'N'
+            AND M.GBCD =  #code#
+            GROUP BY M.MDSEQ
+        ]]>
+        <isNotEmpty property="searchVal">
+            <![CDATA[
+                HAVING COUNT(MS.ITEM) =  $itemCnt$
+            ]]>
+        </isNotEmpty>
+    </select>
+
+    <select id="EquipManage#getEquipRentNum" resultClass="int">
+        <![CDATA[
+            SELECT
+              COUNT(1) AS numrows
+            FROM
+              ONESTOP_RENT_EQUIP
+            WHERE DELYN = 'N'
+              AND MDSEQ = #mdseq#
+              AND EQRST = 1
+              AND EQMST = 1
+        ]]>
+    </select>
+
+    <select id="EquipManage#getCurrAppCnt" resultClass="int">
+        <![CDATA[
+        	select sum(nowCnt) - sum(banpCnt) 
+        	  from (SELECT Isnull(sum(M.AMOUNT), '0') as nowCnt
+		              	   ,0 as banpCnt
+		            FROM
+		              ONESTOP_RENT_APP_MODEL M
+		              LEFT JOIN ONESTOP_RENT_APP APP
+		                ON M.APPNO = APP.APPNO
+		            WHERE APP.DELYN = 'N'
+		              AND APP.APPROVAL != 3
+		              AND APP.STATUS NOT IN ('2', '6')
+		              AND (
+		                APP.IS_SIGN IS NULL
+		                OR APP.IS_SIGN != 'R'
+		              )
+		              AND M.MDSEQ = #mdseq#
+		              AND APP.ENDDT >= #strdt#
+		              AND APP.STRDT <= #enddt#
+		              
+		            union all
+		              
+		            SELECT 0 as nowCnt
+		                   ,Isnull(count(*), '0') as banpCnt
+		            FROM
+		              ONESTOP_RENT_APP_EQUIP M
+		              LEFT JOIN ONESTOP_RENT_APP APP
+		                ON M.APPNO = APP.APPNO
+		            WHERE APP.DELYN = 'N'
+		              AND APP.APPROVAL != 3
+		              AND APP.STATUS NOT IN ('2', '6')
+		              AND (
+		                APP.IS_SIGN IS NULL
+		                OR APP.IS_SIGN != 'R'
+		              )
+		              AND M.MDSEQ = #mdseq#
+		              AND APP.ENDDT >= #strdt#
+		              AND APP.STRDT <= #enddt#
+		              AND M.BANPFLAG = 6
+				) as list
+        ]]>
+    </select>
+    
+    <select id="EquipManage#getCurrAppCnt_bak" resultClass="int">
+        <![CDATA[
+            SELECT
+              Isnull(sum(M.AMOUNT), '0')
+            FROM
+              ONESTOP_RENT_APP_MODEL M
+              LEFT JOIN ONESTOP_RENT_APP APP
+                ON M.APPNO = APP.APPNO
+            WHERE APP.DELYN = 'N'
+              AND APP.APPROVAL != 3
+              AND APP.STATUS NOT IN ('2', '6')
+              AND (
+                APP.IS_SIGN IS NULL
+                OR APP.IS_SIGN != 'R'
+              )
+              AND M.MDSEQ = #mdseq#
+              AND APP.ENDDT >= #strdt#
+              AND APP.STRDT <= #enddt#
+        ]]>
+    </select>
+
+    <select id="EquipManage#getBasketCnt" resultClass="int">
+        <![CDATA[
+            SELECT
+              Isnull(sum(AMOUNT),'0')
+            FROM
+              ONESTOP_RENT_BASKET
+            WHERE MDSEQ = #mdseq#
+              AND ENDDT >= #strdt#
+              AND STRDT <= #enddt#
+        ]]>
+    </select>
+
+    <select id="EquipManage#getMyBasketCnt" resultClass="int">
+        <![CDATA[
+            SELECT
+              Isnull(sum(AMOUNT), '0')
+            FROM
+              ONESTOP_RENT_BASKET
+            WHERE MDSEQ = #mdseq#
+              AND ENDDT >= #strdt#
+              AND STRDT <= #enddt#
+              AND REGENO = #regeno#
+        ]]>
+    </select>
+
+    <select id="EquipManage#getRentNumByModel" resultClass="int">
+        <![CDATA[
+            SELECT
+                COUNT(1) AS numrows
+            FROM
+                ONESTOP_RENT_APP APP
+            LEFT JOIN
+                ONESTOP_RENT_APP_MODEL APPM
+              ON APPM.APPNO = APP.APPNO
+            WHERE APPM.MDSEQ = #mdseq#
+              AND APP.DELYN = 'N'
+              AND APP.STATUS != 2
+              AND APP.APPROVAL = 2
+        ]]>
+    </select>
+
+    <select id="EquipManage#getModelSub" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT
+              isNull(CODE2.GBNM, SUB.ITEM) itemNm
+            FROM
+              ONESTOP_RENT_MODEL_SUB SUB
+              LEFT JOIN ONESTOP_RENT_CODE CODE1
+                ON CODE1.GBCD = SUB.GBCD
+              LEFT JOIN ONESTOP_RENT_CODE CODE2
+                ON CODE2.GBCD = SUB.ITEM
+            WHERE SUB.MDSEQ = #mdseq#
+            ORDER BY SUB.GBCD
+        ]]>
+    </select>
+
+    <select id="EquipManage#getImageUrl" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT
+              PATHNM imageUrl
+            FROM
+              ONESTOP_RENT_FILES
+            WHERE REFNO = #mdseq#
+              AND FILETP = 'I'
+        ]]>
+    </select>
+
+    <!-- 장비정보 -->
+    <select id="EquipManage#getCodeInfo" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT GBCD, GBNM, GBLEV, EQHNO
+            FROM ONESTOP_RENT_CODE
+            WHERE GBCD = #gbcd#
+        ]]>
+    </select>
+
+    <!-- 모델기본정보 -->
+    <select id="EquipManage#getModelBasicInfo" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT MDSEQ, GBCD, MDNO, MDNM, MDTXT, LCHDT
+            FROM ONESTOP_RENT_MODEL
+            WHERE MDSEQ = #mdseq#
+        ]]>
+    </select>
+
+    <!-- 첨부파일 -->
+    <select id="EquipManage#getAttachFileInfo" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT FILENO, FILENM, PATHNM
+            FROM ONESTOP_RENT_FILES
+            WHERE REFNO =  #refno#
+            AND FILETP = #filetp#
+        ]]>
+    </select>
+
+    <!-- 장바구니 정보  -->
+    <select id="EquipManage#getBasketInfo" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT MAX(BSKNO) BSKNO, STRDT, ENDDT, MDSEQ, SUM(AMOUNT) AMOUNT, MAX(REGENO) REGENO
+            FROM ONESTOP_RENT_BASKET
+            WHERE BSKNO IN ($bskno$)
+            GROUP BY STRDT, ENDDT, MDSEQ
+        ]]>
+    </select>
+
+    <select id="EquipManage#getNextBskno" resultClass="int">
+        <![CDATA[
+            SELECT ISNULL(MAX(BSKNO) + 1, 1)
+            FROM ONESTOP_RENT_BASKET
+        ]]>
+    </select>
+
+    <!-- 모델 코드 정보  -->
+    <select id="EquipManage#getModelByCode" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT GBCD, MDNO, MDSEQ, MDNM, MDTXT, MDBG
+            FROM ONESTOP_RENT_MODEL
+            WHERE GBCD =  #gbcd#
+            AND DELYN = 'N'
+            ORDER BY MDNM COLLATE Korean_Wansung_BIN
+        ]]>
+    </select>
+
+    <!-- 모델 코드 정보  -->
+    <select id="EquipManage#getModelInfo" resultClass="EquipManageDto">
+        <![CDATA[
+        SELECT GBCD,
+               MDNO,
+               MDSEQ,
+               MDNM,
+               MDTXT,
+               MDBG
+          FROM ONESTOP_RENT_MODEL
+          WHERE DELYN = 'N'
+        ]]>
+        <dynamic>
+            <isNotEmpty property="mdseq" prepend="AND">
+            <![CDATA[
+                MDSEQ = #mdseq#
+            ]]>
+            </isNotEmpty>
+            <isNotEmpty property="mdseqArr" prepend="AND">
+                <![CDATA[
+                MDSEQ
+                ]]>
+                <iterate prepend="in" open="(" conjunction="," close=")" property="mdseqArr">
+                <![CDATA[
+                #mdseqArr[]#
+                ]]>
+                </iterate>
+            </isNotEmpty>
+        </dynamic>
+    </select>
+
+    <update id="EquipManage#updateEqlst" parameterClass="EquipManageDto">
+        <![CDATA[
+            UPDATE ONESTOP_RENT_EQUIP
+            SET EQLST = #eqlst#
+            WHERE 1=1
+        ]]>
+            <isNotEmpty property="eqnoArr" prepend="AND">
+                <![CDATA[
+                EQNO
+                ]]>
+                <iterate prepend="in" open="(" conjunction="," close=")" property="eqnoArr">
+                <![CDATA[
+                #eqnoArr[]#
+                ]]>
+                </iterate>
+            </isNotEmpty>
+    </update>
+
+    <!-- 모델 코드 정보  -->
+    <select id="EquipManage#getAmountInfo" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT COUNT(*) AMOUNT, GBCD
+            FROM ONESTOP_RENT_EQUIP
+            WHERE DELYN = 'N'
+            GROUP BY GBCD
+        ]]>
+    </select>
+
+    <!-- 모델 코드 정보  -->
+    <select id="EquipManage#getRecViewInfo" resultClass="EquipManageDto">
+        <![CDATA[
+			SELECT SUM(AM.AMOUNT) AS AMOUNT, 
+			       STUFF
+			       (
+			              (SELECT ',' + C.GBNM 
+			                FROM ONESTOP_RENT_APP A 
+			                 LEFT JOIN ONESTOP_RENT_APP_MODEL AM 
+			                     ON AM.APPNO = A.APPNO 
+			                 LEFT JOIN ONESTOP_RENT_MODEL M 
+			                     ON M.MDSEQ = AM.MDSEQ 
+			                 LEFT JOIN ONESTOP_RENT_CODE C 
+			                     ON C.GBCD = M.GBCD 
+			               WHERE A.APPNO = #appno# FOR XML PATH('')
+			              ),1,1,''
+			          ) AS GBNM,
+			          MAX(EMP.DEPTNO) DEPTNO, 
+			          MAX(A.STRDT) STRDT, MAX(A.ENDDT) ENDDT, MAX(APPNUM) APPNUM, MAX(A.APPENO) APPENO, 
+			          MAX(A.APPENM) APPENM, MAX(A.STATUS) STATUS, MAX(A.APPROVAL) APPROVAL, MAX(A.APPUENO) APPUENO, 
+			          MAX(A.APPTEL) APPTEL, MAX(A.APPUENM) APPUENM, MAX(A.APPSS) APPSS, MAX(A.APPMAIL) APPMAIL, 
+			          MAX(A.USEOBJ) USEOBJ, MAX(A.INSUNO) APPINSUNO, MAX(A.INSUNM) APPINSUNM, MAX(A.INSUDT) INSUDT, 
+			          MAX(A.BIGO) BIGO, MAX(A.BANPNO) BANPNO, MAX(A.BANPNM) BANPNM, MAX(A.BANPDT) BANPDT, 
+			          MAX(A.BANPST) BANPST, MAX(A.UHSEQ) UHSEQ, MAX(EUH.INGAENM) INGAENM, MAX(EUH.INGAENO) INGAENO, 
+			          MAX(EUH.INSUNM) INSUNM, MAX(EUH.INSUNO) INSUNO, MAX(EUH.MAILAPPROVAL) MAILAPPROVAL, 
+			          MAX(EUH.MODE) MODE, MAX(EUH.REGDT) REGDT, MAX(A.RENT_OUT_SIGN_IMG) RENT_OUT_SIGN_IMG, MAX(A.RENT_IN_SIGN_IMG) RENT_IN_SIGN_IMG,
+			          MAX(A.RENT_NB_GUBUN) RENT_NB_GUBUN 
+			     FROM ONESTOP_RENT_APP A 
+			      LEFT JOIN ONESTOP_RENT_APP_MODEL AM 
+			          ON AM.APPNO = A.APPNO 
+			      LEFT JOIN ONESTOP_RENT_MODEL M 
+			          ON M.MDSEQ = AM.MDSEQ 
+			      LEFT JOIN ONESTOP_RENT_CODE C 
+			          ON C.GBCD = M.GBCD 
+			      LEFT JOIN ONESTOP_RENT_APP_EQUIP_USER_HISTORY EUH 
+			          ON A.APPNO = EUH.APPNO 
+			          AND A.UHSEQ = EUH.UHSEQ
+			      LEFT JOIN tbSVC_TDMSEMP EMP ON EMP.empno= A.APPENO 
+			    WHERE A.APPNO = #appno#
+			    GROUP BY A.APPNO
+        ]]>
+    </select>
+
+    <update id="EquipManage#updateStatus" parameterClass="EquipManageDto">
+        <![CDATA[
+            UPDATE ONESTOP_RENT_APP
+            SET STATUS = '3'
+            WHERE APPNO = #appno#
+        ]]>
+    </update>
+
+    <update id="EquipManage#updateIsSign" parameterClass="EquipManageDto">
+        <![CDATA[
+            UPDATE ONESTOP_RENT_APP
+            SET IS_SIGN = 'N'
+            WHERE APPNO = #appno#
+        ]]>
+    </update>
+
+    <select id="EquipManage#getAmountForModel" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT APPNO, MDSEQ, AMOUNT
+            FROM ONESTOP_RENT_APP_MODEL
+            WHERE APPNO = #appno#
+        ]]>
+    </select>
+
+   <select id="EquipManage#getAssignedEquipInfo" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT EQ.MDSEQ, EQ.EQNO, EQ.EQNM, EQ.EQALIAS
+            FROM ONESTOP_RENT_APP_EQUIP AEQ
+            LEFT JOIN ONESTOP_RENT_EQUIP EQ ON EQ.EQNO = AEQ.EQNO			
+            WHERE AEQ.APPNO =  #appno#
+            AND AEQ.MDSEQ =  #mdseq#
+        ]]>
+        	<isNotEmpty property="eqno">
+			AND AEQ.EQNO = #eqno#        	
+        	</isNotEmpty>
+        <![CDATA[    
+            ORDER BY EQNM
+        ]]>
+    </select>
+
+   <select id="EquipManage#getEqnm" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT E.EQNM, E.EQALIAS
+            FROM ONESTOP_RENT_APP_EQUIP AE
+            LEFT JOIN ONESTOP_RENT_EQUIP E ON E.EQNO = AE.EQNO
+            WHERE AE.APPNO =  #appno#
+            AND AE.MDSEQ =  #mdseq#
+        ]]>
+    </select>
+
+    <select id="EquipManage#getAssignEquip1" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT SUM(AMOUNT) AS AMOUNT,
+            STUFF((SELECT ',' + CONVERT(varchar, MDSEQ)
+                   FROM ONESTOP_RENT_APP_MODEL
+                   WHERE APPNO = #appno#
+                   FOR XML PATH('')),1,1,'') AS MDSEQ
+            FROM ONESTOP_RENT_APP_MODEL
+            WHERE APPNO = #appno#
+        ]]>
+    </select>
+
+    <select id="EquipManage#getAssignEquip2" resultClass="int">
+        <![CDATA[
+            SELECT COUNT(1) AS numrows
+            FROM ONESTOP_RENT_APP_EQUIP AEQ
+            LEFT JOIN ONESTOP_RENT_EQUIP EQ ON EQ.EQNO = AEQ.EQNO
+            LEFT JOIN ONESTOP_RENT_MODEL M ON M.MDSEQ = AEQ.MDSEQ
+            WHERE AEQ.APPNO = #appno#
+            AND M.DELYN = 'N'
+            AND EQ.DELYN = 'N'
+            AND EQ.EQRST = 1
+            AND EQ.EQMST = 1
+        ]]>
+        <dynamic>
+            <isNotEmpty property="mdseqArr" prepend="AND">
+                <![CDATA[
+                AEQ.MDSEQ
+                ]]>
+                <iterate prepend="in" open="(" conjunction="," close=")" property="mdseqArr">
+                <![CDATA[
+                #mdseqArr[]#
+                ]]>
+                </iterate>
+            </isNotEmpty>
+        </dynamic>
+    </select>
+
+    <select id="EquipManage#getStatusApproval" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT STATUS, APPROVAL, APPNUM, APPENO, APPENM, STRDT, ENDDT
+            FROM ONESTOP_RENT_APP
+            WHERE APPNO = #appno#
+        ]]>
+    </select>
+
+    <delete id="EquipManage#delRecModel" parameterClass="EquipManageDto">
+        <![CDATA[
+            DELETE
+            FROM ONESTOP_RENT_APP_MODEL
+            WHERE APPNO = #appno#
+            AND MDSEQ = #mdseq#
+        ]]>
+    </delete>
+
+    <delete id="EquipManage#delRecEquip" parameterClass="EquipManageDto">
+        <![CDATA[
+            DELETE
+            FROM ONESTOP_RENT_APP_EQUIP
+            WHERE APPNO = #appno#
+            AND MDSEQ = #mdseq#
+        ]]>
+        <isNotEmpty property="euseq">
+        	AND EUSEQ = #euseq#
+        </isNotEmpty>
+    </delete>
+
+    <select id="EquipManage#getAdminUserMail" resultClass="java.util.HashMap">
+        <![CDATA[
+            SELECT EMP_ID empno
+            FROM ONESTOP_RENT_ADMIN
+            WHERE GET_MAIL = 'Y'
+        ]]>
+    </select>
+
+    <select id="EquipManage#getAmount" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT AMOUNT
+            FROM ONESTOP_RENT_APP_MODEL
+            WHERE APPNO = #appno#
+            AND MDSEQ = #mdseq#
+        ]]>
+    </select>
+
+    <select id="EquipManage#getEquipInfo" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT APPNO, MDSEQ, EQNO, EUSEQ
+            FROM ONESTOP_RENT_APP_EQUIP
+            WHERE APPNO = #appno#
+        ]]>
+        <dynamic>
+            <isNotEmpty property="mdseq" prepend="AND">
+                <![CDATA[
+                    MDSEQ = #mdseq#
+                ]]>
+            </isNotEmpty>
+        </dynamic>
+    </select>
+
+    <update id="EquipManage#updateAmount" parameterClass="EquipManageDto">
+        <![CDATA[
+            UPDATE ONESTOP_RENT_APP_MODEL
+            SET AMOUNT = #amount#
+            WHERE APPNO = #appno#
+            AND MDSEQ = #mdseq#
+        ]]>
+    </update>
+
+    <select id="EquipManage#getNextAppno" resultClass="int">
+        <![CDATA[
+            SELECT MAX(APPNO) + 1 appno
+            FROM ONESTOP_RENT_APP
+        ]]>
+    </select>
+
+    <insert id="EquipManage#insertAppData" parameterClass="EquipManageDto">
+        <![CDATA[
+            INSERT INTO
+            ONESTOP_RENT_APP (
+                APPNO,
+                APPNUM,
+                APPENO,
+                APPENM,
+                APPUENO,
+                APPUENM,
+                APPSS,
+                APPTEL,
+                APPMAIL,
+                APPHP,
+				INSUNO,                     
+				INSUNM,
+				INSUDT,
+				BANPNO,
+				BANPNM,
+				BANPDT,              
+				BANPST,
+				BIGO, 
+                USEOBJ,
+                STRDT,
+                ENDDT,
+                STATUS,
+                APPROVAL,
+                REGENO,
+                REGENM,
+                REGDT,
+                RENT_NB_GUBUN
+            ) VALUES (
+                $appno$,
+                #appnum#,
+                #appeno#,
+                #appenm#,
+                #appueno#,
+                #appuenm#,
+                #appss#,
+                #apptel#,
+                #appmail#,
+                #apphp#,
+                #insuno#,
+                #insunm#,
+                #insudt#,
+                #banpno#,
+                #banpnm#,
+                #banpdt#,
+                #banpst#,
+                #bigo#,
+                #useobj#,
+                #strdt#,
+                #enddt#,
+                #status#,
+                #approval#,
+                #regeno#,
+                #regenm#,
+                #regdt#,
+                #rent_NB_Gubun#
+            )
+        ]]>
+    </insert>
+
+    <insert id="EquipManage#insertBasketInfo" parameterClass="EquipManageDto">
+        <![CDATA[
+            INSERT INTO
+            ONESTOP_RENT_BASKET (
+                BSKNO,
+                MDSEQ,
+                AMOUNT,
+                STRDT,
+                ENDDT,
+                REGENO,
+                REGDT
+            ) VALUES (
+                $bskno$,
+                $mdseq$,
+                $amount$,
+                #strdt#,
+                #enddt#,
+                #regeno#,
+                #regdt#
+            )
+        ]]>
+    </insert>
+
+    <update id="EquipManage#updateAppData" parameterClass="EquipManageDto">
+        <![CDATA[
+            UPDATE ONESTOP_RENT_APP
+               SET APPENO = #appeno#,
+                   APPENM = #appenm#,
+                   APPSS = #appss#,
+                   APPTEL = #apptel#,
+                   APPHP = #apphp#,
+                   APPMAIL = #appmail#,
+                   APPUENO = #appueno#,
+                   APPUENM =  #appuenm#,
+                   USEOBJ = #useobj#,
+                   INSUNM = #insunm#,
+                   INSUDT = #insudt#,
+                   BANPNM = #banpnm#,
+                   BANPDT = #banpdt#,
+                   BANPST = #banpst#,
+                   BIGO = #bigo#,
+                   RENT_NB_GUBUN = #rent_NB_Gubun#
+            WHERE APPNO = #appno#
+        ]]>
+    </update>
+
+    <insert id="EquipManage#insertAppModel" parameterClass="EquipManageDto">
+        <![CDATA[
+            INSERT INTO
+            ONESTOP_RENT_APP_MODEL (
+                APPNO,
+                MDSEQ,
+                AMOUNT
+            ) VALUES (
+                $appno$,
+                #mdseq#,
+                #amount#
+            )
+        ]]>
+    </insert>
+
+    <insert id="EquipManage#insertAppEquip" parameterClass="EquipManageDto">
+        <![CDATA[
+            INSERT INTO ONESTOP_RENT_APP_EQUIP (
+                APPNO,
+                MDSEQ,
+                EQNO
+        ]]>
+        	<isNotEmpty property="euseq">
+                ,EUSEQ
+            </isNotEmpty>
+        <![CDATA[
+            ) VALUES (
+                $appno$,
+                #mdseq#,
+                #eqno#
+        ]]>
+        	<isNotEmpty property="euseq">
+        		,#euseq#
+        	</isNotEmpty>
+        <![CDATA[
+            )
+        ]]>
+    </insert>
+
+    <update id="EquipManage#updateInsu" parameterClass="EquipManageDto">
+        <![CDATA[
+            UPDATE ONESTOP_RENT_APP
+            SET STATUS = '4',
+            	INSUNO = #insuno#,
+                INSUNM = #insunm#,
+                INSUDT = #insudt#
+            WHERE APPNO = #appno#
+        ]]>
+    </update>
+
+    <update id="EquipManage#updateInUse" parameterClass="EquipManageDto">
+        <![CDATA[
+            UPDATE ONESTOP_RENT_EQUIP
+            SET EQLST = #eqlst#
+            WHERE EQNO = #eqno#
+            AND MDSEQ = #mdseq#
+        ]]>
+    </update>
+
+    <update id="EquipManage#updateBanp" parameterClass="EquipManageDto">
+        <![CDATA[
+            UPDATE ONESTOP_RENT_APP
+            SET STATUS = 6,
+            	BANPNO = #banpno#,
+                BANPNM = #banpnm#,
+                BANPDT = #banpdt#
+            WHERE APPNO = #appno#
+        ]]>
+    </update>
+
+    <select id="EquipManage#getEquipStatus" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT STATUS, APPROVAL, STRDT, ENDDT
+            FROM ONESTOP_RENT_APP
+            WHERE APPNO =  #appno#
+        ]]>
+    </select>
+
+    <select id="EquipManage#getEquipAmount" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT AMOUNT
+            FROM ONESTOP_RENT_APP_MODEL
+            WHERE APPNO =  #appno#
+            AND MDSEQ =  #mdseq#
+        ]]>
+    </select>
+
+    <select id="EquipManage#getEquipModelInfo" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT C.GBNM, EQ.GBCD, M.MDNM, M.MDSEQ, EQ.EQNM, EQ.EQNO, EQ.EQRST, EQ.EQMST, EQ.EQLST, EQ.EQALIAS
+            FROM ONESTOP_RENT_EQUIP EQ
+            LEFT JOIN ONESTOP_RENT_MODEL M ON M.MDSEQ = EQ.MDSEQ
+            LEFT JOIN ONESTOP_RENT_CODE C ON C.GBCD = M.GBCD
+            WHERE EQ.DELYN =  'N'
+            AND M.DELYN =  'N'
+            AND EQ.MDSEQ =  #mdseq#
+            AND EQ.EQRST =  1
+            AND EQ.EQMST =  1
+            ORDER BY EQ.EQNO
+        ]]>
+    </select>
+
+    <select id="EquipManage#getEquipNo" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT AEQ.EQNO
+            FROM ONESTOP_RENT_APP APP
+            LEFT JOIN ONESTOP_RENT_APP_EQUIP AEQ ON APP.APPNO =AEQ.APPNO
+            WHERE APP.DELYN =  'N'
+            AND APP.APPROVAL != '3'
+        ]]>
+        <isNotEmpty property="appno">
+        	AND APP.APPNO != #appno#
+        </isNotEmpty>
+        <![CDATA[
+            AND AEQ.MDSEQ =  #mdseq#
+            AND APP.ENDDT >= #strdt#
+            AND APP.STRDT <= #enddt#
+            AND APP.STATUS NOT IN ('2', '6')
+            AND AEQ.BANPFLAG = 1
+        ]]>
+    </select>
+
+    <select id="EquipManage#getNotInEquipNo" resultClass="EquipManageDto">
+        SELECT TOP $amount$ EQNO
+        FROM ONESTOP_RENT_EQUIP
+        WHERE DELYN = 'N'
+        AND MDSEQ = $mdseq$
+        AND EQRST = 1
+        AND EQMST = 1
+        <dynamic>
+            <isNotEmpty property="assignedArr" prepend="AND">
+                EQNO
+                <iterate prepend="NOT IN" open="(" conjunction="," close=")" property="assignedArr">
+                    $assignedArr[]$
+                </iterate>
+            </isNotEmpty>
+        </dynamic>
+        ORDER BY EQNO
+    </select>
+
+    <delete id="EquipManage#delBskno" parameterClass="EquipManageDto">
+        <![CDATA[
+            DELETE
+            FROM ONESTOP_RENT_BASKET
+            WHERE BSKNO = #bskno#
+        ]]>
+    </delete>
+
+    <!-- 모델 상세정보 코드가져오기 -->
+    <select id="EquipManage#getNextSignSeq" resultClass="int">
+        <![CDATA[
+            SELECT MAX(SEQNO) + 1 seqno
+            FROM ONESTOP_RENT_SIGN
+        ]]>
+    </select>
+
+    <insert id="EquipManage#insertSignInfo" parameterClass="EquipManageDto">
+        <![CDATA[
+            INSERT INTO
+            ONESTOP_RENT_SIGN (
+                SEQNO,
+                APPNO,
+                STATUS,
+                TITLE,
+                EMPNO,
+                NAME,
+                DEPT_NAME,
+                POS_NAME,
+                REG_SIGN,
+                SIGN_DATE
+            ) VALUES (
+                $seqno$,
+                $appno$,
+                #status#,
+                #appnum#,
+                #empno#,
+                #name#,
+                #deptName#,
+                #posName#,
+                #regSign#,
+                convert(varchar(8), getdate(), 112) + replace(convert(varchar(8), getdate(), 108), ':', '')
+            )
+        ]]>
+    </insert>
+
+    <update id="EquipManage#updateMailPath" parameterClass="java.util.HashMap">
+        update ONESTOP_RENT_APP
+        <isEqual prepend="set" property="status" compareValue="3">
+            RENT_OUT_MAIL_PATH = #mail_path#
+            ,RENT_OUT_MAIL_SEND = '0'
+        </isEqual>
+        <isEqual prepend="set" property="status" compareValue="4">
+            RENT_IN_MAIL_PATH = #mail_path#
+            ,RENT_IN_MAIL_SEND = '0'
+        </isEqual>
+        where appno = #appno#
+    </update>
+
+    <select id="EquipManage#getAppTblinfo" resultClass="EquipManageDto">
+        <![CDATA[
+            SELECT *
+            FROM ONESTOP_RENT_APP
+            WHERE APPNO = #appno#
+        ]]>
+    </select>
+    
+    <insert id="EquipManage#insertEquipUser">
+    	INSERT INTO dbo.ONESTOP_RENT_APP_EQUIP_USER 
+       ( 
+           EUSEQ,
+           APPNO,
+           MDSEQ,
+           APPUENO,
+           APPUENM,
+           DEPTNO,
+           DEPT1NM
+       ) 
+       VALUES 
+       ( 
+              (SELECT ISNULL(MAX(RAEU.EUSEQ)+1,1) 
+                FROM ONESTOP_RENT_APP_EQUIP_USER RAEU
+                WHERE RAEU.APPNO = #appno#
+              ), 
+              #appno#, 
+              #mdseq#, 
+              #appueno#, 
+              #appuenm#,
+              #deptno#,
+              #DEPT1NM#
+       )
+    </insert>
+    
+    <select id="EquipManage#getEquipUserList" resultClass="EquipManageDto">
+    	SELECT EUSEQ, 
+		       APPNO, 
+		       MDSEQ,
+		       EQNO, 
+		       APPUENO, 
+		       APPUENM 
+		  FROM ONESTOP_RENT_APP_EQUIP_USER 
+		 WHERE APPNO = #appno#
+		 <isNotEmpty property="mdseq">
+		 	AND MDSEQ = #mdseq#
+		 </isNotEmpty>
+    </select>
+    
+    <update id="EquipManage#updateAppEquipUser">
+    	UPDATE dbo.ONESTOP_RENT_APP_EQUIP_USER
+		SET EQNO = #eqno# 
+			WHERE APPNO = #appno#
+			AND MDSEQ = #mdseq#
+			AND EUSEQ = #euseq#
+    </update>
+    
+    <select id="EquipManage#getRecInfo" resultClass="EquipManageDto">
+    	SELECT 
+    		M.GBCD,
+			AP.APPNO,
+			EU.MDSEQ,
+			EU.EQNO,
+			AM.AMOUNT, 
+			EU.EUSEQ, 
+			EU.APPUENO, 
+			EU.APPUENM,
+			EU.DEPTNO,
+			EU.DEPT1NM,
+			M.MDNM,
+			EUH.UHSEQ,
+			EUH.INGAENO,
+			EUH.INGAENM,
+			EUH.INSUNO,
+			EUH.INSUNM,
+			EUH.MAILAPPROVAL,
+			EQ.BANPFLAG,
+			convert(varchar, EQ.BANPDT, 20) as BANPDT,
+			EQ.BANPNM,
+			EQ.BANPNO, 
+			SEMP.deptno AS insuDeptNo, 
+			dbo.SPLIT_STR(replace(ltrim(SEMP.dept_name),' ','||'),'||',2) as insuDeptNm			
+		FROM ONESTOP_RENT_APP AP
+		<!-- LEFT JOIN (SELECT * FROM ONESTOP_RENT_APP_EQUIP_USER WHERE APPNO = #appno# AND EUSEQ <= (SELECT SUM(AMOUNT) FROM ONESTOP_RENT_APP_MODEL WHERE APPNO = #appno#)) EU -->
+		LEFT JOIN (SELECT * FROM ONESTOP_RENT_APP_EQUIP_USER WHERE APPNO = #appno#) EU
+			ON EU.APPNO = AP.APPNO
+		LEFT JOIN ONESTOP_RENT_APP_EQUIP EQ
+			ON EQ.APPNO = AP.APPNO
+			AND EQ.MDSEQ = EU.MDSEQ
+			AND EQ.EQNO = EU.EQNO
+		INNER JOIN ONESTOP_RENT_MODEL M 
+			ON M.MDSEQ = EU.MDSEQ
+		INNER JOIN ONESTOP_RENT_APP_MODEL AM
+			ON AM.MDSEQ = EU.MDSEQ
+			AND AM.APPNO = EU.APPNO
+		LEFT JOIN ONESTOP_RENT_APP_EQUIP_USER_HISTORY EUH
+			ON EUH.APPNO = EU.APPNO
+			AND EUH.MDSEQ = EU.MDSEQ
+			AND EUH.EQNO = EU.EQNO
+			AND EUH.EUSEQ = EU.EUSEQ
+			AND EUH.UHSEQ = EU.UHSEQ
+		LEFT JOIN tbSVC_TDMSEMP SEMP ON EUH.INSUNO = SEMP.EMPNO
+		WHERE AP.APPNO = #appno#
+		ORDER BY GBCD, MDNM, EQNO
+    </select>
+    
+	<insert id="EquipManage#insertEQtoEU">
+		INSERT INTO ONESTOP_RENT_APP_EQUIP_USER
+		SELECT 
+		       CASE 
+		           WHEN EQ.EUSEQ IS NULL 
+		           THEN ROW_NUMBER() OVER (PARTITION BY EQ.APPNO ORDER BY EQ.APPNO DESC) 
+		           ELSE EQ.EUSEQ 
+		       END AS EUSEQ, 
+		       EQ.APPNO, 
+		       EQ.MDSEQ,	   
+		       EQ.EQNO, 
+		       A.APPUENO, 
+		       A.APPUENM	  	   
+		  FROM ONESTOP_RENT_APP_EQUIP EQ 
+		   INNER JOIN ONESTOP_RENT_APP A 
+		       ON EQ.APPNO = A.APPNO 
+	</insert>
+	
+	<select id="EquipManage#selectAMexpEQ" resultClass="EquipManageDto">
+		SELECT AM.APPNO, 
+		       AM.MDSEQ, 
+		       ISNULL(AM.AMOUNT,1) AS AMOUNT,
+			   NULL AS EQNO,
+			   APP.APPENO AS APPUENO,
+			   APP.APPENM AS APPUENM
+		  FROM ONESTOP_RENT_APP_MODEL AM   
+		  INNER JOIN ONESTOP_RENT_APP APP
+		  ON APP.APPNO = AM.APPNO
+		 WHERE NOT EXISTS 
+		       (SELECT * 
+		         FROM ONESTOP_RENT_APP_EQUIP EQ 
+		        WHERE EQ.APPNO = AM.APPNO 
+		              AND EQ.MDSEQ = AM.MDSEQ 
+       ) 
+	</select>
+	
+	<select id="EquipManage#getMaxEuseq" resultClass="String">
+		SELECT ISNULL( MAX(EU.EUSEQ), 1) AS EUSEQ
+		  FROM ONESTOP_RENT_APP_EQUIP_USER EU
+		 WHERE APPNO = #appno#
+	</select>
+	
+	<delete id="EquipManage#deleteEquipUser">
+		DELETE 
+		  FROM ONESTOP_RENT_APP_EQUIP_USER 
+		 WHERE APPNO = #appno# 
+		       AND EUSEQ = #euseq#
+	</delete>
+	
+	<update id="EquipManage#partBanp" parameterClass="java.util.HashMap">
+		<![CDATA[
+		update onestop_rent_app_equip
+		   set banpflag = '6' 
+		       ,banpdt = getdate()
+		       ,banpno = #ban_empno#
+               ,banpnm = #ban_name#
+         where appno = #ban_appno# 
+           and mdseq = #ban_mdseq# 
+           and eqno = #ban_eqno#;
+           
+		update onestop_rent_equip
+		   set eqlst = '0' 
+         where mdseq = #ban_mdseq# 
+           and eqno = #ban_eqno#;;
+           
+        if ((select gbcd from onestop_rent_equip where eqno = #ban_eqno#) = '001') or ((select gbcd from onestop_rent_equip where eqno = #ban_eqno#) = '018')
+        if (select count(*) as cnt from onestop_rent_check where appno = #ban_appno# and eqno = #ban_eqno#) = '0'
+        	insert into onestop_rent_check (appno, eqno, cmospwyn, logonpwyn, sharefolderdelyn, documentdelyn, osupdateyn, v3updateyn, lastmoddate)
+        	values (#ban_appno#, #ban_eqno#, 'N', 'N', 'N', 'N', 'N', 'N', getDate());
+		]]>
+	</update>
+	
+	<sql id="monthSumInsertQuery">
+		insert into onestop_month_approval (app_month, long_ins_cnt, long_ban_cnt, short_ins_cnt, short_ban_cnt, app_empno1, app_emp_name1, app_empno2, app_emp_name2, app_empno3, app_emp_name3, reg_datetime, gbcd)
+			select app_month
+			       ,max(long_ins_cnt) as long_ins_cnt
+				   ,max(long_ban_cnt) as long_ban_cnt
+				   ,max(short_ins_cnt) as short_ins_cnt
+				   ,max(short_ban_cnt) as short_ban_cnt
+				   ,max(app_empno1) as app_empno1
+				   ,max(app_emp_name1) as app_emp_name1
+				   ,max(app_empno2) as app_empno2
+				   ,max(app_emp_name2) as app_emp_name2
+				   ,max(app_empno3) as app_empno3
+				   ,max(app_emp_name3) as app_emp_name3
+				   ,getdate()
+				   ,gbcd
+			  from (select #app_month# as app_month
+					       ,case when term_gubun = 'long' then ins_term_cnt
+					             else 0
+					        end long_ins_cnt
+					       ,case when term_gubun = 'long' then ban_term_cnt
+					             else 0
+					        end long_ban_cnt
+					       ,case when term_gubun = 'short' then ins_term_cnt
+					             else 0
+					        end short_ins_cnt
+					       ,case when term_gubun = 'short' then ban_term_cnt
+					             else 0
+					        end short_ban_cnt
+					       ,(select app_empno1 from onestop_month_approval_manager) as app_empno1
+					       ,(select app_emp_name1 from onestop_month_approval_manager) as app_emp_name1
+					       ,(select app_empno2 from onestop_month_approval_manager) as app_empno2
+					       ,(select app_emp_name2 from onestop_month_approval_manager) as app_emp_name2
+					       ,(select app_empno3 from onestop_month_approval_manager) as app_empno3
+					       ,(select app_emp_name3 from onestop_month_approval_manager) as app_emp_name3
+						   ,gbcd
+			          from (select sum(ins_term_cnt) as ins_term_cnt
+			                       ,sum(ban_term_cnt) as ban_term_cnt
+					               ,term_gubun
+								   ,gbcd
+			                  from (select count(*) as ins_term_cnt
+			                               ,0 as ban_term_cnt
+			                               ,term_gubun
+										   ,gbcd
+			                          from (select case when DATEDIFF(dd, strdt, enddt) > 30 then 'long'
+			                                            else 'short'
+				                                    end term_gubun
+													,ore.gbcd
+			                                   from onestop_rent_app ora
+			                                  inner join onestop_rent_app_equip orae
+											     on orae.appno = ora.appno
+											  inner join onestop_rent_equip ore
+											     on orae.eqno = ore.eqno
+												    and (ore.gbcd = '001' OR ore.gbcd = '010')
+											  where insudt like '$strdt$%'
+											) as ins_data
+									 group by gbcd, term_gubun
+											
+											
+									 union all
+											
+									select 0 as ins_term_cnt
+									       ,count(*) as ban_term_cnt
+									       ,term_gubun
+										   ,gbcd
+									  from (select case when DATEDIFF(dd, strdt, enddt) > 30 then 'long'
+											            else 'short'
+											       end term_gubun
+												   ,ore.gbcd
+											  from onestop_rent_app_equip orae
+											 inner join onestop_rent_app ora
+											    on orae.banpflag = 6
+												   and orae.appno = ora.appno
+											 inner join onestop_rent_equip ore
+											    on orae.banpflag = 6
+												   and orae.eqno = ore.eqno
+												   and (ore.gbcd = '001' OR ore.gbcd = '010')
+											 where orae.banpdt between CONVERT(DATETIME, #start_banpdt#, 111) and CONVERT(DATETIME, #end_banpdt#, 111) 
+											   and orae.banpflag = 6
+										   ) as ban_data
+									group by gbcd, term_gubun
+								   ) as union_data
+							 group by gbcd, term_gubun
+					      ) as term_data
+				  ) as a
+			group by gbcd, app_month;
+	</sql>
+	
+	<insert id="EquipManage#insertMonthAppData" parameterClass="java.util.HashMap">
+		<isNotEmpty property="force_reset">
+				delete from onestop_month_approval where app_month = #app_month#;
+				<include refid="monthSumInsertQuery"></include>
+		</isNotEmpty>
+		<isEqual property="RESET" compareValue="Y">
+			if (select count(*) as cnt from onestop_month_approval where app_month = #app_month# and app_datetime1 is null) = '1'
+			BEGIN
+				delete from onestop_month_approval where app_month = #app_month#;
+				<include refid="monthSumInsertQuery"></include>
+			END
+			else if (select count(*) as cnt from onestop_month_approval where app_month = #app_month#) = '0'
+			BEGIN
+				<include refid="monthSumInsertQuery"></include>
+			END
+		</isEqual>
+		<isEqual property="RESET" compareValue="N">
+			if (select count(*) as cnt from onestop_month_approval where app_month = #app_month# and app_datetime1 is null) = '1'
+			BEGIN
+				delete from onestop_month_approval where app_month = #app_month#;
+				<include refid="monthSumInsertQuery"></include>
+			END
+			else if (select count(*) as cnt from onestop_month_approval where app_month = #app_month#) = '0'
+			BEGIN
+				<include refid="monthSumInsertQuery"></include>
+			END
+		</isEqual>
+	</insert>
+	
+	<select id="EquipManage#getCheckAppList" resultClass="java.util.HashMap">
+		select *
+		  from onestop_month_approval_manager
+	</select>
+	
+	<select id="EquipManage#getCheckAppMonthList" resultClass="java.util.HashMap">
+		SELECT
+			app_month,
+			MAX(ISNULL(note_long_ins_cnt, 0)) AS note_long_ins_cnt,
+			MAX(ISNULL(tabl_long_ins_cnt, 0)) AS tabl_long_ins_cnt,
+			MAX(ISNULL(note_long_ban_cnt, 0)) AS note_long_ban_cnt,
+			MAX(ISNULL(tabl_long_ban_cnt, 0)) AS tabl_long_ban_cnt,
+			MAX(ISNULL(note_short_ins_cnt, 0)) AS note_short_ins_cnt,
+			MAX(ISNULL(tabl_short_ins_cnt, 0)) AS tabl_short_ins_cnt,
+			MAX(ISNULL(note_short_ban_cnt, 0)) AS note_short_ban_cnt,
+			MAX(ISNULL(tabl_short_ban_cnt, 0)) AS tabl_short_ban_cnt,
+			app_empno1,
+			app_emp_name1,
+			app_datetime1,
+			app_empno2,
+			app_emp_name2,
+			app_datetime2,
+			app_empno3,
+			app_emp_name3,
+			app_datetime3,
+			check_result
+		FROM(
+			select 
+				app_month,
+				CASE WHEN gbcd = '001' THEN long_ins_cnt END AS note_long_ins_cnt,
+				CASE WHEN gbcd = '010' THEN long_ins_cnt END AS tabl_long_ins_cnt,
+				CASE WHEN gbcd = '001' THEN long_ban_cnt END AS note_long_ban_cnt,
+				CASE WHEN gbcd = '010' THEN long_ban_cnt END AS tabl_long_ban_cnt,
+				CASE WHEN gbcd = '001' THEN short_ins_cnt END AS note_short_ins_cnt,
+				CASE WHEN gbcd = '010' THEN short_ins_cnt END AS tabl_short_ins_cnt,
+				CASE WHEN gbcd = '001' THEN short_ban_cnt END AS note_short_ban_cnt,
+				CASE WHEN gbcd = '010' THEN short_ban_cnt END AS tabl_short_ban_cnt,
+				app_empno1,
+				app_emp_name1,
+				app_datetime1,
+				app_empno2,
+				app_emp_name2,
+				app_datetime2,
+				app_empno3,
+				app_emp_name3,
+				app_datetime3,
+				check_result
+			from 
+				onestop_month_approval
+		)a
+		GROUP BY app_month, app_empno1, app_emp_name1, app_datetime1,app_empno2, app_emp_name2, app_datetime2, app_empno3, app_emp_name3, app_datetime3, check_result
+		order by app_month desc
+		 OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	<select id="EquipManage#getCheckAppMonthInfo" resultClass="java.util.HashMap">
+		SELECT
+			TOP 1
+			app_month,
+			MAX(ISNULL(note_long_ins_cnt, 0)) AS note_long_ins_cnt,
+			MAX(ISNULL(tabl_long_ins_cnt, 0)) AS tabl_long_ins_cnt,
+			MAX(ISNULL(note_long_ban_cnt, 0)) AS note_long_ban_cnt,
+			MAX(ISNULL(tabl_long_ban_cnt, 0)) AS tabl_long_ban_cnt,
+			MAX(ISNULL(note_short_ins_cnt, 0)) AS note_short_ins_cnt,
+			MAX(ISNULL(tabl_short_ins_cnt, 0)) AS tabl_short_ins_cnt,
+			MAX(ISNULL(note_short_ban_cnt, 0)) AS note_short_ban_cnt,
+			MAX(ISNULL(tabl_short_ban_cnt, 0)) AS tabl_short_ban_cnt,
+			app_empno1,
+			app_emp_name1,
+			app_datetime1,
+			app_empno2,
+			app_emp_name2,
+			app_datetime2,
+			app_empno3,
+			app_emp_name3,
+			app_datetime3,
+			check_result
+		FROM(
+			select 
+				app_month,
+				CASE WHEN gbcd = '001' THEN long_ins_cnt END AS note_long_ins_cnt,
+				CASE WHEN gbcd = '010' THEN long_ins_cnt END AS tabl_long_ins_cnt,
+				CASE WHEN gbcd = '001' THEN long_ban_cnt END AS note_long_ban_cnt,
+				CASE WHEN gbcd = '010' THEN long_ban_cnt END AS tabl_long_ban_cnt,
+				CASE WHEN gbcd = '001' THEN short_ins_cnt END AS note_short_ins_cnt,
+				CASE WHEN gbcd = '010' THEN short_ins_cnt END AS tabl_short_ins_cnt,
+				CASE WHEN gbcd = '001' THEN short_ban_cnt END AS note_short_ban_cnt,
+				CASE WHEN gbcd = '010' THEN short_ban_cnt END AS tabl_short_ban_cnt,
+				app_empno1,
+				app_emp_name1,
+				app_datetime1,
+				app_empno2,
+				app_emp_name2,
+				app_datetime2,
+				app_empno3,
+				app_emp_name3,
+				app_datetime3,
+				check_result
+			from 
+				onestop_month_approval
+			WHERE
+				app_month = #app_month#
+		)a
+		GROUP BY app_month, app_empno1, app_emp_name1, app_datetime1,app_empno2, app_emp_name2, app_datetime2, app_empno3, app_emp_name3, app_datetime3, check_result
+		
+	</select>
+	
+	<select id="EquipManage#getCheckAppMonthListXls" resultClass="java.util.HashMap">
+		  SELECT
+				app_month as '날짜',
+				CONCAT(MAX(ISNULL(note_long_ins_cnt, 0)) + MAX(ISNULL(note_short_ins_cnt, 0)), ' / ', MAX(ISNULL(tabl_long_ins_cnt, 0)) + MAX(ISNULL(tabl_short_ins_cnt, 0)) ) as '총 반출(노트북/태블릿)',
+				CONCAT(MAX(ISNULL(note_long_ban_cnt, 0)) + MAX(ISNULL(note_short_ban_cnt, 0)), ' / ', MAX(ISNULL(tabl_long_ban_cnt, 0)) + MAX(ISNULL(tabl_short_ban_cnt, 0)) ) as '총 반납(노트북/태블릿)',
+				CONCAT(MAX(ISNULL(note_long_ins_cnt, 0)) ,' / ', MAX(ISNULL(tabl_long_ins_cnt, 0))) as '장기 반출(노트북/태블릿)',
+				CONCAT(MAX(ISNULL(note_long_ban_cnt, 0)) ,' / ', MAX(ISNULL(tabl_long_ban_cnt, 0))) as '장기 반납(노트북/태블릿)',
+				CONCAT(MAX(ISNULL(note_short_ins_cnt, 0)) ,' / ', MAX(ISNULL(tabl_short_ins_cnt, 0))) as '단기 반출(노트북/태블릿)',
+				CONCAT(MAX(ISNULL(note_short_ban_cnt, 0)) ,' / ', MAX(ISNULL(tabl_short_ban_cnt, 0))) as '단기 반납(노트북/태블릿)',
+				isnull(check_result, '') as '점검결과',
+				app_emp_name1 as '점검자' 
+               ,app_datetime1
+               ,app_emp_name2 as '파트장'
+               ,app_datetime2 
+               ,app_emp_name3 as '부서장'
+               ,app_datetime3
+			FROM(
+				select 
+					app_month,
+					CASE WHEN gbcd = '001' THEN long_ins_cnt END AS note_long_ins_cnt,
+					CASE WHEN gbcd = '010' THEN long_ins_cnt END AS tabl_long_ins_cnt,
+					CASE WHEN gbcd = '001' THEN long_ban_cnt END AS note_long_ban_cnt,
+					CASE WHEN gbcd = '010' THEN long_ban_cnt END AS tabl_long_ban_cnt,
+					CASE WHEN gbcd = '001' THEN short_ins_cnt END AS note_short_ins_cnt,
+					CASE WHEN gbcd = '010' THEN short_ins_cnt END AS tabl_short_ins_cnt,
+					CASE WHEN gbcd = '001' THEN short_ban_cnt END AS note_short_ban_cnt,
+					CASE WHEN gbcd = '010' THEN short_ban_cnt END AS tabl_short_ban_cnt,
+					app_empno1,
+					app_emp_name1,
+					app_datetime1,
+					app_empno2,
+					app_emp_name2,
+					app_datetime2,
+					app_empno3,
+					app_emp_name3,
+					app_datetime3,
+					check_result
+				from 
+					onestop_month_approval
+			)a
+			GROUP BY app_month, app_empno1, app_emp_name1, app_datetime1,app_empno2, app_emp_name2, app_datetime2, app_empno3, app_emp_name3, app_datetime3, check_result
+		order by app_month desc
+	</select>
+	
+	<select id="EquipManage#getCheckAppMonthListCnt" resultClass="int">
+		SELECT
+			COUNT(*) as totCnt 
+		FROM(
+			select 
+				app_month,
+				app_empno1,
+				app_emp_name1,
+				app_datetime1,
+				app_empno2,
+				app_emp_name2,
+				app_datetime2,
+				app_empno3,
+				app_emp_name3,
+				app_datetime3
+			from 
+				onestop_month_approval
+			GROUP BY app_month, app_empno1, app_emp_name1, app_datetime1,app_empno2, app_emp_name2, app_datetime2, app_empno3, app_emp_name3, app_datetime3
+		)a
+	</select>
+	
+	<select id="EquipManage#getCheckAppMonthDeviceList" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		select * 
+		  from (select 'ins' as insban, *
+                  from (select case when DATEDIFF(dd, strdt, enddt) > 30 then 'long'
+                                    else 'short'
+                                end term_gubun
+								,ora.appnum  
+								,ora.appno
+								,ora.appenm
+								,ora.regdt
+								,ora.strdt
+								,ora.enddt 
+								,ora.insudt
+								,orae.banpnm
+								,orae.banpdt
+								,orm.mdnm
+								,ore.eqnm
+								,ore.eqalias
+                           from onestop_rent_app ora
+                          inner join onestop_rent_app_equip orae
+							 on orae.appno = ora.appno
+						  inner join onestop_rent_equip ore
+						     on orae.eqno = ore.eqno
+							    and ore.gbcd = #gbcd#
+						  inner join onestop_rent_model orm
+						     on ore.mdseq = orm.mdseq
+						  where insudt like '$strdt$%'
+				) as ins_data
+							
+							
+				union all
+							
+				select 'ban' as insban, *
+				  from (select case when DATEDIFF(dd, strdt, enddt) > 30 then 'long'
+						            else 'short'
+					 	        end term_gubun
+							    ,ora.appnum  
+							    ,ora.appno
+							    ,ora.appenm
+							    ,ora.regdt
+							    ,ora.strdt
+							    ,ora.enddt 
+							    ,ora.insudt
+							    ,orae.banpnm
+							    ,orae.banpdt
+							    ,orm.mdnm
+							    ,ore.eqnm
+							    ,ore.eqalias
+						   from onestop_rent_app_equip orae
+						  inner join onestop_rent_app ora
+							 on orae.banpflag = 6
+							    and orae.appno = ora.appno
+						  inner join onestop_rent_equip ore
+							 on orae.banpflag = 6
+							    and orae.eqno = ore.eqno
+							    and ore.gbcd = #gbcd#
+					      inner join onestop_rent_model orm
+						     on ore.mdseq = orm.mdseq
+						  where orae.banpdt between CONVERT(DATETIME, #start_banpdt#, 111) and CONVERT(DATETIME, #end_banpdt#, 111)
+						    and orae.banpflag = 6
+				) as ban_data
+            ) as data
+		where insban = #insban#
+		<isNotEmpty property="gubun" prepend="and">
+			term_gubun = #gubun#
+		</isNotEmpty>
+		order by strdt
+	</select>
+	
+	<insert id="EquipManage#insertCheckAppManage">
+		delete from ONESTOP_MONTH_APPROVAL_MANAGER;
+		
+		insert into ONESTOP_MONTH_APPROVAL_MANAGER (app_empno1, app_emp_name1, app_empno2, app_emp_name2, app_empno3, app_emp_name3, reg_empno, reg_datetime)
+		values (#app_empno1#, #app_emp_name1#, #app_empno2#, #app_emp_name2#, #app_empno3#, #app_emp_name3#, #reg_empno#, getdate())
+	</insert>
+	
+	<select id="EquipManage#getMonthApproval_Info" resultClass="java.util.HashMap">
+		select TOP 1 *
+		  from onestop_month_approval
+		 where app_month = #app_month#
+	</select>
+	
+	<update id="EquipManage#updateMonthApproval_Info" parameterClass="java.util.HashMap">
+		update onestop_month_approval
+		<isEqual property="level" compareValue="1"> 
+		   set check_result = #check_result#
+		       ,check_datetime = getdate()
+		       ,app_datetime1 = getdate()
+		       ,socket1_datetime = getdate()
+		</isEqual>
+		<isEqual property="level" compareValue="2"> 
+		   set app_datetime2 = getdate()
+		       ,socket2_datetime = getdate()
+		</isEqual>
+		<isEqual property="level" compareValue="3"> 
+		   set app_datetime3 = getdate()
+		       ,socket3_datetime = getdate()
+		</isEqual>
+		<isEqual property="level" compareValue="mail"> 
+		   set send_mail_datetime = getdate()
+		</isEqual>
+		 where app_month = #app_month#  
+	</update>
+	
+	<insert id="EquipManage#insertOneStopLog" parameterClass="java.util.ArrayList">
+		INSERT INTO ONE_STOP_LOG(
+			ep_LogSeq, ep_SignType, ep_DocData, ep_DocApprover, ep_SendData, ep_ReciveData, ep_SendDate
+		)VALUES
+		<iterate property="" conjunction=",">
+			(
+				#List[].ep_LogSeq#,	
+				#List[].ep_SignType#,	
+				#List[].ep_DocData#,	
+				#List[].ep_DocApprover#,	
+				#List[].ep_SendData#,	
+				#List[].ep_ReciveData#,
+				getDate()
+			)
+		</iterate>
+	</insert>
+	
+	<select id="EquipManage#getOneStopLogCnt" resultClass="int">
+		SELECT ISNULL(MAX(ep_LogSeq), 0) AS ep_LogSeq FROM ONE_STOP_LOG
+	</select>
+	
+	<select id="EquipManage#oneStopLogList" resultClass="java.util.HashMap">
+		SELECT 
+			* 
+		FROM 
+			ONE_STOP_LOG 
+		ORDER BY ep_DocData DESC, ep_SendDate
+		OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+		FETCH NEXT #perPageCnt# ROWS ONLY
+	</select>
+	
+	
+	<select id="EquipManage#oneStopLogListCnt" resultClass="int">
+		SELECT 
+			COUNT(*) 
+		FROM 
+			ONE_STOP_LOG 
+	</select>
+	
+	<select id="EquipManage#oneStopLogDetail" resultClass="java.util.HashMap">
+		SELECT 
+			* 
+		FROM 
+			ONE_STOP_LOG 
+		WHERE
+			ep_LogSeq = #ep_LogSeq#
+	</select>
+	
+	<insert id="EquipManage#insertFile">
+		<selectKey keyProperty="RENT_SECURITY_SEQ" resultClass="int">
+			SELECT COALESCE(max(RENT_SECURITY_SEQ), 0)+1 FROM ONESTOP_RENT_SECURITY_FILE
+		</selectKey>
+		INSERT INTO
+            ONESTOP_RENT_SECURITY_FILE (
+            	RENT_SECURITY_SEQ,
+                APPNO,
+                RENT_SECURITY_fileName,
+                RENT_SECURITY_orgFileName,
+                RENT_SECURITY_ext,
+                RENT_SECURITY_phycalPath,
+                RENT_SECURITY_logicalPath,
+                RENT_SECURITY_userPK,
+                RENT_SECURITY_regDate
+            ) VALUES (
+            	#RENT_SECURITY_SEQ#,
+                #appno#,
+                #RENT_SECURITY_fileName#,
+                #RENT_SECURITY_orgFileName#,
+                #RENT_SECURITY_ext#,
+                #RENT_SECURITY_phycalPath#,
+                #RENT_SECURITY_logicalPath#,
+                #RENT_SECURITY_userPK#,
+                getdate()
+            )
+	</insert>
+	
+	<select id="EquipManage#selectRentFile" resultClass="EquipManageDto">
+		select TOP 1
+			RENT_SECURITY_SEQ, RENT_SECURITY_orgFileName, appno, RENT_SECURITY_phycalPath
+		from ONESTOP_RENT_SECURITY_FILE WHERE appno = #appno#
+	</select>
+	
+	<delete id="EquipManage#AjaxRentFileremove" parameterClass="int">
+		delete from ONESTOP_RENT_SECURITY_FILE WHERE RENT_SECURITY_SEQ = #SCF_SEQ#
+	</delete>
+</sqlMap>

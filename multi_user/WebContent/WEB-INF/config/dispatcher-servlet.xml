@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"	
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd												  
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">		
+
+
+<context:annotation-config/>
+<context:component-scan base-package="kr.co.neodreams.multi_user"/>
+
+<bean id="jsonView" class="net.sf.json.spring.web.servlet.view.JsonView">
+	<property name="contentType" value="application/json;charset=UTF-8"></property>
+</bean>
+
+<task:scheduler id="scheduler" pool-size="10"/>
+<task:scheduled-tasks scheduler="scheduler" >
+    <task:scheduled ref="DataGetSchedule" method= "dataGet" cron="0 0 5 * * *" />
+</task:scheduled-tasks>
+
+<bean id="DataGetSchedule" class="kr.co.neodreams.multi_user.service.DataSchedule"/>
+
+<task:scheduler id="scheduler" pool-size="10"/>
+<task:scheduled-tasks scheduler="scheduler" >
+    <task:scheduled ref="DataSetSchedule" method= "dataSet" cron="0 30 5 * * *" />
+</task:scheduled-tasks>
+
+<bean id="DataSetSchedule" class="kr.co.neodreams.multi_user.service.DataSchedule"/>
+
+
+<task:scheduler id="scheduler" pool-size="10"/>
+<task:scheduled-tasks scheduler="scheduler" >
+    <task:scheduled ref="DataGetSchedule" method= "dataGetNomu" cron="0 10 5 * * *" />
+</task:scheduled-tasks>
+
+<task:scheduler id="scheduler" pool-size="10"/>
+<task:scheduled-tasks scheduler="scheduler" >
+    <task:scheduled ref="DataSetSchedule" method= "dataSetNomu" cron="0 40 5 * * *" />
+</task:scheduled-tasks>
+
+
+<task:scheduler id="rentalSendSMSscheduler" pool-size="10"/>
+<task:scheduled-tasks scheduler="rentalSendSMSscheduler" >
+    <task:scheduled ref="RentalSendSMS" method= "sendSMS" cron="0 30 8 ? * MON-FRI" />
+</task:scheduled-tasks>
+
+<bean id="RentalSendSMS" class="kr.co.neodreams.multi_user.service.RentalSendSMS"/>
+
+
+<task:scheduler id="rentalMonthAppDataScheduler" pool-size="10"/>
+<task:scheduled-tasks scheduler="rentalMonthAppDataScheduler" >
+    <task:scheduled ref="RentalMonthAppData" method= "insertMonthAppData" cron="0 10 0 1 * ?" />
+</task:scheduled-tasks>
+
+<bean id="RentalMonthAppData" class="kr.co.neodreams.multi_user.service.SchedulerService"/>
+ 
+<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+     <property name="locations">
+     	<list>
+     		<value>/WEB-INF/jdbc/jdbc.properties</value>
+     	</list>
+     </property>
+     <property name="fileEncoding">
+     	<value>UTF-8</value>
+     </property>
+</bean> 
+
+<bean name="mssql" class="${jdbc.mssql.dataSource}" destroy-method="close">
+    <property name="driverClassName" value="${jdbc.mssql.driverClassName}"/>
+    <property name="url" value="${jdbc.mssql.url}"/>
+    <property name="username" value="${jdbc.mssql.username}"/>
+    <property name="password" value="${jdbc.mssql.password}"/>
+    <property name="maxActive" value="30"></property>
+    <property name="maxIdle" value="10"></property>
+    <property name="maxWait" value="-1"></property>    
+</bean>	
+
+<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+   <property name="dataSource" ref="mssql"></property>
+   <property name="configLocation" value="/WEB-INF/config/SqlMapConfig.xml"></property>
+</bean>
+
+<bean id="sqlMapClientTemplate"
+    class="org.springframework.orm.ibatis.SqlMapClientTemplate"
+    p:sqlMapClient-ref="sqlMapClient" />
+
+<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+   <property name="prefix" value="/jsp/"></property>
+   <property name="suffix" value=".jsp"></property>
+   <property name="order" value="1"></property>  
+</bean>
+
+<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+	<property name="exceptionMappings">
+		<props>
+			<prop key="java.lang.Exception">error</prop>
+		</props>
+	</property>
+</bean>
+
+<bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
+   <property name="order" value="0"></property>
+</bean>
+
+<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+  <property name="defaultEncoding" value="UTF-8"></property>
+  <property name="maxUploadSize" value="2000000000"></property>  
+</bean>
+
+<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+   <property name="dataSource" ref="mssql"/>
+</bean>
+     
+<bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+   <property name="transactionManager" ref="transactionManager"/>
+</bean>
+
+<aop:config>
+		<aop:pointcut id="txPointcut"
+			expression="execution(public * kr.co.neodreams..service.*Service.*(..))"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut" />
+</aop:config>
+
+<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="*" rollback-for="Exception" />
+		</tx:attributes>
+</tx:advice>
+
+<bean id="ServiceInitInterceptor" class="kr.co.neodreams.multi_user.base.controller.ServiceInitInterceptor" /> 
+  
+<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+    <property name="alwaysUseFullPath" value="true" />
+</bean>
+
+
+<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+    <property name="interceptors">
+      <list>
+        <ref bean="ServiceInitInterceptor"/>
+      </list>
+    </property>
+    <property name="alwaysUseFullPath" value="true" />
+</bean>
+
+<aop:aspectj-autoproxy />
+<bean id="downloadView" class="kr.co.neodreams.multi_user.common.DownloadView"/>
+</beans>
+
+
+
+
+

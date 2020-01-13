@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- kepco ver -->
+<statements>
+    <dept_select>
+    	select dept_code, dept_name, up_code, dept_order, manager, hostname, nvl(del_flag,'') as del_flag from v_tdms_dept
+	</dept_select>
+    
+    <user_select>
+    	<![CDATA[
+			select empno, name, mailno, sosok, deptno, hp
+			       , telno, levelno, classno, passwd, leveldate, title, exist, levelnm, classnm, jikyee
+			from v_tdms_emp where length(mailno) < 38
+		]]> 
+	</user_select>
+	
+	<detail_select>
+    	select empno, infaxno, cellno, nvl(haname,'') as haname, com_date, bodate, nvl(ename,'') as ename, out_telno, out_faxno from v_tdms_detail
+	</detail_select>
+	
+	<user_select_nomu>
+		<![CDATA[
+			select empno
+			       ,name
+			       ,levelno
+			       ,levelnm
+			       ,dept_code
+			       ,dept_name
+			       ,fu_dept_code
+			       ,telno
+			       ,classno
+			       ,classnm
+			       ,birth
+			       ,com_date
+			       ,leveldate
+			       ,bodate
+			       ,photo
+			  from bonuser_tbl
+		]]>
+	</user_select_nomu>
+</statements>

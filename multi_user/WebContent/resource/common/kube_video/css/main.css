@@ -1,0 +1,31 @@
+@media screen
+{
+	html, body
+	{
+		height: 100%;
+		background-color: #FFFFFF;
+	}
+	body
+	{
+		margin: 0px;
+		padding: 0px;
+		overflow: hidden;
+	}
+	#flashContent
+	{
+		/*
+		width: 100%;
+		height: 100%;
+		*/
+		margin: 0px;
+		padding: 0px;
+		border: 0px;
+		z-index: 0;
+	}
+	#wmvContent
+	{
+		position: absolute;
+		margin: 20px 50px 0px;
+		z-index: 1;
+	}	
+}

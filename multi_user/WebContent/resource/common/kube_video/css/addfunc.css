@@ -1,0 +1,62 @@
+.searchWrap {
+    background: url('/resource/common/kube_video/image/control/add/search_background.png') no-repeat;
+    width: 592px;
+    height: 62px;
+    position: absolute;
+    left: 24px;
+    bottom: 40px;
+    z-index: 50;
+    display: none;
+}
+
+.searchWrap > .searchKeyword {
+    position: absolute;
+    left: 94px;
+    top: 21px;
+}
+
+.searchWrap > .searchKeyword > #keywordInput {
+    width: 265px;
+    height: 19px;
+}
+
+.searchWrap > .searchBtn {
+    margin: 14px 0px 14px 381px;
+}
+
+.searchWrap > .searchBtn > .naverBtn {
+    background: url('/resource/common/kube_video/image/control/add/search_naverBtn.png') no-repeat;
+    width: 78px;
+    height: 38px;
+    float: left;
+    cursor: pointer;
+}
+
+.searchWrap > .searchBtn > .googleBtn {
+    background: url('/resource/common/kube_video/image/control/add/search_googleBtn.png') no-repeat;
+    width: 78px;
+    height: 38px;
+    margin-left: 80px;
+    cursor: pointer;
+}
+
+.searchWrap > .searchClose {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    width: 26px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.start_btn{
+    position: absolute;
+    background: url(/resource/common/kube_video/image/quiz/start_btrn.png) no-repeat;
+    width: 150px;
+    height: 58px;
+    bottom: 110px;
+    left: 43%;
+    z-index: 51;
+    cursor: pointer;
+    display: none;
+}
