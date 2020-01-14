@@ -4,7 +4,7 @@
 <%@ include file="/resource/common/include/common.jsp"%>
 <SCRIPT LANGUAGE="JavaScript">
 	function powerband() {
-		alert("서비스 준비중 입니다.");
+		alert("서비스 준비중 입니다.!");
 	}
 </SCRIPT>
 <div class="gnbmenu-box">
@@ -40,19 +40,76 @@
                         </ul>
                     </li>
                     
+                    <li id="topmenu2"><a href="/contentsInfo.do">서비스요청</a>
+                    	<ul>
+                    		<li class="menu-on"><a href="/contentsInfo.do">컨텐츠제작</a></li>
+                    		<li><a href="/displayBoardInfo.do">전광판게시</a></li>
+                    		<li><a href="/admin/noticeList.do">업무자료실</a></li>
+                    		<li><a href="#">출력요청</a></li>
+                    		<li><a href="#">사진촬영</a></li>
+                    		<li><a href="#">OA교육장</a></li>
+                    	</ul>
+                    </li>
                     
-                   
-                   
-                    
-                    <li id="topmenu8"><a href="/kube.do" target="_blank">KUBE</a></li>
+					<li id="topmenu3"><a href="/equipManual.do">장비대여</a>
+						<ul>
+							<li class="menu-on"><a href="/equipManual.do">이용안내</a></li>
+							<li><a href="/equipRentList.do">설비현황</a></li>
+							<li><a href="/appList.do">마이페이지</a></li>
+							<li><a href="/basketList.do">장바구니</a></li>
+							<c:if test="${isGetAdmin != null}">
+							<li><a href="/admin/equipRentStatus.do">관리메뉴</a></li>
+							</c:if>
+						</ul>
+					</li>   
+					
+					<li id="topmenu4"><a href="#">S/W라이센스</a>
+						<ul>
+							<li class="menu-on"><a href="#">라이센스등록</a></li>
+							<li><a href="#">소프트웨어관리</a></li>
+						</ul>
+					</li>    
+					
+					<li id="topmenu5"><a href="#">다운로드</a>
+						<ul>
+							<li class="menu-on"><a href="#">공개소프트웨어</a></li>
+							<li><a href="#">업무소프트웨어</a></li>
+							<li><a href="#">드라이버</a></li>
+							<li><a href="#">패치/업데이트</a></li>
+							<li><a href="#">멀티미디어</a></li>
+							<li><a href="#">윈도우10</a></li>
+						</ul>
+					</li>    
+					
+					<li id="topmenu6"><a href="#">게시판</a>
+						<ul>
+							<li class="menu-on"><a href="#">공지사항</a></li>
+							<li><a href="#">자유게시판</a></li>
+							<li><a href="#">Q&A</a></li>
+						</ul>
+					</li>  
+					
+                    <li id="topmenu7"><a href="/mypageContentsList.do">마이페이지</a>
+                        <ul id="topmenu_sub6" style="left:-340px;">
+                            <li class="menu-on"><a href="/mypageContentsList.do">컨텐츠제작 신청내역</a></li>
+                            <li><a href="/mypageDisplayBoardList.do">전광판게시 신청내역</a></li>
+                            <!-- <li><a href="/mypageRentalList.do">장비대여 신청내역</a></li> -->
+                            <li><a href="#">출력요청 신청내역</a></li>
+                            <li><a href="#">사진촬영 신청내역</a></li>
+                            <li><a href="#">QA교육장 신청내역</a></li>
+                            <li><a href="/mypageStatistics.do">이용현황통계</a></li>
+                        </ul>
+                    </li>					       
+                                                                                                 
+                    <!-- li id="topmenu8"><a href="/kube.do" target="_blank">KUBE</a></li -->
 
-                    <li id="topmenu9"><a href="/promote/promoteInfo.do">행사신청</a>
+                    <!-- li id="topmenu9"><a href="/promote/promoteInfo.do">행사신청</a>
                         <ul>
                             <li class="menu-on"><a href="/promote/promoteInfo.do">이용안내</a></li>
                             <li><a href="/promote/promoteRequest.do">행사신청</a></li>
                             <li><a href="/promote/promoteProgress.do">진행사항</a></li>
                         </ul>
-                    </li>
+                    </li  -->
 
 					<%--안씀                         
                     <li id="topmenu8"><a href="/kube.do" target="_blank">KUBE</a>
@@ -74,7 +131,7 @@
                     </li>
  					--%>
                     
-                    <li id="topmenu2"><a href="/contentsInfo.do">컨텐츠제작</a>
+                    <!-- li id="topmenu2"><a href="/contentsInfo.do">컨텐츠제작</a>
                         <ul>
                             <li class="menu-on"><a href="/contentsInfo.do">이용안내</a></li>
                             <li><a href="/contentsRequest.do">제작요청</a></li>
@@ -85,25 +142,15 @@
                             <li><a href="/admin/noticeList.do">업무 자료실</a></li>
                             </c:if>
                         </ul>
-                    </li>
-                    <li id="topmenu3"><a href="/displayBoardInfo.do">전광판게시</a>
+                    </li  -->
+                    <!-- li id="topmenu3"><a href="/displayBoardInfo.do">전광판게시</a>
                         <ul>
                             <li class="menu-on"><a href="/displayBoardInfo.do">이용안내</a></li>
                             <li><a href="/displayBoardRequest.do">게시신청</a></li>
                             <li><a href="/displayBoardProgress.do">진행상황</a></li>
                         </ul>
                     </li>
-					<li id="topmenu4"><a href="/equipManual.do">장비대여</a>
-						<ul>
-							<li class="menu-on"><a href="/equipManual.do">이용안내</a></li>
-							<li><a href="/equipRentList.do">설비현황</a></li>
-							<li><a href="/appList.do">마이페이지</a></li>
-							<li><a href="/basketList.do">장바구니</a></li>
-							<c:if test="${isGetAdmin != null}">
-							<li><a href="/admin/equipRentStatus.do">관리메뉴</a></li>
-							</c:if>
-						</ul>
-					</li>
+
                     <li id="topmenu5"><a href="/powerStatus.do">전력수급현황</a>
                         <ul>
                             <li class="menu-on"><a href="/powerStatus.do">내 사업소 현황</a></li>
@@ -117,7 +164,7 @@
                         </ul>
                     </li>
                     <li id="topmenu6"><a href="http://band.kepco.co.kr/share">파워밴드</a>
-                    </li>
+                    </li -->
                     <!-- 어드민 추가 매뉴 --> 
                     <!-- 맞춤형 사용 안함 시작 -->
                     <!--
@@ -130,14 +177,7 @@
                     -->
                     <!-- 맞춤형 사용 안함 끝 -->
                     <!-- 어드민 추가 매뉴 끝-->
-                    <li id="topmenu7"><a href="/mypageContentsList.do">마이페이지</a>
-                        <ul id="topmenu_sub6" style="left:-340px;">
-                            <li class="menu-on"><a href="/mypageContentsList.do">컨텐츠제작 신청내역</a></li>
-                            <li><a href="/mypageDisplayBoardList.do">전광판게시 신청내역</a></li>
-                            <!-- <li><a href="/mypageRentalList.do">장비대여 신청내역</a></li> -->
-                            <li><a href="/mypageStatistics.do">이용현황통계</a></li>
-                        </ul>
-                    </li>
+
                 </ul>
         </div>
     </div>
