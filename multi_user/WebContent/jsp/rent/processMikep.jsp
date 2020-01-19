@@ -65,7 +65,7 @@
             <div class="contents-header-framebox">
                 <div class="learn-tit-framebox">
                     <c:import url="/resource/common/include/leftMenu_01.jsp">
-                        <c:param name="left_depth_1" value="8"></c:param>
+                        <c:param name="left_depth_1" value="3"></c:param>
                         <c:param name="left_depth_2" value="2"></c:param>
                     </c:import>
                 </div>

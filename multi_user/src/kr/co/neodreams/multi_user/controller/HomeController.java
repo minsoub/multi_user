@@ -86,4 +86,19 @@ public class HomeController extends BaseController{
 		return mv;
 	}
 	
+	@RequestMapping("/test2.do")
+	public ModelAndView test(HttpServletRequest request) throws Exception{
+		
+		ModelAndView mv = new ModelAndView();
+	
+		try{	
+
+			mv.setViewName("/test2");
+
+		}catch(Exception e){
+			e.printStackTrace();
+			mv.setViewName("/error/error");
+		}	
+		return mv;
+	}
 }

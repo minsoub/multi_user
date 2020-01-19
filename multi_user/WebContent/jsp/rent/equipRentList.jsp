@@ -7,7 +7,7 @@
 <body>
     <div class="topMenu-bg-img-sub"></div>
     <c:import url="/resource/common/include/topMenu.jsp" />
-    <c:set value="2" var="left_depth_1"/>
+    <c:set value="3" var="left_depth_1"/>
 
     <div id="contents" class="learn-frame-area">
         <div class="contents-framebox" id="contents_id">
@@ -15,7 +15,7 @@
             <div class="contents-header-framebox">
                 <div class="learn-tit-framebox">
                     <c:import url="/resource/common/include/leftMenu_01.jsp">
-                        <c:param name="left_depth_1" value="8"></c:param>
+                        <c:param name="left_depth_1" value="3"></c:param>
                         <c:param name="left_depth_2" value="2"></c:param>
                     </c:import>
                 </div>
@@ -267,7 +267,7 @@
     var code1 = $("#selectCode option:selected").val();
     var modal_eq = '';
     $(document).ready(function() {
-        load_fnc('4', '0', '0'); //menu script
+        load_fnc('3', '0', '0'); //menu script
         $("#strdt").datepicker();
         $("#enddt").datepicker();
         var searchVal = '${searchVal}';

@@ -12,8 +12,8 @@
 		<div class="contents-header-framebox">
 		<div class="learn-tit-framebox">
 			<c:import url="/resource/common/include/leftMenu_01.jsp">
-				<c:param name="left_depth_1" value="3"></c:param>
-				<c:param name="left_depth_2" value="1"></c:param>
+				<c:param name="left_depth_1" value="2"></c:param>
+				<c:param name="left_depth_2" value="2"></c:param>
 			</c:import>
 		</div> 
 		</div>
@@ -24,10 +24,16 @@
 			<div class="nav-box">
 				<div class="nav-img"><img alt="" src="/resource/images/sub/sub3_tit_img.png"></div>
 				<div class="nav-list">
-					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;전광판게시&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">이용안내</b>
+					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;서비스요청&nbsp;&nbsp;>&nbsp;&nbsp;전광판게시  &nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">이용안내</b>
 				</div>
-				<div class="nav-title">이용안내</div>
+				<div class="nav-title">전광판 게시 <small class="sub2">이용안내</small></div>
 			</div>
+			
+			<div class="tabNav sub2">
+				<li><a href="" class="active">이용안내</a></li>
+				<li><a href="/displayBoardRequest.do">게시신청</a></li>
+				<li><a href="/displayBoardProgress.do">진행사항</a></li>
+			</div>			
 	
 			<div class="basic-list">
 <h2>게시신청</h2>
@@ -58,7 +64,7 @@
 </div>
 <script type="text/javascript">
 $(document).ready(function() {
-	load_fnc('3', '0', '0'); //menu script
+	load_fnc('2', '0', '0'); //menu script
 });
 </script>
 <c:import url="/resource/common/include/bottom.jsp" />

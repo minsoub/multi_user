@@ -50,6 +50,11 @@ import kr.co.neodreams.multi_user.service.EquipManageService;
 import kr.co.neodreams.multi_user.service.RentService;
 import net.sf.json.JSONObject;
 
+/**
+ * 장비대여 Controller
+ * @author minso
+ *
+ */
 @Controller
 public class RentController extends BaseController {
 

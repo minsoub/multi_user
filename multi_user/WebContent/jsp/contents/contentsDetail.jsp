@@ -45,7 +45,7 @@
 <c:choose>
 	<c:when test="${mode eq 0 }">
 	<c:set var="modeNum" value="2"/>
-	<c:set var="modeNum2" value="3"/>
+	<c:set var="modeNum2" value="1"/>
 	</c:when>
 	<c:when test="${mode eq 1 }">
 	<c:set var="modeNum" value="4"/>
@@ -129,12 +129,20 @@
 		<!--content-->
 		<div class="contents-con-framebox">
 			<div class="nav-box">
-				<div class="nav-img"><img alt="" src="/resource/images/sub/sub3_tit_img.png"></div>
-					<div class="nav-list">
-						<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;컨텐츠제작&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">진행상황</b>
-					</div>
-				<div class="nav-title">진행상황</div>
+				<div class="nav-img"><img alt="" src="/resource/images/sub/sub2_tit_img.png"></div>
+				<div class="nav-list">
+					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;서비스요청&nbsp;&nbsp;>&nbsp;&nbsp;컨텐츠제작&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">진행상황</b>
+				</div>
+				<div class="nav-title">컨텐츠 제작 <small class="sub2">진행상황</small></div>
 			</div>
+	
+			<div class="tabNav sub2">
+				<li><a href="/contentsInfo.do">이용안내</a></li>
+				<li><a href="/contentsRequest.do">제작요청</a></li>
+				<li><a href="#" class="active">진행사항</a></li>
+			</div>
+					
+
 	
 			<c:if test="${SM_LSTATE ne '3093' && SM_LSTATE ne '3097'}">
 				<div class="searchArea_con" style="float:right;">

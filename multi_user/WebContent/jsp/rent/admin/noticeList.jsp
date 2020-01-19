@@ -36,7 +36,7 @@
 				<div class="learn-tit-framebox">
 					<c:import url="/resource/common/include/leftMenu_01.jsp">
 						<c:param name="left_depth_1" value="2"></c:param>
-						<c:param name="left_depth_2" value="5"></c:param>
+						<c:param name="left_depth_2" value="3"></c:param>
 					</c:import>
 				</div>
 			</div>
@@ -47,7 +47,7 @@
 				<div class="nav-box">
 					<div class="nav-img"><img src="/resource/images/sub/sub8_tit_img.png"></div>
 					<div class="nav-list">
-						<img src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;컨텐츠 제작&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">업무 자료실</b>
+						<img src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;서비스 요청&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">업무 자료실</b>
 					</div>
 					<div class="nav-title">업무 자료실</div>
 				</div>
@@ -130,6 +130,10 @@
 	</div>
 </body>
 <script type="text/javascript">
+$(document).ready(function() {
+	load_fnc('2', '0', '0'); //menu script
+});
+
 	function goDetail(val){
 		$('#notice_Seq').val(val);
 		$('#frm').attr('action', '/admin/noticeDetail.do');

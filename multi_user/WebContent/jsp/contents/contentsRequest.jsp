@@ -51,7 +51,7 @@
 		<div class="learn-tit-framebox">
 			<c:import url="/resource/common/include/leftMenu_01.jsp">
 				<c:param name="left_depth_1" value="2"></c:param>
-				<c:param name="left_depth_2" value="2"></c:param>
+				<c:param name="left_depth_2" value="1"></c:param>
 			</c:import>
 		</div> 
 		</div>
@@ -60,11 +60,17 @@
 		<!--content-->
 		<div class="contents-con-framebox">
 			<div class="nav-box">
-				<div class="nav-img"><img alt="" src="/resource/images/sub/sub3_tit_img.png"></div>
+				<div class="nav-img"><img alt="" src="/resource/images/sub/sub2_tit_img.png"></div>
 				<div class="nav-list">
-					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;컨텐츠제작&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">제작요청</b>
+					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;서비스요청&nbsp;&nbsp;>&nbsp;&nbsp;컨텐츠제작&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">제작요청</b>
 				</div>
-				<div class="nav-title">제작요청</div>
+				<div class="nav-title">컨텐츠 제작 <small class="sub2">제작요청</small></div>
+			</div>
+	
+			<div class="tabNav sub2">
+				<li><a href="/contentsInfo.do">이용안내</a></li>
+				<li><a href="#" class="active">제작요청</a></li>
+				<li><a href="/contentsProgress.do">진행사항</a></li>
 			</div>
             
             <div class="sub-nav-title">요청사항 기재</div>

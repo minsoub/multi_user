@@ -43,7 +43,7 @@
 		<div class="learn-tit-framebox">
 			<c:import url="/resource/common/include/leftMenu_01.jsp">
 				<c:param name="left_depth_1" value="2"></c:param>
-				<c:param name="left_depth_2" value="3"></c:param>
+				<c:param name="left_depth_2" value="1"></c:param>
 			</c:import>
 		</div> 
 		</div>
@@ -54,10 +54,17 @@
 			<div class="nav-box">
 				<div class="nav-img"><img alt="" src="/resource/images/sub/sub2_tit_img.png"></div>
 				<div class="nav-list">
-					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;컨텐츠제작&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">진행상황</b>
+					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;서비스요청&nbsp;&nbsp;>&nbsp;&nbsp;컨텐츠제작&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">진행상황</b>
 				</div>
-				<div class="nav-title">진행상황</div>
+				<div class="nav-title">컨텐츠 제작 <small class="sub2">진행상황</small></div>
 			</div>
+	
+			<div class="tabNav sub2">
+				<li><a href="/contentsInfo.do">이용안내</a></li>
+				<li><a href="/contentsRequest.do">제작요청</a></li>
+				<li><a href="#" class="active">진행사항</a></li>
+			</div>
+			
 			
 			<form id="frm" name="frm" method="post" onSubmit="return false;" onkeypress="javascript:if(event.keyCode == 13){btnSearFrm()}">
             <input type="hidden" id="SM_SEQ" name="SM_SEQ" value="0">

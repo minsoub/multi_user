@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="/resource/common/css/main.css" />
 <link rel="stylesheet" type="text/css" href="/resource/common/css/jquery-1.12.1-ui.css" />
 
-<title>멀티미디어센터</title>
+<title>디지털 플라자</title>
 <script type="text/javascript" src="/resource/common/js/jquery-1.9.1.js"></script>   
 <script type="text/javascript" src="/resource/common/js/jquery-1.12.0.min.js"></script>
 <script type="text/javascript" src="/resource/common/js/jquery.number.min.js"></script>

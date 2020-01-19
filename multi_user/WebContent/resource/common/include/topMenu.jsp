@@ -47,7 +47,7 @@
                     		<li><a href="/admin/noticeList.do">업무자료실</a></li>
                     		<li><a href="#">출력요청</a></li>
                     		<li><a href="#">사진촬영</a></li>
-                    		<li><a href="#">OA교육장</a></li>
+                    		<li><a href="/oalist.do">OA교육장</a></li>
                     	</ul>
                     </li>
                     
@@ -63,9 +63,9 @@
 						</ul>
 					</li>   
 					
-					<li id="topmenu4"><a href="#">S/W라이센스</a>
+					<li id="topmenu4"><a href="/swlicense.do">S/W라이센스</a>
 						<ul>
-							<li class="menu-on"><a href="#">라이센스등록</a></li>
+							<li class="menu-on"><a href="/swlicense.do">라이센스등록</a></li>
 							<li><a href="#">소프트웨어관리</a></li>
 						</ul>
 					</li>    

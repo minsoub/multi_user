@@ -15,7 +15,7 @@
 <body>
     <div class="topMenu-bg-img-sub"></div>
     <c:import url="/resource/common/include/topMenu.jsp" />
-    <c:set value="2" var="left_depth_1"/>
+    <c:set value="3" var="left_depth_1"/>
 
     <c:set var="empno" value="${sessionScope.SESS_EMPNO }"/>
     <c:set var="userNm" value="${sessionScope.SESS_USER_NAME }"/>
@@ -30,9 +30,9 @@
             <div class="contents-header-framebox">
                 <div class="learn-tit-framebox">
                     <c:import url="/resource/common/include/leftMenu_01.jsp">
-                        <c:param name="left_depth_1" value="8"></c:param>
+                        <c:param name="left_depth_1" value="3"></c:param>
                         <c:param name="left_depth_2" value="5"></c:param>
-                        <c:param name="left_depth_3" value="2"></c:param>
+                        <c:param name="left_depth_3" value="4"></c:param>
                     </c:import>
                 </div>
             </div>
@@ -262,7 +262,7 @@ $.fn.jqTransSelectRefresh = function(){
     var code1 = $('#selectCode').val();
     var modal_eq = '';
     $(document).ready(function() {
-        load_fnc('4', '0', '0'); //menu script
+        load_fnc('3', '0', '0'); //menu script
 
         $("input[name='banpdt']").datetimepicker({
             format:'Y-m-d H:i',

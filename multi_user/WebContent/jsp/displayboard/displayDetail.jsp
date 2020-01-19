@@ -40,8 +40,8 @@
 <c:set var="sessEmpno" value="${sessEmpno}" />
 <c:choose>
 	<c:when test="${mode eq 0 }">
-	<c:set var="modeNum" value="3"/>
-	<c:set var="modeNum2" value="3"/>
+	<c:set var="modeNum" value="2"/>
+	<c:set var="modeNum2" value="2"/>
 	</c:when>
 	<c:when test="${mode eq 1 }">
 	<c:set var="modeNum" value="4"/>
@@ -125,24 +125,34 @@
 		<!-- leftmenu end-->
 		<!--content-->
 		<div class="contents-con-framebox">
+			
+		<c:choose>
+		<c:when test="${mode eq 0 }">
 			<div class="nav-box">
-				<c:choose>
-					<c:when test="${mode eq 0 }">
-						<div class="nav-img"><img alt="" src="/resource/images/sub/sub3_tit_img.png"></div>
-						<div class="nav-list">
-							<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;전광판게시&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">진행상황</b>
-						</div>
-						<div class="nav-title">진행상황</div>	
-					</c:when>
-					<c:when test="${mode eq 1 }">
-						<div class="nav-img"><img alt="" src="/resource/images/sub/sub4_tit_img.png"></div>
-						<div class="nav-list">
-							<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;마이페이지&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">전광판게시 신청내역</b>
-						</div>
-						<div class="nav-title">전광판게시 신청내역</div>
-					</c:when>
-				</c:choose>
+				<div class="nav-img"><img alt="" src="/resource/images/sub/sub3_tit_img.png"></div>
+				<div class="nav-list">
+					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;서비스요청&nbsp;&nbsp;>&nbsp;&nbsp;전광판게시  &nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">진행상황</b>
+				</div>
+				<div class="nav-title">전광판 게시 <small class="sub2">진행상황</small></div>
 			</div>
+			
+			<div class="tabNav sub2">
+				<li><a href="/displayBoardInfo.do">이용안내</a></li>
+				<li><a href="/displayBoardRequest.do">게시신청</a></li>
+				<li><a href="#" class="active">진행사항</a></li>
+			</div>
+		</c:when>
+		<c:when test="${mode eq 1 }">
+			<div class="nav-box">
+				<div class="nav-img"><img alt="" src="/resource/images/sub/sub4_tit_img.png"></div>
+				<div class="nav-list">
+					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;마이페이지&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">전광판게시 신청내역</b>
+				</div>
+				<div class="nav-title">전광판게시 신청내역</div>
+			</div>
+		</c:when>
+		</c:choose>
+
 			<c:if test="${SM_LSTATE ne '3093' && SM_LSTATE ne '3097'}">
 				<div class="searchArea_con" style="float:right;">
 					<table>

@@ -24,11 +24,17 @@
 			<div class="nav-box">
 				<div class="nav-img"><img alt="" src="/resource/images/sub/sub2_tit_img.png"></div>
 				<div class="nav-list">
-					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;컨텐츠제작&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">이용안내</b>
+					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;서비스요청&nbsp;&nbsp;>&nbsp;&nbsp;컨텐츠제작&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">이용안내</b>
 				</div>
-				<div class="nav-title">이용안내</div>
+				<div class="nav-title">컨텐츠 제작 <small class="sub2">이용안내</small></div>
 			</div>
 	
+			<div class="tabNav sub2">
+				<li><a href="" class="active">이용안내</a></li>
+				<li><a href="/contentsRequest.do">제작요청</a></li>
+				<li><a href="/contentsProgress.do">진행사항</a></li>
+			</div>
+				
 			<div class="basic-list">
 <h2>목적</h2>
 <pre>
