@@ -14,7 +14,7 @@
 			<div class="learn-tit-framebox">
 			<c:import url="/resource/common/include/leftMenu_01.jsp">
 				<c:param name="left_depth_1" value="12"></c:param>
-				<c:param name="left_depth_2" value="1"></c:param>
+				<c:param name="left_depth_2" value="3"></c:param>
 			</c:import>
 		</div> 
 		</div> 
@@ -26,9 +26,9 @@
 			<div class="nav-box">
 				<div class="nav-img"><img alt="" src="/resource/images/sub/sub7_tit_img.png"></div>
 				<div class="nav-list">
-					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;게시판&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">공지사항</b>
+					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;게시판&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">Q&A</b>
 				</div>
-				<div class="nav-title">공지사항</div>
+				<div class="nav-title">Q&A</div>
 			</div>
 			
 			<form id="frm" name="frm" method="post" onSubmit="return false;" onkeypress="javascript:if(event.keyCode == 13){funFrmPagingSubmit()}">

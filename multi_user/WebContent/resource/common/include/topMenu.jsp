@@ -70,22 +70,22 @@
 						</ul>
 					</li>    
 					
-					<li id="topmenu5"><a href="#">다운로드</a>
+					<li id="topmenu5"><a href="/publicsw.do">다운로드</a>
 						<ul>
-							<li class="menu-on"><a href="#">공개소프트웨어</a></li>
-							<li><a href="#">업무소프트웨어</a></li>
-							<li><a href="#">드라이버</a></li>
-							<li><a href="#">패치/업데이트</a></li>
-							<li><a href="#">멀티미디어</a></li>
-							<li><a href="#">윈도우10</a></li>
+							<li class="menu-on"><a href="/publicsw.do">공개소프트웨어</a></li>
+							<li><a href="/jobsw.do">업무소프트웨어</a></li>
+							<li><a href="/driversw.do">드라이버</a></li>
+							<li><a href="/patchsw.do">패치/업데이트</a></li>
+							<li><a href="/multisw.do">멀티미디어</a></li>
+							<li><a href="/winsw.do">윈도우10</a></li>
 						</ul>
 					</li>    
 					
 					<li id="topmenu6"><a href="#">게시판</a>
 						<ul>
-							<li class="menu-on"><a href="#">공지사항</a></li>
-							<li><a href="#">자유게시판</a></li>
-							<li><a href="#">Q&A</a></li>
+							<li class="menu-on"><a href="/notice.do">공지사항</a></li>
+							<li><a href="/freeboard.do">자유게시판</a></li>
+							<li><a href="/qnaboard.do">Q&A</a></li>
 						</ul>
 					</li>  
 					

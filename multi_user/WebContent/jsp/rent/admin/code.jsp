@@ -230,8 +230,8 @@
 			
             <div class="btn-zone" style="float:left">
                 <ul>
-                    <li><input type="button" name="srchDescription" class="search_btn" onclick="window.location('/admin/adminList.do')" value="관리자등록"  style="width:80px;"></li>
-                    <li><input type="button" name="srchDescription" class="search_btn" onclick="window.location('/admin/stanModelList.do')" value="모델관리"  style="width:80px;"></li>
+                    <li><input type="button" id="btnAdminList" name="srchDescription" class="search_btn" value="관리자등록"  style="width:80px;"></li>
+                    <li><input type="button" id="btnModelList" name="srchDescription" class="search_btn"  value="모델관리"  style="width:80px;"></li>
                 </ul>
             </div>
 	
@@ -249,6 +249,14 @@ $(document).ready(function() {
 		alert(resultMessage);
 		<% session.removeAttribute("resultMessage"); %>
 	}
+	
+	$("#btnAdminList").click(function(){
+		location.href="/admin/adminList.do";
+	});
+	
+	$("#btnModelList").click(function(){
+		location.href="/admin/stanModelList.do";
+	});
 	
 });
 

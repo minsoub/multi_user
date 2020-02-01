@@ -12,7 +12,7 @@
 		<div class="contents-header-framebox">
 		<div class="learn-tit-framebox">
 			<c:import url="/resource/common/include/leftMenu_01.jsp">
-				<c:param name="left_depth_1" value="8"></c:param>
+				<c:param name="left_depth_1" value="3"></c:param>
 				<c:param name="left_depth_2" value="5"></c:param>
 				<c:param name="left_depth_3" value="5"></c:param>
 			</c:import>
@@ -85,8 +85,8 @@
 			</div>
             <div class="btn-zone" style="float:left">
                 <ul>
-                    <li><input type="button" name="srchDescription" class="search_btn" onclick="window.location('/admin/code.do')" value="코드관리" style="width:80px;"></li>
-                    <li><input type="button" name="srchDescription" class="search_btn" onclick="window.location('/admin/stanModelList.do')" value="모델관리" style="width:80px;"></li>
+                    <li><input type="button" name="srchDescription" class="search_btn" onclick="javascript:window.location='/admin/code.do'" value="코드관리" style="width:80px;"></li>
+                    <li><input type="button" name="srchDescription" class="search_btn" onclick="javascript:window.location='/admin/stanModelList.do'" value="모델관리" style="width:80px;"></li>
                 </ul>
             </div>
             <div class="btn-zone">

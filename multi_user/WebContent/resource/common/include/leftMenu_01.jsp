@@ -403,7 +403,102 @@
         </div>
         </c:if>
         <!--장비대여 끝 -->
-    </c:when>    
+    </c:when>   
+    
+	<c:when test="${param.left_depth_1 eq 11 }">
+	<!--  다운로드    -->
+        <div>
+            <img alt="다운로드" src="/resource/images/sub/sub_title06.png">
+        </div>	
+        <div>
+            <ul>
+                <li>
+                    <a href="/publicsw.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub7_leftmenu_01b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub7_leftmenu_01.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <li>
+                    <a href="/jobsw.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 2 }">업무소프트웨어</c:when>
+                        <c:otherwise>업무소프트웨어</c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <li>
+                    <a href="/driversw.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 3 }">드라이버</c:when>
+                        <c:otherwise>드라이버</c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <li>
+                    <a href="/patchsw.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 4 }">패치/업데이트</c:when>
+                        <c:otherwise>패치/업데이트</c:otherwise>
+                    </c:choose>
+                    </a>
+                </li> 
+                <li>
+                    <a href="/multisw.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 5 }">멀티미디어</c:when>
+                        <c:otherwise>멀티미디어</c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <li>
+                    <a href="/winsw.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 6 }">윈도우10</c:when>
+                        <c:otherwise>윈도우10</c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>                                                
+            </ul>
+        </div>                
+	</c:when>    
+
+	<c:when test="${param.left_depth_1 eq 12 }">
+	<!--  게시판    -->
+        <div>
+            <img alt="게시판" src="/resource/images/sub/sub_title10.png">
+        </div>	
+        <div>
+            <ul>
+                <li>
+                    <a href="/notice.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub7_leftmenu_01b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub7_leftmenu_01.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <li>
+                    <a href="/freeboard.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 2 }">자유게시판</c:when>
+                        <c:otherwise>자유게시판</c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <li>
+                    <a href="/qnaboard.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 3 }">Q&A</c:when>
+                        <c:otherwise>Q&A</c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+            </ul>
+        </div>                
+	</c:when>
+	
     
     <c:when test="${param.left_depth_1 eq 8 }">
         <!-- 장비대여 -->
@@ -623,7 +718,7 @@
     </c:when>
 
     
-    <c:when test="${param.left_depth_1 eq 11 }">
+    <c:when test="${param.left_depth_1 eq 19 }">
         <!-- 전력수급현황 -->
         <div>
             <img alt="미세먼지 현황" src="/resource/images/sub/sub_title11.png">

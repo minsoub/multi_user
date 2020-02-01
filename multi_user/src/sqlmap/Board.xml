@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Board">
+    <typeAlias alias="BoardDto" type="kr.co.neodreams.multi_user.dto.BoardDto"/>
+
+    <select id="Board#getSelectBoardList" parameterClass="BoardDto" resultClass="BoardDto">
+        <![CDATA[
+            SELECT seq,subject,convert(nchar(10) , WTIME ,120 ) as wtime ,hit
+            FROM [SPLAZA_BOARD]
+            WHERE
+        ]]>
+        <![CDATA[
+                YEAR ( WTIME) > 2014
+        ]]>
+        <isNotEmpty prepend="and" property="searchString">
+                (Subject LIKE '%$searchString$%'
+                or Content LIKE '%$searchString$%')
+        </isNotEmpty>
+        	AND BBSID = #bbsid#                
+        order by WTIME desc
+        OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+    </select>
+
+    <select id="Board#getSelectBoardListCnt" parameterClass="BoardDto" resultClass="int">
+        <![CDATA[
+            SELECT count(*) as totalCnt
+            FROM [SPLAZA_BOARD]
+            WHERE
+        ]]>
+        <![CDATA[
+                YEAR ( WTIME) > 2014
+        ]]>
+        <isNotEmpty prepend="and" property="searchString">
+                (Subject LIKE '%$searchString$%'
+                or Content LIKE '%$searchString$%')
+        </isNotEmpty>
+        	AND BBSID = #bbsid#   
+    </select>    
+    
+</sqlMap>    

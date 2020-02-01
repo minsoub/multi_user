@@ -13,8 +13,8 @@
 		<div class="learn-tit-framebox">
 			<div class="learn-tit-framebox">
 			<c:import url="/resource/common/include/leftMenu_01.jsp">
-				<c:param name="left_depth_1" value="12"></c:param>
-				<c:param name="left_depth_2" value="1"></c:param>
+				<c:param name="left_depth_1" value="11"></c:param>
+				<c:param name="left_depth_2" value="2"></c:param>
 			</c:import>
 		</div> 
 		</div> 
@@ -26,9 +26,9 @@
 			<div class="nav-box">
 				<div class="nav-img"><img alt="" src="/resource/images/sub/sub7_tit_img.png"></div>
 				<div class="nav-list">
-					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;게시판&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">공지사항</b>
+					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;다운로드&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">업무소프트웨어</b>
 				</div>
-				<div class="nav-title">공지사항</div>
+				<div class="nav-title">업무소프트웨어</div>
 			</div>
 			
 			<form id="frm" name="frm" method="post" onSubmit="return false;" onkeypress="javascript:if(event.keyCode == 13){funFrmPagingSubmit()}">
@@ -74,9 +74,9 @@
 								<c:forEach var="item" items="${noticeList}" varStatus="status">
 									<tr>
 										<td class="no-td">${totalCnt - (paging.perPageCnt*(paging.pageNo-1)) - status.index }</td>
-										<td style="text-align: left;cursor: pointer;" onclick="javascript:funGoPageDetail('/notice_view.do?num=${item.num}');">${item.subject }</td>
-										<td class="date-td">${item.reg_Date }</td>
-										<td class="ref-td">${item.visited }</td>
+										<td style="text-align: left;cursor: pointer;" onclick="javascript:funGoPageDetail('/freeboard_view.do?seq=${item.seq}');">${item.subject }</td>
+										<td class="date-td">${item.wtime }</td>
+										<td class="ref-td">${item.hit }</td>
 									</tr>
 								</c:forEach>
 							<c:if test="${fn:length(noticeList) == 0}">
@@ -96,7 +96,7 @@
 </div>
 <script type="text/javascript">
 $(document).ready(function() {
-	load_fnc('0', '0', '0'); //menu script
+	load_fnc('5', '0', '0'); //menu script
 });
 </script>
 <c:import url="/resource/common/include/bottom.jsp" />
