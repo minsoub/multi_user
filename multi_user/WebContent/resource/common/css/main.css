@@ -44,7 +44,7 @@ header #topmenu-framebox>ul>li.menu-on>ul>li.menu-on>ul{display:block;}
 header #topmenu-framebox>ul>li.menu-on>ul>li.menu-on>ul>li.menu-on>a{color:#fff;}
 
 header #sub_tab{position: relative; height: 40px; min-width:1000px; background-color: #658196; opacity:0.5;z-index:-100;}
-
+header #topmenu-framebox>ul>li>ul#topmenu_sub6{left:auto !important;right:74px;}
 #topmenu_sub7{left:-480px;}
 /* header #topmenu-framebox>ul>li.menu-on>ul>li.menu-on>ul>li.menu-on{background:url(../../common/images/www/new../../common/topsubmenu_on.png) no-repeat 3px center;} */
 

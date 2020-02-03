@@ -57,15 +57,17 @@
 						<table id="listTable" summary="">
 							<caption>게시판 테이블</caption>
 							<colgroup>
-								<col style="width: 8%" class="no-td">
+								<col style="width: 5%" class="no-td">
 								<col style="width: auto%">
-								<col style="width: 20%">
+								<col style="width: 10%">
+								<col style="width: 15%">
 								<col style="width: 15%" class="date-td">
 							</colgroup>
 							<thead>
 								<tr>
 									<th scope="col" class="no-td">번호</th>
 									<th scope="col" ><span class="sort" sortid="2">제목</span></th>
+									<th scope="col">등록자</th>
 									<th scope="col">등록일</th>
 									<th scope="col" class="date-td" ><span class="sort sort_desc" sortid="-1">조회</span></th>
 								</tr>
@@ -75,13 +77,14 @@
 									<tr>
 										<td class="no-td">${totalCnt - (paging.perPageCnt*(paging.pageNo-1)) - status.index }</td>
 										<td style="text-align: left;cursor: pointer;" onclick="javascript:funGoPageDetail('/freeboard_view.do?seq=${item.seq}');">${item.subject }</td>
+										<td sylte="text-align">${item.writer}</td>
 										<td class="date-td">${item.wtime }</td>
 										<td class="ref-td">${item.hit }</td>
 									</tr>
 								</c:forEach>
 							<c:if test="${fn:length(noticeList) == 0}">
 				              	<tr>
-				              		<td colspan="4">검색 결과가 없습니다</td>
+				              		<td colspan="5">검색 결과가 없습니다</td>
 				              	</tr>
 				            </c:if>
 						</tbody>	

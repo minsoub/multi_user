@@ -5,7 +5,7 @@
 
     <select id="Board#getSelectBoardList" parameterClass="BoardDto" resultClass="BoardDto">
         <![CDATA[
-            SELECT seq,subject,convert(nchar(10) , WTIME ,120 ) as wtime ,hit
+            SELECT seq,subject, writer, convert(nchar(10) , WTIME ,120 ) as wtime ,hit
             FROM [SPLAZA_BOARD]
             WHERE
         ]]>

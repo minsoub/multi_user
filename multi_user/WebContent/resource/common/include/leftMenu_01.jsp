@@ -415,48 +415,48 @@
                 <li>
                     <a href="/publicsw.do">
                     <c:choose>
-                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub7_leftmenu_01b.png"></c:when>
-                        <c:otherwise><img alt="" src="/resource/images/sub/sub7_leftmenu_01.png"></c:otherwise>
+                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub6_leftmenu_01b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub6_leftmenu_01.png"></c:otherwise>
                     </c:choose>
                     </a>
                 </li>
                 <li>
                     <a href="/jobsw.do">
                     <c:choose>
-                        <c:when test="${param.left_depth_2 eq 2 }">업무소프트웨어</c:when>
-                        <c:otherwise>업무소프트웨어</c:otherwise>
+                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub6_leftmenu_02b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub6_leftmenu_02.png"></c:otherwise>
                     </c:choose>
                     </a>
                 </li>
                 <li>
                     <a href="/driversw.do">
                     <c:choose>
-                        <c:when test="${param.left_depth_2 eq 3 }">드라이버</c:when>
-                        <c:otherwise>드라이버</c:otherwise>
+                        <c:when test="${param.left_depth_2 eq 3 }"><img alt="" src="/resource/images/sub/sub6_leftmenu_03b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub6_leftmenu_03.png"></c:otherwise>
                     </c:choose>
                     </a>
                 </li>
                 <li>
                     <a href="/patchsw.do">
                     <c:choose>
-                        <c:when test="${param.left_depth_2 eq 4 }">패치/업데이트</c:when>
-                        <c:otherwise>패치/업데이트</c:otherwise>
+                        <c:when test="${param.left_depth_2 eq 4 }"><img alt="" src="/resource/images/sub/sub6_leftmenu_04b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub6_leftmenu_04.png"></c:otherwise>
                     </c:choose>
                     </a>
                 </li> 
                 <li>
                     <a href="/multisw.do">
                     <c:choose>
-                        <c:when test="${param.left_depth_2 eq 5 }">멀티미디어</c:when>
-                        <c:otherwise>멀티미디어</c:otherwise>
+                        <c:when test="${param.left_depth_2 eq 5 }"><img alt="" src="/resource/images/sub/sub6_leftmenu_05b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub6_leftmenu_05.png"></c:otherwise>
                     </c:choose>
                     </a>
                 </li>
                 <li>
                     <a href="/winsw.do">
                     <c:choose>
-                        <c:when test="${param.left_depth_2 eq 6 }">윈도우10</c:when>
-                        <c:otherwise>윈도우10</c:otherwise>
+                        <c:when test="${param.left_depth_2 eq 6 }"><img alt="" src="/resource/images/sub/sub6_leftmenu_06b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub6_leftmenu_06.png"></c:otherwise>
                     </c:choose>
                     </a>
                 </li>                                                
@@ -474,24 +474,24 @@
                 <li>
                     <a href="/notice.do">
                     <c:choose>
-                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub7_leftmenu_01b.png"></c:when>
-                        <c:otherwise><img alt="" src="/resource/images/sub/sub7_leftmenu_01.png"></c:otherwise>
+                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub10_leftmenu_01b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub10_leftmenu_01.png"></c:otherwise>
                     </c:choose>
                     </a>
                 </li>
                 <li>
                     <a href="/freeboard.do">
                     <c:choose>
-                        <c:when test="${param.left_depth_2 eq 2 }">자유게시판</c:when>
-                        <c:otherwise>자유게시판</c:otherwise>
+                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub10_leftmenu_02b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub10_leftmenu_02.png"></c:otherwise>
                     </c:choose>
                     </a>
                 </li>
                 <li>
                     <a href="/qnaboard.do">
                     <c:choose>
-                        <c:when test="${param.left_depth_2 eq 3 }">Q&A</c:when>
-                        <c:otherwise>Q&A</c:otherwise>
+                        <c:when test="${param.left_depth_2 eq 3 }"><img alt="" src="/resource/images/sub/sub10_leftmenu_03b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub10_leftmenu_03.png"></c:otherwise>
                     </c:choose>
                     </a>
                 </li>
@@ -503,31 +503,55 @@
     <c:when test="${param.left_depth_1 eq 8 }">
         <!-- 장비대여 -->
         <div>
-            <img alt="장비대여" src="/resource/images/sub/sub_title03.png">
+            <img alt="마이페이지" src="/resource/images/sub/sub_title04.png">
         </div>
         <div>
             <ul>
                 <li>
                     <a href="/displayBoardInfo.do">
                     <c:choose>
-                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub3_leftmenu_01b.png"></c:when>
-                        <c:otherwise><img alt="" src="/resource/images/sub/sub3_leftmenu_01.png"></c:otherwise>
+                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_01b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_01.png"></c:otherwise>
                     </c:choose>
                     </a>
                 </li>
                 <li>
                     <a href="/displayBoardRequest.do">
                     <c:choose>
-                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub3_leftmenu_02b.png"></c:when>
-                        <c:otherwise><img alt="" src="/resource/images/sub/sub3_leftmenu_02.png"></c:otherwise>
+                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_02b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_02.png"></c:otherwise>
                     </c:choose>
                     </a>
                 </li>
                 <li>
+                    <a href="/displayBoardRequest.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 3 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_03b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_03.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li> 
+                <li>
+                    <a href="/displayBoardRequest.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 4 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_04b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_04.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>                
+                <li>
+                    <a href="/displayBoardRequest.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 5 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_05b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_05.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>                 
+                <li>
                     <a href="/displayBoardProgress.do">
                     <c:choose>
-                        <c:when test="${param.left_depth_2 eq 3 }"><img alt="" src="/resource/images/sub/sub3_leftmenu_03b.png"></c:when>
-                        <c:otherwise><img alt="" src="/resource/images/sub/sub3_leftmenu_03.png"></c:otherwise>
+                        <c:when test="${param.left_depth_2 eq 6 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_06b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_06.png"></c:otherwise>
                     </c:choose>
                     </a>
                 </li>
@@ -613,21 +637,35 @@
                     </c:choose>
                     </a>
                 </li>
-                <%--
                 <li>
-                    <a href="/mypageRentalList.do">
+                    <a href="#">
                     <c:choose>
                         <c:when test="${param.left_depth_2 eq 3 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_03b.png"></c:when>
                         <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_03.png"></c:otherwise>
                     </c:choose>
                     </a>
                 </li>
-                --%>
                 <li>
-                    <a href="/mypageStatistics.do">
+                    <a href="#">
                     <c:choose>
                         <c:when test="${param.left_depth_2 eq 4 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_04b.png"></c:when>
                         <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_04.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li> 
+                <li>
+                    <a href="#">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 5 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_05b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_05.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>                                
+                <li>
+                    <a href="/mypageStatistics.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 6 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_06b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_06.png"></c:otherwise>
                     </c:choose>
                     </a>
                 </li>
