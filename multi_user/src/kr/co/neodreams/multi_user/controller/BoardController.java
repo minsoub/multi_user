@@ -4,11 +4,17 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.neodreams.multi_user.base.controller.BaseController;
@@ -145,7 +151,7 @@ public class BoardController extends BaseController{
 			List<BoardDto> noticeList = null;
 			
 			int totalCnt = 0;
-			commonDto.setBbsid("10023");		// 드라이버
+			commonDto.setBbsid("10024");		// 드라이버
 
 			noticeList = boardService.getSelectBoardList(commonDto);
 			totalCnt = boardService.getSelectBoardListCnt(commonDto);
@@ -182,7 +188,7 @@ public class BoardController extends BaseController{
 			List<BoardDto> noticeList = null;
 			
 			int totalCnt = 0;
-			commonDto.setBbsid("10024");		// 패치/업데이트 
+			commonDto.setBbsid("10025");		// 패치/업데이트 
 
 			noticeList = boardService.getSelectBoardList(commonDto);
 			totalCnt = boardService.getSelectBoardListCnt(commonDto);
@@ -219,7 +225,7 @@ public class BoardController extends BaseController{
 			List<BoardDto> noticeList = null;
 			
 			int totalCnt = 0;
-			commonDto.setBbsid("10025");		// 멀티미디어 
+			commonDto.setBbsid("10026");		// 멀티미디어 
 
 			noticeList = boardService.getSelectBoardList(commonDto);
 			totalCnt = boardService.getSelectBoardListCnt(commonDto);
@@ -256,7 +262,7 @@ public class BoardController extends BaseController{
 			List<BoardDto> noticeList = null;
 			
 			int totalCnt = 0;
-			commonDto.setBbsid("10026");		// 윈도우 10 
+			commonDto.setBbsid("10027");		// 윈도우 10 
 
 			noticeList = boardService.getSelectBoardList(commonDto);
 			totalCnt = boardService.getSelectBoardListCnt(commonDto);
@@ -273,5 +279,73 @@ public class BoardController extends BaseController{
 			mv.setViewName("/error/error");
 		}	
 		return mv;
-	} 	
+	} 
+	
+	/**
+	 * 게시글 작성 폼을 보여준다. 
+	 * 
+	 * @param bbsid
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/bbsWrite.do")
+	public ModelAndView bbsWrite(@RequestParam String bbsid, HttpServletRequest request)
+	{
+		ModelAndView mv = new ModelAndView();
+		
+		mv.addObject("bbsid", bbsid);
+		mv.addObject("menu_depth1", "11");
+		if (bbsid.equals("10022"))		// 공개소프트웨어
+		{
+			mv.addObject("menu_depth2", "1");
+			mv.addObject("title", "공개소프트웨어");
+		}else if(bbsid.equals("10023"))	// 업무소프트웨어
+		{
+			mv.addObject("menu_depth2", "2");
+			mv.addObject("title", "업무소프트웨어");
+		}else if(bbsid.equals("10024"))	// 드라이버
+		{
+			mv.addObject("menu_depth2", "3");
+			mv.addObject("title", "드라이버");
+		}else if(bbsid.equals("10025"))	// 패치/업데이트
+		{
+			mv.addObject("menu_depth2", "4");
+			mv.addObject("title", "패치/업데이트");
+		}else if(bbsid.equals("10026"))	// 멀티미디어
+		{
+			mv.addObject("menu_depth2", "5");
+			mv.addObject("title", "멀티미디어");
+		}else if(bbsid.equals("10027"))	// 윈도우 10
+		{
+			mv.addObject("menu_depth2", "6");
+			mv.addObject("title", "윈도우 10");
+		}
+		
+		mv.setViewName("/board/bbsWrite");
+		
+		return mv;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/registBoard.do")
+	public void registBoard(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
+		String retVal = "0";
+		
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
+		
+		try{
+			boardDto.setWriter(SESS_USER_NAME);
+			boardDto.setUserid(SESS_EMPNO);
+
+			retVal = Integer .toString(boardService.boardInsert(boardDto));
+			dataSourceTransactionManager.commit(status);
+		}catch (Exception e) {
+			retVal = "-1";
+			dataSourceTransactionManager.rollback(status);
+		}finally {
+			res.getWriter().write(retVal);
+		}
+	}
 }

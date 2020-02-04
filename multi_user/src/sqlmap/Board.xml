@@ -36,6 +36,29 @@
                 or Content LIKE '%$searchString$%')
         </isNotEmpty>
         	AND BBSID = #bbsid#   
-    </select>    
+    </select>
+    
+    <insert id="Board#boardInsert">
+		<selectKey keyProperty="seq" resultClass="int">
+			SELECT COALESCE(max(seq), 0)+1 FROM SPLAZA_FILEINFO
+		</selectKey>
+		INSERT INTO SPLAZA_FILEINFO(
+			seq,		bbsid,			writer,  subject, content, hit, wtime, ip, userid, notice
+		)VALUES(
+			#seq#,	#bbsid#,		#writer#,		#subject#, #content#, 0, 	getDate(), #ip#, #userid#, #notice#
+		)
+	</insert>
+	
+	<insert id="Board#boardAttatchInsert" parameterClass="java.util.ArrayList">
+		INSERT INTO SPLAZA_ATTATCH(
+			FREQ,				SEQ,      BBSID
+		)VALUES
+		<iterate conjunction=",">
+		(
+			#List[].freq#,	#List[].seq#,   #List[].bbsid
+		)
+		</iterate>
+	</insert>
+	
     
 </sqlMap>    

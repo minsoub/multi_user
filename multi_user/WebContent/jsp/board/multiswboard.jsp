@@ -90,6 +90,11 @@
 			</form>
 				
 			<c:import url="/resource/common/include/paging.jsp" />	
+					<div class="btn-zone">
+						<ul>
+							<li><input type="button" name="srchDescription" class="admin_btn" onclick="javascript:window.location='/bbsWrite.do?bbsid=10026';" value="등록"></li>
+						</ul>
+					</div>				
 		</div>
 		<!--content end-->
 	</div>

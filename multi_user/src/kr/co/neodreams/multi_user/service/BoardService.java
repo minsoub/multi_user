@@ -30,4 +30,13 @@ public interface BoardService {
      * @throws Exception
      */
     public int getSelectBoardListCnt (BoardDto boardDto) throws Exception;
+    
+    /**
+     * 게시글을 등록한다.
+     * 
+     * @param boardDto
+     * @return
+     * @throws Exception
+     */
+    public int boardInsert(BoardDto boardDto) throws Exception;
 }

@@ -54,6 +54,9 @@ public class Constants {
     public static final String CONTENTS_DOWNLOAD_ASP_CALL = KUBE_UPLOAD_ASP_IP + ":82/interface/kube/contents_download_Detail.asp";
     public static final String DISPLAY_ASP_CALL = KUBE_UPLOAD_ASP_IP + ":82/interface/kube/display_upload_Write.asp";
     public static final String DISPLAY_DOWNLOAD_ASP_CALL = KUBE_UPLOAD_ASP_IP + ":82/interface/kube/display_download_Detail.asp";
+    // 20200204 공통게시판 ASP파일 경로 추가
+    public static final String COMMON_UPLOAD_ASP_CALL = KUBE_UPLOAD_ASP_IP + "/interface/kube/common_upload_write.asp";
+    public static final String COMMON_DOWNLOAD_ASP_CALL = KUBE_UPLOAD_ASP_IP + "/interface/kube/common_download.asp";    
     
     
     public static final int SMS_PORT = 13139; 

@@ -1,5 +1,7 @@
 package kr.co.neodreams.multi_user.dto;
 
+import java.util.List;
+
 import kr.co.neodreams.multi_user.base.dto.BasePagingDto;
 
 /**
@@ -36,7 +38,53 @@ public class BoardDto  extends BasePagingDto{
 	
 	private String searchString;
 	
+	// 파일
+	private String freqs;				// 파일번호 리스트
+	private String freq;				// 파일번호
+	private String filename;			// 파일명
+	private String maskname;			// 마스크명
+	private String filesize;			// 파일사이즈
 	
+	private List<BoardDto> attachList;
+	
+	
+	
+	public String getFreqs() {
+		return freqs;
+	}
+	public void setFreqs(String freqs) {
+		this.freqs = freqs;
+	}
+	public String getFreq() {
+		return freq;
+	}
+	public void setFreq(String freq) {
+		this.freq = freq;
+	}
+	public String getFilename() {
+		return filename;
+	}
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+	public String getMaskname() {
+		return maskname;
+	}
+	public void setMaskname(String maskname) {
+		this.maskname = maskname;
+	}
+	public String getFilesize() {
+		return filesize;
+	}
+	public void setFilesize(String filesize) {
+		this.filesize = filesize;
+	}
+	public List<BoardDto> getAttachList() {
+		return attachList;
+	}
+	public void setAttachList(List<BoardDto> attachList) {
+		this.attachList = attachList;
+	}
 	public String getSearchString() {
 		return searchString;
 	}
