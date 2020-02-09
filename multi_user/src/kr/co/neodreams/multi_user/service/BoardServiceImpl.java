@@ -45,6 +45,16 @@ public class BoardServiceImpl implements BoardService {
     {
     	return boardDao.getSelectBoardListCnt(boardDto);
     }
+    
+    /**
+     * 게시글 상세정보를 리턴한다.
+     * 
+     */
+    @Override
+    public BoardDto getSelectBoardDetail(BoardDto boardDto) throws Exception
+    {
+    	return boardDao.getSelectBoardDetail(boardDto);
+    }
 
     /**
      * 게시글을 등록한다.
@@ -54,7 +64,7 @@ public class BoardServiceImpl implements BoardService {
 		// TODO Auto-generated method stub
 		int retVal = (int) boardDao.boardInsert(boardDto);
 		if(retVal > 0) {
-			boardDto.setSeq(String.valueOf(retVal));
+			boardDto.setSeq(retVal);
 			int attatchFileChk = boardAttatchInsert(boardDto);
 			
 			if(attatchFileChk < 0) {

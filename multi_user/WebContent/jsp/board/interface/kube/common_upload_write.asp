@@ -35,11 +35,12 @@ On Error Resume Next
 
 	'업로드 임시 저장 폴더
 	'uploadform.DefaultPath = "E:\VOD\KUBE\video_tmp\" & NowThisYear & "\" & NowThisMonth & NowThisDay
-    uploadform.DefaultPath = "E:\VOD\multi_user\multi_Contents\attatch_tmp\" & NowThisYear & "\" & NowThisMonth & NowThisDay
+    uploadform.DefaultPath = "E:\project_upload_test\multi_user\multiBoard\attatch_tmp\" & NowThisYear & "\" & NowThisMonth & NowThisDay
 
     '임시 폴더와 동일 폴더에 저장
 	'strDirectory = "E:\VOD\KUBE\video_tmp\" & NowThisYear & "\" & NowThisMonth & NowThisDay & "\"
-    strDirectory = "E:\VOD\multi_user\multi_Contents\attatch_tmp\" & NowThisYear & "\" & NowThisMonth & NowThisDay & "\"
+    strDirectory = "E:\project_upload_test\multi_user\multiBoard\attatch_tmp\" & NowThisYear & "\" & NowThisMonth & NowThisDay & "\"
+	
 	
 	'Response.Write Err.Number
 	'Response.Write(strDirectory) &"<BR>"
@@ -48,30 +49,17 @@ On Error Resume Next
 	'---------------------------------------------------------------------------------------------------
 	'# 업로드 확장자 제한  "cgi,pl,php,php3,php4,php5,ph,inc,phtm,phtml,js,exe,com,cmd,nt,jsp,bat,asp,c,cpp,h,stb,shtml,shtm,css,vbs,htm,html"
 	'---------------------------------------------------------------------------------------------------
-	'Dim bbsid, target_file_input
 
-	bbsid = uploadform("bbsid")
-	target_file_input = uploadform("uploadFile")
+	Attach_File = uploadform("uploadFile").FileName
 
-	On Error Goto 0 ' Reset error handling.
-
-	Attach_File = uploadform(target_file_input).FileName
-	'response.write "//Attach_File : " &Attach_File &"<br>"
-
-	FileName = Mid(Attach_File, InstrRev(Attach_File, "\") + 1)
-	'response.write "//FileName : " &FileName&"<br>"
-
-	File_ext = uploadform(target_file_input).FileExtension
-	'response.write "//File_ext : " &File_ext&"<br>"
-
-	saveFileName = datediff("s","1970-01-01",now()) - (9*60*60)
-	'response.write "//saveFileName : " &saveFileName&"<br>"
-
-	strFile  = strDirectory & saveFileName & "." & File_ext
-	'response.write "//strFile : " &strFile&"<br>"
+'	FileName = Mid(Attach_File, InstrRev(Attach_File, "\") + 1)
+'	Response.write "FileNameFileName="& FileName &"<br>"
 	
-	FileSave = uploadform(target_file_input).SaveAs(strFile, False)
-	'response.write "//strFile : " &FileSave&"<br>"
+	saveFileName = datediff("s","1970-01-01",now()) - (9*60*60)
+
+	strFile  = strDirectory & saveFileName & "." & uploadform.FileExtension
+	
+	FileSave = uploadform("uploadFile").SaveAs(strFile, False)
 
 	'완료파일, 사용자파일 구분
 	
@@ -87,11 +75,11 @@ On Error Resume Next
 		
 		' 게시판 순번을 업데이트 해야 된다.
 		streamSQL = "insert into SPLAZA_FILEINFO (FREQ, FILENAME, PHY_PATH, FILESIZE, DOWNLOAD, STS, EXIST)"
-		streamSQL = streamSQL & "values ('" & FREQ & "', '"& Attach_File & "', '" & strFile &"',  '0', '0', '1', 'N')"
+		streamSQL = streamSQL & " values ('" & FREQ & "', '"& Attach_File & "', '" & strFile &"',  '0', '0', '1', 'N')"
 		'response.write("SQL : " & streamSQL & "<br>") 
 		Set StreamRef = dbCon.Execute(streamSQL)
 
-	   Response.Write SCF_SEQ
+	   Response.Write FREQ 
 	End If
 
 	On Error Goto 0 ' Reset error handling.

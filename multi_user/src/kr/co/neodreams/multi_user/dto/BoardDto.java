@@ -11,7 +11,7 @@ import kr.co.neodreams.multi_user.base.dto.BasePagingDto;
  */
 public class BoardDto  extends BasePagingDto{
 
-	private String seq;					// 순번
+	private int seq;					// 순번
 	private String bbsid;				// 게시판 아이디
 	private String categ;				// 카테고리
 	private String ref;					// 글번호2
@@ -91,10 +91,10 @@ public class BoardDto  extends BasePagingDto{
 	public void setSearchString(String searchString) {
 		this.searchString = searchString;
 	}
-	public String getSeq() {
+	public int getSeq() {
 		return seq;
 	}
-	public void setSeq(String seq) {
+	public void setSeq(int seq) {
 		this.seq = seq;
 	}
 	public String getBbsid() {

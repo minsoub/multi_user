@@ -39,6 +39,16 @@ public class BoardDao  extends BaseDao {
     public int getSelectBoardListCnt (BoardDto boardDto) throws Exception{
         return getCount("Board#getSelectBoardListCnt", boardDto);
     }
+    /**
+     * 게시글 상세 정보를 리턴한다.
+     * 
+     * @param boardDto
+     * @return
+     * @throws Exception
+     */
+    public BoardDto getSelectBoardDetail (BoardDto boardDto) throws Exception {
+    	return (BoardDto) select("Board#getSelectBoardDetail", boardDto);
+    }
     
     /**
      * 게시글 등록한다.

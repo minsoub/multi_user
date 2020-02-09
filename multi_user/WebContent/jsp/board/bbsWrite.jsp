@@ -25,15 +25,15 @@
 <body>
 	<div class="topMenu-bg-img-sub"></div>
 	<c:import url="/resource/common/include/topMenu.jsp" />
-	<c:set value="2" var="left_depth_1"/>
+	<c:set value="${menudepth_1}" var="left_depth_1"/>
 	<div id="contents" class="learn-frame-area">
 		<div class="contents-framebox" id="contents_id">
 			<!-- leftmenu -->
 			<div class="contents-header-framebox">
 				<div class="learn-tit-framebox">
 					<c:import url="/resource/common/include/leftMenu_01.jsp">
-						<c:param name="left_depth_1" value="${menudepth_1}"></c:param>
-						<c:param name="left_depth_2" value="${menudepth_2}"></c:param>
+						<c:param name="left_depth_1" value="${menu_depth1}"></c:param>
+						<c:param name="left_depth_2" value="${menu_depth2}"></c:param>
 					</c:import>
 				</div>
 			</div>
@@ -59,7 +59,7 @@
 									<legend>자료실</legend>
 									<div class="row-group">
 										<form id="frm" name="frm" method="post">
-											<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo }" />
+											<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo}" />
 											<input type="hidden" id="bbsid" name="bbsid" value="${bbsid}" />
 											<!-- dl class="insert_ready">
 												<dt class="must-option"><label>업무</label></dt>
@@ -166,7 +166,7 @@ $(document).ready(function(){
 				    complete: function(xhr) {
 				    },
 				    error: function(e){
-				    	alert('업로드 중 오류가 발생했습니다\n새로고침 후 다시 진행 하시기 바랍니다');
+				    	alert('업로드 중 오류가 발생했습니다\n새로고침 후 다시 진행 하시기 바랍니다' + e);
 				    	location.replace(location.href);
 				    }
 				})
@@ -191,9 +191,9 @@ function goSubmit(){
 	})
 	
 	if(progressChk){
-		if($.trim($('#title').val()) == ''){
+		if($.trim($('#subject').val()) == ''){
 			alert('제목을 작성해주세요.');
-			$('#notice_Title').focus();
+			$('#subject').focus();
 			return false;
 		}
 		
@@ -205,7 +205,8 @@ function goSubmit(){
 		var params = {
 				"freqs" : attatch_Ids.join('|'),
 				//"notice_Gbn" : $('#notice_Gbn').val(),
-				"title" : $('#title').val(),
+				"bbsid" : "${bbsid}",
+				"subject" : $('#subject').val(),
 				"content" : escapeHtml($('#content').text()),
 		}
 		
@@ -215,8 +216,8 @@ function goSubmit(){
 				url : '/registBoard.do',
 				dataType : 'json',
 				data : params,
-				success : function(result){
-					alert('등록되었습니다.');
+				success : function(result){					
+					alert('등록되었습니다.' + result);
 		// 작업필요		
 		//			$('#frm').append('<input type="hidden" name="seq" value="'+result+'" />');
 		//			$('#frm').attr('action', '/boardDetail.do');
@@ -328,7 +329,7 @@ function escapeHtml (string) {
 } 
 
 function goList(){
-	$('#frm').attr('action', '/admin/noticeList.do');
+	$('#frm').attr('action', '/bbsList.do');
 	$('#frm').submit();
 }
 

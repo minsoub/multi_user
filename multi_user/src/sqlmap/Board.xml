@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
-<sqlMap namespace="Board">
+<sqlMap namespace="BoardDto">
     <typeAlias alias="BoardDto" type="kr.co.neodreams.multi_user.dto.BoardDto"/>
 
     <select id="Board#getSelectBoardList" parameterClass="BoardDto" resultClass="BoardDto">
@@ -21,6 +21,10 @@
         OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
          FETCH NEXT #perPageCnt# ROWS ONLY
     </select>
+    
+    <select id="Board#getSelectBoardDetail" parameterClass="BoardDto" resultClass="BoardDto">
+    	
+    </select>
 
     <select id="Board#getSelectBoardListCnt" parameterClass="BoardDto" resultClass="int">
         <![CDATA[
@@ -40,14 +44,16 @@
     
     <insert id="Board#boardInsert">
 		<selectKey keyProperty="seq" resultClass="int">
-			SELECT COALESCE(max(seq), 0)+1 FROM SPLAZA_FILEINFO
+			SELECT COALESCE(max(seq), 0)+1 FROM SPLAZA_BOARD
 		</selectKey>
-		INSERT INTO SPLAZA_FILEINFO(
-			seq,		bbsid,			writer,  subject, content, hit, wtime, ip, userid, notice
-		)VALUES(
-			#seq#,	#bbsid#,		#writer#,		#subject#, #content#, 0, 	getDate(), #ip#, #userid#, #notice#
+		INSERT INTO SPLAZA_BOARD (
+			seq,     bbsid,     writer,    subject,     content, 
+			hit,     wtime,     ip,        userid,      notice
+		) VALUES (
+			#seq#,	 #bbsid#,   #writer#,  #subject#,   #content#, 
+			0,       getDate(), #ip#,      #userid#,    #notice#
 		)
-	</insert>
+	</insert>		
 	
 	<insert id="Board#boardAttatchInsert" parameterClass="java.util.ArrayList">
 		INSERT INTO SPLAZA_ATTATCH(
@@ -55,7 +61,7 @@
 		)VALUES
 		<iterate conjunction=",">
 		(
-			#List[].freq#,	#List[].seq#,   #List[].bbsid
+			#List[].freq#,	#List[].seq#,   #List[].bbsid#
 		)
 		</iterate>
 	</insert>

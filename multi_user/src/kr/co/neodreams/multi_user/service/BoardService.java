@@ -39,4 +39,13 @@ public interface BoardService {
      * @throws Exception
      */
     public int boardInsert(BoardDto boardDto) throws Exception;
+    
+    /**
+     * 게시글 상세정보를 리턴한다. 
+     * 
+     * @param boardDto
+     * @return
+     * @throws Exception
+     */
+    public BoardDto getSelectBoardDetail(BoardDto boardDto) throws Exception;
 }
