@@ -104,4 +104,49 @@ public class BoardServiceImpl implements BoardService {
 		}
 		return retVal;
 	}
+	/**
+	 * 게시글 조회수를 증가시킨다.
+	 * 
+	 */
+	public int boardHitUpdate(BoardDto boardDto) throws Exception {
+		int retVal = (int) boardDao.boardHitUpdate(boardDto);
+		
+		return retVal;
+	}
+	
+    /**
+     * 게시글을 삭제한다.
+     * 
+     * @param noticeDto
+     * @return
+     * @throws Exception
+     */
+	public int boardDelete(BoardDto boardDto) throws Exception
+	{
+		return boardDao.boardDelete(boardDto);
+	}
+	
+	/**
+	 * 삭제할 첨부 파일 리스트를 조회한다.
+	 * 
+	 * @param noticeDto
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BoardDto> garbageAttatch (BoardDto boardDto) throws Exception
+	{
+		return boardDao.garbageAttatch(boardDto);
+	}
+	
+	/**
+	 * 게시판 첨부 파일을  삭제한다.
+	 * 
+	 * @param noticeDto
+	 * @return
+	 * @throws Exception
+	 */
+	public int boardFileDelete(BoardDto boardDto) throws Exception	
+	{
+		return boardDao.boardFileDelete(boardDto);
+	}
 }

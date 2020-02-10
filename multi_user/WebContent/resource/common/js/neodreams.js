@@ -150,7 +150,13 @@ function funFrmPagingSubmit2(url){
 	$('#pageNo').val('1');
 	$('#frm').attr('action', url).attr('method', 'post').attr('target', '_self').submit();
 }
-
+function funFrmPagingSubmit3(url){
+	var f = document.frm;
+	f.target = "_self";
+	f.pageNo.value = "1";
+	f.action = url;	
+	f.submit();
+}
 function funGoPageDetail(url){
 	var f = document.frm;
 	f.target = "_self";

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import kr.co.neodreams.multi_user.base.dao.BaseDao;
 import kr.co.neodreams.multi_user.dto.BoardDto;
+import kr.co.neodreams.multi_user.dto.NoticeDto;
 
 /**
  * 게시판 데이터베이스 처리 클래스
@@ -68,4 +69,64 @@ public class BoardDao  extends BaseDao {
 	public Object boardAttatchInsert(List<BoardDto> listBoardDto) {
 		return insert("Board#boardAttatchInsert", listBoardDto);
 	}
+	
+	/**
+	 * 게시글 조회수를 증가시킨다.
+	 * 
+	 * @param boardDto
+	 * @return
+	 */
+	public Object boardHitUpdate(BoardDto boardDto) {
+		return update("Board#boardHitUpdate", boardDto);
+	}
+	/**
+	 * 게시글을 삭제한다.
+	 *  
+	 * @param boardDto
+	 * @return
+	 */
+	public int boardDelete(BoardDto boardDto) {
+		return delete("Board#boardDelete", boardDto);
+	}
+
+	/**
+	 * 첨부된 파일을 삭제한다.
+	 * 
+	 * @param boardDto
+	 * @return
+	 */
+	public int attatchDelete(BoardDto boardDto) {
+		return delete("Board#boardattatchDelete", boardDto);
+	}
+
+	/**
+	 * 게시글 삭제후 첨부 파일 삭제 리스트를 조회한다.
+	 * 
+	 * @param boardDto
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<BoardDto> garbageAttatch(BoardDto boardDto) {
+		return (List<BoardDto>) list("Board#garbageAttatch", boardDto);
+	}
+
+	/**
+	 * 첨부 파일을 삭제한다.
+	 * 
+	 * @param boardDto
+	 * @return
+	 */
+	public int boardFileDelete(BoardDto boardDto) {
+		return delete("Board#boardFileDelete", boardDto);
+	}
+
+	/**
+	 * 첨부 파일 리스트를 조회한다.
+	 * 
+	 * @param boardDto
+	 * @return
+	 */
+	public BoardDto getAttatch(BoardDto boardDto) {
+		return (BoardDto) select("Board#getAttatchList", boardDto);
+	}	
 }

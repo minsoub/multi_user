@@ -3,6 +3,7 @@ package kr.co.neodreams.multi_user.service;
 import java.util.List;
 
 import kr.co.neodreams.multi_user.dto.BoardDto;
+import kr.co.neodreams.multi_user.dto.NoticeDto;
 
 /**
  * IT 플라자 게시판 관련 서비스
@@ -48,4 +49,40 @@ public interface BoardService {
      * @throws Exception
      */
     public BoardDto getSelectBoardDetail(BoardDto boardDto) throws Exception;
+    
+    /**
+     * 게시글 조회 수를 증가시킨다.
+     * 
+     * @param boardDto
+     * @return
+     * @throws Exception
+     */
+    public int boardHitUpdate(BoardDto boardDto) throws Exception;
+    
+    /**
+     * 게시글을 삭제한다.
+     * 
+     * @param boardDto
+     * @return
+     * @throws Exception
+     */
+	public int boardDelete(BoardDto boardDto) throws Exception;
+	
+	/**
+	 * 삭제할 첨부 파일 리스트를 조회한다.
+	 * 
+	 * @param boardDto
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BoardDto> garbageAttatch (BoardDto boardDto) throws Exception;
+	
+	/**
+	 * 게시판 첨부 파일을  삭제한다.
+	 * 
+	 * @param boardDto
+	 * @return
+	 * @throws Exception
+	 */
+	public int boardFileDelete(BoardDto boardDto) throws Exception;
 }

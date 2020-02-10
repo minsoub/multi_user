@@ -22,9 +22,54 @@
          FETCH NEXT #perPageCnt# ROWS ONLY
     </select>
     
-    <select id="Board#getSelectBoardDetail" parameterClass="BoardDto" resultClass="BoardDto">
-    	
+	<resultMap class="kr.co.neodreams.multi_user.dto.BoardDto" id="bbsResult">
+		<result property="seq" 			column="seq"/>
+		<result property="bbsid" 		column="bbsid"/>
+		<result property="subject" 		column="subject"/>
+		<result property="content"	 	column="content"/>
+		<result property="writer" 		column="writer"/>
+		<result property="wtime" 		column="wtime"/>
+		<result property="hit" 			column="hit"/>
+		<result property="freq" 		column="freq"/>
+		<result property="attachList" 	column="{seq=seq, freq=freq}" select="Board#getAttatchList" />
+	</resultMap>
+	
+	<resultMap class="kr.co.neodreams.multi_user.dto.BoardDto" id="attatchResult" >
+		<result property="seq" 			column="seq"/>
+		<result property="freq" 		column="freq"/>
+		<result property="bbsid" 		column="bbsid"/>
+		<result property="filename" 	column="filename"/>
+		<result property="phy_path"		column="phy_path"/>
+	</resultMap>    
+    
+    <select id="Board#getSelectBoardDetail" resultMap="bbsResult">
+            SELECT 
+            		seq, bbsid, subject, content, writer, 
+            		convert(nchar(10) , WTIME ,120 ) as wtime ,hit, '0' as freq
+              FROM [SPLAZA_BOARD]
+             WHERE 
+            	   seq = #seq#
+               AND bbsid = #bbsid#  	
     </select>
+    
+	<select id="Board#getAttatchList" resultMap="attatchResult">
+		SELECT
+			a.seq,
+			a.freq, 
+			a.bbsid, 
+			b.filename, 
+			b.phy_path
+		FROM
+			SPLAZA_Attatch a
+		INNER JOIN SPLAZA_FILEINFO b ON a.freq = b.freq 
+		WHERE
+			a.seq = #seq#
+		<isNotNull property="freq">
+			<isNotEqual property="freq" compareValue="0" prepend="AND">
+			b.freq = #freq#
+			</isNotEqual>
+		</isNotNull>
+	</select>    
 
     <select id="Board#getSelectBoardListCnt" parameterClass="BoardDto" resultClass="int">
         <![CDATA[
@@ -65,6 +110,80 @@
 		)
 		</iterate>
 	</insert>
+	
+	<update id="Board#boardHitUpdate">
+		UPDATE SPLAZA_BOARD
+		   SET HIT = HIT + 1
+		 WHERE SEQ = #seq#
+		   AND BBSID = #bbsid#
+	</update>
+	
+	<update id="Board#boardUpdate">
+		UPDATE 
+			SPLAZA_BOARD 
+		SET
+			subject = #subject#,
+			content = #content#
+		WHERE
+			  seq = #seq#
+		  AND bbsid = #bbsid#
+	</update>	
+	
+	<select id="Board#garbageAttatch" resultClass="BoardDto">
+		SELECT
+			ISNULL(b.seq, 0) AS seq,
+			a.freq, 
+			a.filename, 
+			a.phy_path, 
+			b.bbsid
+		FROM 
+			SPLAZA_FILEINFO a LEFT JOIN SPLAZA_Attatch b ON a.freq = b.freq
+		WHERE
+			<isNotEqual property="seq" compareValue="0" >
+			b.seq = #seq#
+				<isNotEqual property="freq" compareValue="0" prepend="AND" >
+				a.freq = #freq#
+				</isNotEqual>
+			</isNotEqual>
+			<isEqual property="seq" compareValue="0" >
+				<isNotEqual property="freq" compareValue="0" >
+					a.freq = #freq#
+				</isNotEqual>
+				<isEqual property="freq" compareValue="0" >
+				b.seq IS NULL
+				</isEqual>
+			</isEqual>
+	</select>	
+	
+	<delete id="Board#boardDelete">
+		DELETE FROM SPLAZA_BOARD WHERE seq = #seq# and bbsid=#bbsid#
+	</delete>
+	
+	<delete id="Board#attatchDelete">
+		DELETE FROM SPLAZA_Attatch WHERE seq = #seq# and bbsid=#bbsid#
+	</delete>
+		
+	<delete id="Board#boardFileDelete">
+		<isEqual property="seq" compareValue="0" >
+			<isNotEqual property="freq" compareValue="0" >
+				DELETE FROM SPLAZA_FILEINFO WHERE freq = #freq#;
+			</isNotEqual>
+		</isEqual>
+		
+		<isNotEqual property="seq" compareValue="0" >
+			<isEqual property="freq" compareValue="0" >
+			DELETE FROM SPLAZA_FILEINFO WHERE freq IN (SELECT freq FROM SPLAZA_Attatch WHERE seq = #seq#);
+			DELETE FROM SPLAZA_Attatch WHERE seq = #seq#;
+			</isEqual>
+		</isNotEqual>
+		
+		<isNotEqual property="seq" compareValue="0" >
+			<isNotEqual property="freq" compareValue="0" >
+				DELETE FROM SPLAZA_FILEINFO WHERE freq = #freq#;
+				DELETE FROM SPLAZA_Attatch WHERE seq = #seq# AND freq = #freq#;
+			</isNotEqual>
+		</isNotEqual>
+	</delete>	
 	
     
 </sqlMap>    

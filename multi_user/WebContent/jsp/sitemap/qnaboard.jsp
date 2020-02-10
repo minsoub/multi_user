@@ -33,7 +33,8 @@
 			
 			<form id="frm" name="frm" method="post" onSubmit="return false;" onkeypress="javascript:if(event.keyCode == 13){funFrmPagingSubmit()}">
 			<input type="hidden" name="pageNo" id="pageNo"  value="${paging.pageNo }"/>
-			
+			<input type="hidden" name="bbsid" id="bbsid"  value="${paging.bbsid }"/>
+			<input type="hidden" id="seq" name="seq" value="0">
 			<div class="searchArea_con">
 					<fieldset>
 					<div class="search-box">		
@@ -74,9 +75,9 @@
 								<c:forEach var="item" items="${noticeList}" varStatus="status">
 									<tr>
 										<td class="no-td">${totalCnt - (paging.perPageCnt*(paging.pageNo-1)) - status.index }</td>
-										<td style="text-align: left;cursor: pointer;" onclick="javascript:funGoPageDetail('/notice_view.do?num=${item.num}');">${item.subject }</td>
-										<td class="date-td">${item.reg_Date }</td>
-										<td class="ref-td">${item.visited }</td>
+										<td style="text-align: left;cursor: pointer;" onclick="javascript:ViewDetail('${item.seq}');">${item.subject }</td>
+										<td class="date-td">${item.wtime }</td>
+										<td class="ref-td">${item.hit }</td>
 									</tr>
 								</c:forEach>
 							<c:if test="${fn:length(noticeList) == 0}">
@@ -90,13 +91,30 @@
 			</form>
 				
 			<c:import url="/resource/common/include/paging.jsp" />	
+					<div class="btn-zone">
+						<ul>
+							<li><input type="button" name="srchDescription" class="admin_btn" onclick="javascript:window.location='/boardWrite.do?bbsid=${paging.bbsid}';" value="등록"></li>
+						</ul>
+					</div>				
 		</div>
 		<!--content end-->
 	</div>
 </div>
 <script type="text/javascript">
 $(document).ready(function() {
-	load_fnc('0', '0', '0'); //menu script
+	load_fnc('6', '0', '0'); //menu script
 });
+
+function ViewDetail(seq)
+{
+	$("#seq").val(seq);
+	
+	var f = document.frm;
+	f.target = "_self";
+	//f.pageNo.value = "1";
+	f.action = '/boardDetail.do';	
+	f.submit();
+
+}
 </script>
 <c:import url="/resource/common/include/bottom.jsp" />

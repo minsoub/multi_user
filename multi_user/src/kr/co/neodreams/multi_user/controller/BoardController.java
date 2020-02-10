@@ -1,5 +1,7 @@
 package kr.co.neodreams.multi_user.controller;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -25,6 +27,7 @@ import kr.co.neodreams.multi_user.base.controller.BaseController;
 import kr.co.neodreams.multi_user.common.CommonUtil;
 import kr.co.neodreams.multi_user.common.DownloadView;
 import kr.co.neodreams.multi_user.dto.BoardDto;
+import kr.co.neodreams.multi_user.dto.NoticeDto;
 import kr.co.neodreams.multi_user.service.BoardService;
 
 /**
@@ -45,6 +48,17 @@ public class BoardController extends BaseController{
 	
     @Resource(name = "commonUtil")
     private CommonUtil commonUtil;
+    
+    protected String[] boardTitle = {
+    	"공개소프트웨어",
+    	"업무소프트웨어",
+    	"드라이버",
+    	"패치/업데이트",
+    	"멀티미디어",
+    	"윈도우10"
+    };
+    protected String[] menuDepth = {"1", "2", "3", "4", "5", "6"};
+    
     
     protected Logger log = LoggerFactory.getLogger(this.getClass()); 
     
@@ -93,9 +107,14 @@ public class BoardController extends BaseController{
 			noticeList = boardService.getSelectBoardList(commonDto);
 			totalCnt = boardService.getSelectBoardListCnt(commonDto);
 			
-			mv.setViewName("/board/publicswboard");
+			//mv.setViewName("/board/publicswboard");
+			mv.setViewName("/board/bbsList");
+			mv.addObject("noticeList", noticeList);	
 			
-			mv.addObject("noticeList", noticeList);			
+			mv.addObject("bbsid", "10022");
+			mv.addObject("menu_depth1", "11");
+			mv.addObject("menu_depth2", "1");
+			mv.addObject("title", "공개소프트웨어");
 			//페이징처리
 			mv.addObject("totalCnt", totalCnt);
 			mv.addObject("paging",   commonDto);
@@ -132,9 +151,14 @@ public class BoardController extends BaseController{
 			noticeList = boardService.getSelectBoardList(commonDto);
 			totalCnt = boardService.getSelectBoardListCnt(commonDto);
 			
-			mv.setViewName("/board/jobswboard");
+			//mv.setViewName("/board/jobswboard");
+			mv.setViewName("/board/bbsList");
 			mv.addObject("noticeList", noticeList);
 			
+			mv.addObject("bbsid", "10023");
+			mv.addObject("menu_depth1", "11");
+			mv.addObject("menu_depth2", "2");
+			mv.addObject("title", "업무소프트웨어");
 			//페이징처리
 			mv.addObject("totalCnt", totalCnt);
 			mv.addObject("paging", commonDto);
@@ -169,9 +193,14 @@ public class BoardController extends BaseController{
 			noticeList = boardService.getSelectBoardList(commonDto);
 			totalCnt = boardService.getSelectBoardListCnt(commonDto);
 			
-			mv.setViewName("/board/driverswboard");
+			//mv.setViewName("/board/driverswboard");
+			mv.setViewName("/board/bbsList");
 			mv.addObject("noticeList", noticeList);
 			
+			mv.addObject("bbsid", "10024");
+			mv.addObject("menu_depth1", "11");
+			mv.addObject("menu_depth2", "3");
+			mv.addObject("title", "드라이버");
 			//페이징처리
 			mv.addObject("totalCnt", totalCnt);
 			mv.addObject("paging", commonDto);
@@ -206,9 +235,14 @@ public class BoardController extends BaseController{
 			noticeList = boardService.getSelectBoardList(commonDto);
 			totalCnt = boardService.getSelectBoardListCnt(commonDto);
 			
-			mv.setViewName("/board/patchswboard");
+			//mv.setViewName("/board/patchswboard");
+			mv.setViewName("/board/bbsList");
 			mv.addObject("noticeList", noticeList);
 			
+			mv.addObject("bbsid", "10025");
+			mv.addObject("menu_depth1", "11");
+			mv.addObject("menu_depth2", "4");
+			mv.addObject("title", "패치/업데이트");
 			//페이징처리
 			mv.addObject("totalCnt", totalCnt);
 			mv.addObject("paging", commonDto);
@@ -243,9 +277,14 @@ public class BoardController extends BaseController{
 			noticeList = boardService.getSelectBoardList(commonDto);
 			totalCnt = boardService.getSelectBoardListCnt(commonDto);
 			
-			mv.setViewName("/board/multiswboard");
+			//mv.setViewName("/board/multiswboard");
+			mv.setViewName("/board/bbsList");
 			mv.addObject("noticeList", noticeList);
 			
+			mv.addObject("bbsid", "10026");
+			mv.addObject("menu_depth1", "11");
+			mv.addObject("menu_depth2", "5");
+			mv.addObject("title", "멀티미디어");
 			//페이징처리
 			mv.addObject("totalCnt", totalCnt);
 			mv.addObject("paging", commonDto);
@@ -280,9 +319,14 @@ public class BoardController extends BaseController{
 			noticeList = boardService.getSelectBoardList(commonDto);
 			totalCnt = boardService.getSelectBoardListCnt(commonDto);
 			
-			mv.setViewName("/board/winswboard");
+			//mv.setViewName("/board/winswboard");
+			mv.setViewName("/board/bbsList");
 			mv.addObject("noticeList", noticeList);
 			
+			mv.addObject("bbsid", "10027");
+			mv.addObject("menu_depth1", "11");
+			mv.addObject("menu_depth2", "6");
+			mv.addObject("title", "윈도우 10");
 			//페이징처리
 			mv.addObject("totalCnt", totalCnt);
 			mv.addObject("paging", commonDto);
@@ -303,33 +347,53 @@ public class BoardController extends BaseController{
 	 */
 	@RequestMapping("/bbsList.do")
 	public ModelAndView bbsList(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
-	//public ModelAndView bbsList(@ModelAttribute BoardDto boardDto, ModelMap model) throws Exception{
 		ModelAndView mv = new ModelAndView();
 		String bbsid = boardDto.getBbsid();
 		String url = null;
+		List<BoardDto> noticeList = null;
+		int totalCnt = 0;
 		
 		System.out.println("bbsid : " + bbsid);
+		System.out.println("searchString : " + boardDto.getSearchString());
+		
+		noticeList = boardService.getSelectBoardList(boardDto);
+		totalCnt = boardService.getSelectBoardListCnt(boardDto);
+		
+		mv.addObject("noticeList", noticeList);
+		mv.addObject("bbsid", bbsid);
+		mv.addObject("menu_depth1", "11");
 		
 		if (bbsid.equals("10022"))		// 공개소프트웨어
 		{
-			url = "redirect:/publicsw.do";
+			mv.addObject("menu_depth2", menuDepth[0]);
+			mv.addObject("title",       boardTitle[0]);
 		}else if(bbsid.equals("10023"))	// 업무소프트웨어
 		{
-			url = "redirect:/jobsw.do";
+			mv.addObject("menu_depth2", menuDepth[1]);
+			mv.addObject("title",       boardTitle[1]);
 		}else if(bbsid.equals("10024"))	// 드라이버
 		{
-			url = "redirect:/driversw.do";
+			mv.addObject("menu_depth2", menuDepth[2]);
+			mv.addObject("title",       boardTitle[2]);
 		}else if(bbsid.equals("10025"))	// 패치/업데이트
 		{
-			url = "redirect:/patchsw.do";
+			mv.addObject("menu_depth2", menuDepth[3]);
+			mv.addObject("title",       boardTitle[3]);
 		}else if(bbsid.equals("10026"))	// 멀티미디어
 		{
-			url = "redirect:/multisw.do";
+			mv.addObject("menu_depth2", menuDepth[4]);
+			mv.addObject("title",       boardTitle[4]);
 		}else if(bbsid.equals("10027"))	// 윈도우 10
 		{
-			url = "redirect:/winsw.do";
+			mv.addObject("menu_depth2", menuDepth[5]);
+			mv.addObject("title",       boardTitle[5]);
 		}
-		mv.setViewName(url);
+		
+		//페이징처리
+		mv.addObject("totalCnt", totalCnt);
+		mv.addObject("paging", boardDto);
+		
+		mv.setViewName("/board/bbsList");
 		return mv;
 	}
 	
@@ -423,11 +487,21 @@ public class BoardController extends BaseController{
 		}
 	}
 	
-	@ResponseBody
-	@RequestMapping("/boardDetail.do")
-	public void boardDetail(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
+
+	/**
+	 * 게시판 상세 보기
+	 * 
+	 * @param req
+	 * @param res
+	 * @param boardDto
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/bbsDetail.do")
+	public ModelAndView bbsDetail(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
 		ModelAndView mv = new ModelAndView();
 		String bbsid = boardDto.getBbsid();
+		int pageNo = boardDto.getPageNo(); 
 		
 		mv.addObject("bbsid", bbsid);
 		mv.addObject("menu_depth1", "11");
@@ -458,8 +532,119 @@ public class BoardController extends BaseController{
 		}
 		
 		BoardDto dto = boardService.getSelectBoardDetail(boardDto);
+		dto.setPageNo(pageNo);
 		mv.addObject("boardInfo", dto);
+		mv.addObject("paging", dto);
+		
+		// 게시글 조회수증가 
+		int result = boardService.boardHitUpdate(boardDto);
 		
 		mv.setViewName("/board/bbsView");
+		
+		return mv;
 	}
+	
+	/**
+	 * 게시글 상세 보기에서 게시글을 삭제한다. 
+	 * 파일이 있으면 파일을 삭제해야 한다.
+	 * 
+	 * @param req
+	 * @param res
+	 * @param boardDto
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping("/deleteBoard.do")
+	public void removeNotice(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
+		String retVal = "0";
+		
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
+		
+		try{
+			int fileChk = fileDelete(boardDto);
+			
+			if(fileChk > 0) {
+				retVal = Integer.toString(boardService.boardFileDelete(boardDto));
+				retVal = Integer.toString(boardService.boardDelete(boardDto));
+			}else {
+				throw new Exception("-1"); 
+			}
+			
+			
+			dataSourceTransactionManager.commit(status);
+		}catch (Exception e) {
+			retVal = "-1";
+			dataSourceTransactionManager.rollback(status);
+		}finally {
+			res.getWriter().write(retVal);
+		}
+	}
+	/**
+	 * 첨부된 파일을 삭제한다.
+	 * 
+	 * @param req
+	 * @param res
+	 * @param boardDto
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping("/deleteBoardAttatch.do")
+	public void removeAttatch(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
+		String retVal = "0";
+		
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
+		
+		try{
+			int fileChk = fileDelete(boardDto);
+			
+			if(fileChk > 0) {
+				retVal = Integer.toString(boardService.boardFileDelete(boardDto));
+			}else {
+				throw new Exception("-1"); 
+			}
+			dataSourceTransactionManager.commit(status);
+		}catch (Exception e) {
+			retVal = "-1";
+			dataSourceTransactionManager.rollback(status);
+		}finally {
+			res.getWriter().write(retVal);
+		}
+	}
+	
+	/**
+	 * 물리적인 파일을 삭제한다.
+	 * 
+	 * @param boardDto
+	 * @return
+	 * @throws Exception
+	 */
+	public int fileDelete(BoardDto boardDto) throws Exception{
+		int retVal = 0;
+		
+		try {
+			List<BoardDto> boardList = new ArrayList<>();
+			boardList = boardService.garbageAttatch(boardDto);
+			
+			for(int i=0; i < boardList.size(); i++) {
+				BoardDto getFileDto = new BoardDto();
+				
+				getFileDto = boardList.get(i);
+				
+				if(!"".equals(getFileDto.getPhy_path())){
+					File file = new File(getFileDto.getPhy_path());
+					if(file.exists()) {
+						file.delete();
+					}
+				}
+			}	
+			retVal = 1;
+		}catch(Exception e) {
+			retVal = -1;
+		}	
+		return retVal;
+	}	
 }

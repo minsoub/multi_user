@@ -44,11 +44,18 @@ public class BoardDto  extends BasePagingDto{
 	private String filename;			// 파일명
 	private String maskname;			// 마스크명
 	private String filesize;			// 파일사이즈
+	private String phy_path;			// 물리적인 경로
 	
 	private List<BoardDto> attachList;
 	
 	
 	
+	public String getPhy_path() {
+		return phy_path;
+	}
+	public void setPhy_path(String phy_path) {
+		this.phy_path = phy_path;
+	}
 	public String getFreqs() {
 		return freqs;
 	}

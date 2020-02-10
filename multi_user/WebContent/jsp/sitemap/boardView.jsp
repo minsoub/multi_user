@@ -47,9 +47,9 @@
 			<!--content-->
 			<div class="contents-con-framebox">
 				<div class="nav-box">
-					<div class="nav-img"><img src="/resource/images/sub/sub8_tit_img.png"></div>
+					<div class="nav-img"><img src="/resource/images/sub/sub7_tit_img.png"></div>
 					<div class="nav-list">
-						<img src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;다운로드&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">${title}</b>
+						<img src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;게시판&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">${title}</b>
 					</div>
 					<div class="nav-title">${title}</div>
 				</div>
@@ -71,11 +71,15 @@
 											<dt class="must-option"><label>제목</label></dt>
 											<dd style="width: 200px;">${boardInfo.subject }</dd>
 										</dl>
-										<dl class="insert_ready">
-											<dt class="must-option"><label>내용</label></dt>
-											<dd>
-												<textarea class="textarea-style" rows="10" cols="88" id="content" name="content" style="width: 618px;" readonly="readonly"><c:out value="${boardInfo.content}" escapeXml="false" /></textarea>
-											</dd>
+										<dl class="insert_ready3">
+											<dt class="must-option" style="width:15%;"><label for="writer" id="writer_label">등록자</label></dt>
+											<dd style="width: 240px;"><c:out value="${boardInfo.writer }"></c:out></dd>
+											<dt class="must-option"><label for="reg_date" id="reg_date_label">등록일</label></dt>
+											<dd style="width: 240px;"><c:out value="${boardInfo.wtime }"></c:out></dd>
+										</dl>										
+										<dl class="insert_ready3">
+											<dt class="must-option"><label for="content" id="content_label">내용</label></dt>
+											<dd class="must-option2-dd"><pre style="white-space: pre-line;word-wrap: break-word;">${boardInfo.content}</pre></dd>
 										</dl>
 									</form>
 									<dl class="insert_ready" id="attatchArea">
@@ -119,7 +123,7 @@
 <script type="text/javascript" src="/resource/common/js/jquery.tag-editor.min.js"></script>   
 <script type="text/javascript">
 $(document).ready(function() {
-	load_fnc('2', '0', '0'); //menu script
+	load_fnc('6', '0', '0'); //menu script
 });
 function goUpdate(){
 	$('#frm').attr('action', '/admin/noticeUpdate.do');
@@ -128,9 +132,9 @@ function goUpdate(){
 
 function goDelete(){
 	var params = {
-			"seq" : $('#seq').val(),
-			"bbsid" : $('#bbsid').val(),
-			"freq" : 0
+		"seq" : $('#seq').val(),
+		"bbsid" : $('#bbsid').val(),
+		"freq" : 0
 	}
 	
 	if(confirm('삭제하시겠습니까?')){
@@ -158,7 +162,11 @@ function goDown(val){
 }
 
 function goList(){
-	$('#frm').attr('action', '/bbsList.do');
+	if ("${bbsid}" == "10020") {
+		$('#frm').attr('action', '/freeboard.do');
+	}else {
+		$('#frm').attr('action', '/qnaboard.do');
+	}
 	$('#frm').submit();
 }
 

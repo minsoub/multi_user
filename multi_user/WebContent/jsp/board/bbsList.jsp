@@ -13,8 +13,8 @@
 		<div class="learn-tit-framebox">
 			<div class="learn-tit-framebox">
 			<c:import url="/resource/common/include/leftMenu_01.jsp">
-				<c:param name="left_depth_1" value="11"></c:param>
-				<c:param name="left_depth_2" value="2"></c:param>
+				<c:param name="left_depth_1" value="${menu_depth1}"></c:param>
+				<c:param name="left_depth_2" value="${menu_depth2}"></c:param>
 			</c:import>
 		</div> 
 		</div> 
@@ -26,14 +26,15 @@
 			<div class="nav-box">
 				<div class="nav-img"><img alt="" src="/resource/images/sub/sub7_tit_img.png"></div>
 				<div class="nav-list">
-					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;다운로드&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">업무소프트웨어</b>
+					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;다운로드&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">${title}</b>
 				</div>
-				<div class="nav-title">업무소프트웨어</div>
+				<div class="nav-title">${title}</div>
 			</div>
 			
-			<form id="frm" name="frm" method="post" onSubmit="return false;" onkeypress="javascript:if(event.keyCode == 13){funFrmPagingSubmit()}">
+			<form id="frm" name="frm" method="post" onSubmit="return false;" onkeypress="javascript:if(event.keyCode == 13){funFrmPagingSubmit3('/bbsList.do')}">
 			<input type="hidden" name="pageNo" id="pageNo"  value="${paging.pageNo }"/>
-			
+			<input type="hidden" id="bbsid" name="bbsid" value="${bbsid}" />
+			<input type="hidden" id="seq" name="seq" value="0">
 			<div class="searchArea_con">
 					<fieldset>
 					<div class="search-box">		
@@ -46,7 +47,7 @@
     							</select>
                             </div>
 							<input type="text" title="검색바" id="searchString" name="searchString" value="${paging.searchString}">
-							<input type="button" style="cursor: pointer;" class="search_btn" onclick="javascript:funFrmPagingSubmit();" value="검색">
+							<input type="button" style="cursor: pointer;" class="search_btn" onclick="javascript:funFrmPagingSubmit3('/bbsList.do');" value="검색">
 						</div>
 					</div>
 					</fieldset>
@@ -57,15 +58,17 @@
 						<table id="listTable" summary="">
 							<caption>게시판 테이블</caption>
 							<colgroup>
-								<col style="width: 8%" class="no-td">
+								<col style="width: 5%" class="no-td">
 								<col style="width: auto%">
-								<col style="width: 20%">
+								<col style="width: 10%">
+								<col style="width: 15%">
 								<col style="width: 15%" class="date-td">
 							</colgroup>
 							<thead>
 								<tr>
 									<th scope="col" class="no-td">번호</th>
 									<th scope="col" ><span class="sort" sortid="2">제목</span></th>
+									<th scope="col">등록자</th>
 									<th scope="col">등록일</th>
 									<th scope="col" class="date-td" ><span class="sort sort_desc" sortid="-1">조회</span></th>
 								</tr>
@@ -74,14 +77,15 @@
 								<c:forEach var="item" items="${noticeList}" varStatus="status">
 									<tr>
 										<td class="no-td">${totalCnt - (paging.perPageCnt*(paging.pageNo-1)) - status.index }</td>
-										<td style="text-align: left;cursor: pointer;" onclick="javascript:funGoPageDetail('/freeboard_view.do?seq=${item.seq}');">${item.subject }</td>
+										<td style="text-align: left;cursor: pointer;" onclick="javascript:ViewDetail('${item.seq}');">${item.subject }</td>
+										<td sylle="text-align">${item.writer}</td>
 										<td class="date-td">${item.wtime }</td>
 										<td class="ref-td">${item.hit }</td>
 									</tr>
 								</c:forEach>
 							<c:if test="${fn:length(noticeList) == 0}">
 				              	<tr>
-				              		<td colspan="4">검색 결과가 없습니다</td>
+				              		<td colspan="5">검색 결과가 없습니다</td>
 				              	</tr>
 				            </c:if>
 						</tbody>	
@@ -92,7 +96,7 @@
 			<c:import url="/resource/common/include/paging.jsp" />	
 					<div class="btn-zone">
 						<ul>
-							<li><input type="button" name="srchDescription" class="admin_btn" onclick="javascript:window.location='/bbsWrite.do?bbsid=10023';" value="등록"></li>
+							<li><input type="button" name="srchDescription" class="admin_btn" onclick="javascript:window.location='/bbsWrite.do?bbsid=${bbsid}';" value="등록"></li>
 						</ul>
 					</div>			
 		</div>
@@ -103,5 +107,17 @@
 $(document).ready(function() {
 	load_fnc('5', '0', '0'); //menu script
 });
+
+function ViewDetail(seq)
+{
+	$("#seq").val(seq);
+	
+	var f = document.frm;
+	f.target = "_self";
+	//f.pageNo.value = "1";
+	f.action = '/bbsDetail.do';	
+	f.submit();
+
+}
 </script>
 <c:import url="/resource/common/include/bottom.jsp" />
