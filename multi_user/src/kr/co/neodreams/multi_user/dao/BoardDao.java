@@ -80,6 +80,16 @@ public class BoardDao  extends BaseDao {
 		return update("Board#boardHitUpdate", boardDto);
 	}
 	/**
+	 * 게시글을 수정한다.
+	 * 
+	 * @param boardDto
+	 * @return
+	 */
+	public int boardUpdate(BoardDto boardDto) {
+		return update("Board#boardUpdate", boardDto);
+	}
+	
+	/**
 	 * 게시글을 삭제한다.
 	 *  
 	 * @param boardDto

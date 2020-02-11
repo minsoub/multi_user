@@ -225,6 +225,46 @@ public class SiteMapController extends BaseController{
 		return mv;
 	}	
 	
+	/**
+	 * 게시판 상세 보기
+	 * 
+	 * @param req
+	 * @param res
+	 * @param boardDto
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/bbsDetail.do")
+	public ModelAndView bbsDetail(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
+		ModelAndView mv = new ModelAndView();
+		String bbsid = boardDto.getBbsid();
+		int pageNo = boardDto.getPageNo(); 
+		
+		mv.addObject("bbsid", bbsid);
+		mv.addObject("menu_depth1", "12");
+		if (bbsid.equals("10020"))		 
+		{
+			mv.addObject("menu_depth2", "2");
+			mv.addObject("title", "자유게시판");
+		}else if(bbsid.equals("10021"))	 
+		{
+			mv.addObject("menu_depth2", "3");
+			mv.addObject("title", "Q&A");
+		}
+		
+		BoardDto dto = boardService.getSelectBoardDetail(boardDto);
+		dto.setPageNo(pageNo);
+		mv.addObject("boardInfo", dto);
+		mv.addObject("paging", dto);
+		
+		// 게시글 조회수증가 
+		int result = boardService.boardHitUpdate(boardDto);
+		
+		mv.setViewName("/sitemap/boardView");
+		
+		return mv;
+	}
+	
 	@RequestMapping("/siteMap.do")
 	public ModelAndView SiteMap(){
 		ModelAndView mv = new ModelAndView();

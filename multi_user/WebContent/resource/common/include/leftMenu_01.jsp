@@ -405,6 +405,33 @@
         <!--장비대여 끝 -->
     </c:when>   
     
+	<c:when test="${param.left_depth_1 eq 13 }">
+	<!--  S/W라이센스    -->
+        <div>
+            <img alt="S/W라이센스" src="/resource/images/sub/sub_title05.png">
+        </div>	
+        <div>
+            <ul>
+                <li>
+                    <a href="/swlicense.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub5_leftmenu_01b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub5_leftmenu_01.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <li>
+                    <a href="/freeboard.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub5_leftmenu_02b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub5_leftmenu_02.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+            </ul>
+        </div>                
+	</c:when>    
+    
 	<c:when test="${param.left_depth_1 eq 11 }">
 	<!--  다운로드    -->
         <div>

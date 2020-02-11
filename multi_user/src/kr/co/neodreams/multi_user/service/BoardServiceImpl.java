@@ -114,6 +114,24 @@ public class BoardServiceImpl implements BoardService {
 		return retVal;
 	}
 	
+    /** 게시글 수정하기
+     * 
+     * @param boardDto
+     * @return
+     * @throws Exception
+     */
+    public int boardUpdate(BoardDto boardDto) throws Exception
+    {
+		int retVal = boardDao.boardUpdate(boardDto);
+		if(retVal > 0) {
+			int attatchFileChk = boardAttatchInsert(boardDto);
+			
+			if(attatchFileChk < 0) {
+				throw new Exception("-1"); 
+			}
+		}
+		return retVal;
+    }
     /**
      * 게시글을 삭제한다.
      * 

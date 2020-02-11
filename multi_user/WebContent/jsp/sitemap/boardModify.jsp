@@ -25,7 +25,8 @@
 <body>
 	<div class="topMenu-bg-img-sub"></div>
 	<c:import url="/resource/common/include/topMenu.jsp" />
-	<c:set value="${menudepth_1}" var="left_depth_1"/>
+	<c:set value="${menu_depth1}" var="left_depth_1"/>
+
 	<div id="contents" class="learn-frame-area">
 		<div class="contents-framebox" id="contents_id">
 			<!-- leftmenu -->
@@ -42,9 +43,9 @@
 			<!--content-->
 			<div class="contents-con-framebox">
 				<div class="nav-box">
-					<div class="nav-img"><img src="/resource/images/sub/sub8_tit_img.png"></div>
+					<div class="nav-img"><img src="/resource/images/sub/sub7_tit_img.png"></div>
 					<div class="nav-list">
-						<img src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;다운로드&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">${title}</b>
+						<img src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;게시판&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">${title}</b>
 					</div>
 					<div class="nav-title">${title}</div>
 				</div>
@@ -61,38 +62,39 @@
 										<form id="frm" name="frm" method="post">
 											<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo}" />
 											<input type="hidden" id="bbsid" name="bbsid" value="${bbsid}" />
-											<input type="hidden" id="categ" name="categ" value="${categ}" />
-											<!-- dl class="insert_ready">
-												<dt class="must-option"><label>업무</label></dt>
-												<dd style="width: 200px;">
-													<p class="inputDesign">
-														<select id="notice_Gbn" name="notice_Gbn">
-															<option value="P">PPT</option>
-															<option value="I">이미지</option>
-															<option value="V">영상</option>
-															<option value="F">플래시</option>
-														</select>
-													</p>
-												</dd>
-											</dl  -->
+											<input type="hidden" name="seq" id="seq" value="${resultDetail.seq }" />
+											<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo }" />
+
 											<dl class="insert_ready">
 												<dt class="must-option"><label>제목</label></dt>
-												<dd style="width: 200px;"><input type="text" id="subject" name="subject" value=""></dd>
+												<dd style="width: 200px;"><input type="text" id="subject" name="subject" value="${resultDetail.subject}"></dd>
 											</dl>
 											<dl class="insert_ready">
 												<dt class="must-option"><label>내용</label></dt>
-												<dd><textarea class="textarea-style" rows="10" cols="88" id="content" name="content" style="width: 618px;"></textarea></dd>
+												<dd>
+													<textarea class="textarea-style" rows="10" cols="88" id="content" name="content" style="width: 618px;"><c:out value="${resultDetail.content}" escapeXml="false" /></textarea>
+												</dd>
 											</dl>
 										</form>
 										<dl class="insert_ready" id="attatchArea">
 											<dt class="must-option"><label>첨부파일</label></dt>
-											<dd style="width:97%" id="fileIdx_0">
+											<c:forEach var="item" items="${resultDetail.attatchList }" varStatus="status">
+												<dd style="width:97%" class="fileSet">
+													<div style="position: relative;">
+														<div>
+															${item.filename }
+															<div style="float:right; ">
+																<button type="button" class="btn_blue" data-attatchseq="${item.freq }" onclick="fn_AttatchDel(this);return false;" >삭제</button>
+															</div>
+														</div>
+													</div>
+												</dd>
+											</c:forEach>
+											<dd style="width:97%">
 												<div style="position: relative;">
 													<form id="file_frm" name="file_frm" method="post" enctype="multipart/form-data">
 														<div>
-															<input type="hidden" id="bbsid" name="bbsid" value="${bbsid}" />
 															<input type="hidden" id="seqs_0" name="seqs" />
-															<!-- <button type="button" id="srchDescription" name="srchDescription" onclick="javascript:$('#uploadFile').trigger('click')" class="btn_yellow" style="width:250px;cursor: pointer;">업로드 파일을 클릭해주세요</button> -->
 															<input type="file" name="uploadFile" title="영상 파일" onclick="javascript:submitChk = false;" style="height:30px;" accept="*.*"/>
 															<progress id="progressBar_0" min="0" max="100" value="0" style="width:250px;height:30px;position:absolute;"></progress>
 															<span id="progressT_0" style="display: none;position:absolute;color:#ffffff;">진행중 <font id="progressBarRate_0">0</font>%</span>
@@ -134,15 +136,15 @@
 <script type="text/javascript">
 
 $(document).ready(function(){
-	load_fnc('5', '0', '0'); //menu script
+	load_fnc('2', '0', '0'); //menu script
 	$(document).on('change', 'input[name="uploadFile"]', function(event){
 		var ua = window.navigator.userAgent;
 		var rowIdx = $(this).closest('dd').index();
+		var attatchedLng = parseInt($('.fileSet').length + 1); 
 		if(navigator.appName == 'Netscape' && ua.indexOf('Trident/7.0') != -1){
 			var file = $(this).prop("files")[0];
-		
 			if(file != null){
-				$('form[name="file_frm"]').eq((rowIdx-1)).ajaxForm({
+				$('form[name="file_frm"]').eq((rowIdx-attatchedLng)).ajaxForm({
 					url: "<%=Constants.COMMON_UPLOAD_ASP_CALL %>",
 					type: "POST",
 					crossdomain: true, 
@@ -152,26 +154,23 @@ $(document).ready(function(){
 					timeout: 1000 * 60 * 10,
 					beforeSend: function() {
 						var percentVal = '0%';
-						$('span[id^=progressT_').eq(rowIdx-1).show();
+						$('span[id^=progressT_').eq(rowIdx-attatchedLng).show();
 					},
 					uploadProgress: function(event, position, total, percentComplete) {
-						$('progress[id^=progressBar_]').eq(rowIdx-1).val(percentComplete);
-						$('font[id^=progressBarRate_]').eq(rowIdx-1).text(percentComplete);
-						
-						//$('#srchDescription').text('업로드 진행 중');
+						$('progress[id^=progressBar_]').eq(rowIdx-attatchedLng).val(percentComplete);
+						$('font[id^=progressBarRate_]').eq(rowIdx-attatchedLng).text(percentComplete);
 					},
 					success: function(msg) {
-						$('input[id^=seqs_]').eq(rowIdx-1).val(msg);
-						
+						$('input[id^=seqs_]').eq(rowIdx-attatchedLng).val(msg);
 				    }, 
 				    complete: function(xhr) {
 				    },
 				    error: function(e){
-				    	alert('업로드 중 오류가 발생했습니다\n새로고침 후 다시 진행 하시기 바랍니다' + e);
+				    	alert('업로드 중 오류가 발생했습니다\n새로고침 후 다시 진행 하시기 바랍니다');
 				    	location.replace(location.href);
 				    }
 				})
-				$('form[name="file_frm"]').eq((rowIdx-1)).submit();
+				$('form[name="file_frm"]').eq((rowIdx-attatchedLng)).submit();
 			}
 		}else{
 			alert('IE 최신 브라우저에서 사용 가능합니다.');
@@ -193,7 +192,7 @@ function goSubmit(){
 	
 	if(progressChk){
 		if($.trim($('#subject').val()) == ''){
-			alert('제목을 작성해주세요.');
+			alert('작업명을 작성해주세요.');
 			$('#subject').focus();
 			return false;
 		}
@@ -203,38 +202,36 @@ function goSubmit(){
 				attatch_Ids.push($(this).val());
 			}
 		});
+		$('#freq').val(attatch_Ids.join('|'));
 		var params = {
+				"seq" : $('#seq').val(),
 				"freqs" : attatch_Ids.join('|'),
-				"categ" : $('#categ').val(),
 				"bbsid" : "${bbsid}",
 				"subject" : $('#subject').val(),
 				"content" : escapeHtml($('#content').text()),
 		}
 		
-		if(confirm('등록하시겠습니까?')){
+		if(confirm('수정하시겠습니까?')){
 			$.ajax({
 				type : 'post',
-				url : '/registBoard.do',
+				url : '/bbsUpdate.do',
 				dataType : 'json',
 				data : params,
-				success : function(result){					
-					alert('등록되었습니다.' + result);
-		// 작업필요		
-		//			$('#frm').append('<input type="hidden" name="seq" value="'+result+'" />');
-		//			$('#frm').attr('action', '/boardDetail.do');
-		//			$('#frm').submit();
+				success : function(result){
+					alert('수정되었습니다.');
+					$('#frm').attr('action', '/boardDetail.do');
+					$('#frm').submit();
 				},
 				error : function(e){
 				}
 			})
 		}
 	}
-	
 }
 
 function fn_AttatchAdd(obj){
 	var cloneObj = $(obj).parents('dd').clone();
-	var rowsIdx = $('#attatchArea').children('dd').length;
+	var rowsIdx = $('#attatchArea').children('dd').length - $('.fileSet').length;
 	$(cloneObj).find('input').each(function(){
 		if(typeof($(this).attr('id')) != 'undefined'){
 			var attrId = $(this).attr('id').split('_');
@@ -272,41 +269,57 @@ function fn_AttatchAdd(obj){
 }
 
 function fn_AttatchDel(obj){
-	if($('#attatchArea dd').length == 1){
-		alert('삭제하실 수 없습니다.');
-		return false;
+	var attatchSeq = '0';
+	var params = '';
+	
+	if(typeof($(obj).data('attatchseq')) != 'undefined'){
+		attatchSeq = $(obj).data('attatchseq');
+		
+		params = {
+			"seq" : $('#seq').val(),
+			"freq" : attatchSeq
+		}
 	}else{
-		var rowIdx = $(this).closest('dd').index();
-		var params = {
-			"seq" : 0,
-			"freq" : $('input[name=seqs]').eq(rowIdx-1).val()
+		if(($('#attatchArea dd').length - $('.fileSet').length) == 1){
+			alert('삭제하실 수 없습니다.');
+			return false;
 		}
 		
+		var rowIdx = $(this).closest('dd').index();
+		var attatchedLng = parseInt($('.fileSet').length + 1);
+		
+		params = {
+				"seq" : 0,
+				"freq" : $('input[name=seqs]').eq(rowIdx-attatchedLng).val()
+		}
 		if(
-			typeof($('input[name=seqs]').eq(rowIdx-1)) == 'undefined' ||
-			$('input[name=seqs]').eq(rowIdx-1).val() == '' ||
-			$('input[name=seqs]').eq(rowIdx-1).val() == undefined		
+			typeof($('input[name=seqs]').eq(rowIdx-attatchedLng)) == 'undefined' ||
+			$('input[name=seqs]').eq(rowIdx-attatchedLng).val() == '' ||
+			$('input[name=seqs]').eq(rowIdx-attatchedLng).val() == undefined
+				
 		){
 			$(obj).parents('dd').remove();
 			return false;
 		}
-		
-		if(confirm('파일을 삭제하시겠습니까?')){
-			$.ajax({
-				type : 'post',
-				url : '/admin/removeAttatch.do',
-				dataType : 'json',
-				data : params,
-				success : function(result){
-					if(result >= 0){
-						alert('삭제되었습니다.');
-						$(obj).parents('dd').remove();
-					}
-				},
-				error : function(e){
+	}
+
+	
+	
+	if(confirm('파일을 삭제하시겠습니까?')){
+		$.ajax({
+			type : 'post',
+			url : '/deleteBoardAttatch.do',
+			dataType : 'json',
+			data : params,
+			success : function(result){
+				if(result > 0){
+					alert('삭제되었습니다.');
+					$(obj).parents('dd').remove();
 				}
-			})
-		}
+			},
+			error : function(e){
+			}
+		})
 	}
 }
 
@@ -330,7 +343,11 @@ function escapeHtml (string) {
 } 
 
 function goList(){
-	$('#frm').attr('action', '/bbsList.do');
+	if ("${bbsid}" == "10020") {
+		$('#frm').attr('action', '/freeboard.do');
+	}else {
+		$('#frm').attr('action', '/qnaboard.do');
+	}
 	$('#frm').submit();
 }
 

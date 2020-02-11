@@ -30,11 +30,19 @@
 				</div>
 				<div class="nav-title">${title}</div>
 			</div>
+			<c:if test="${bbsid eq '10027'}">
+			<div class="tabNav sub5">
+				<li><a href="javascript:BoardList('1');" class="active">SW자료</a></li>
+				<li><a href="javascript:BoardList('2');">드라이버 공유</a></li>
+				<li><a href="javascript:BoardList('3');">교육자료</a></li>
+			</div>			
+			</c:if>
 			
 			<form id="frm" name="frm" method="post" onSubmit="return false;" onkeypress="javascript:if(event.keyCode == 13){funFrmPagingSubmit3('/bbsList.do')}">
 			<input type="hidden" name="pageNo" id="pageNo"  value="${paging.pageNo }"/>
 			<input type="hidden" id="bbsid" name="bbsid" value="${bbsid}" />
 			<input type="hidden" id="seq" name="seq" value="0">
+			<input type="hidden" id="categ" name="categ" value="${categ}">
 			<div class="searchArea_con">
 					<fieldset>
 					<div class="search-box">		
@@ -96,7 +104,7 @@
 			<c:import url="/resource/common/include/paging.jsp" />	
 					<div class="btn-zone">
 						<ul>
-							<li><input type="button" name="srchDescription" class="admin_btn" onclick="javascript:window.location='/bbsWrite.do?bbsid=${bbsid}';" value="등록"></li>
+							<li><input type="button" name="srchDescription" class="admin_btn" onclick="javascript:window.location='/bbsWrite.do?bbsid=${bbsid}&categ=${categ}';" value="등록"></li>
 						</ul>
 					</div>			
 		</div>
@@ -118,6 +126,16 @@ function ViewDetail(seq)
 	f.action = '/bbsDetail.do';	
 	f.submit();
 
+}
+
+function BoardList(seq)
+{
+	$("#categ").val(seq);
+	var f = document.frm;
+	f.target = "_self";
+	//f.pageNo.value = "1";
+	f.action = '/bbsList.do';	
+	f.submit();	
 }
 </script>
 <c:import url="/resource/common/include/bottom.jsp" />

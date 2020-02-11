@@ -73,17 +73,7 @@ public class BoardController extends BaseController{
         return mv;
     }
     
-    /**
-     * OA 교육장
-     * @return
-     */
-    @RequestMapping("/oalist.do")
-    public ModelAndView oaList() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("/board/oalist");
-        return mv;
-    }
-    
+   
 	/**
 	 * 다운로드 > 공개소프트웨어 리스트 조회 
 	 * 
@@ -327,6 +317,7 @@ public class BoardController extends BaseController{
 			mv.addObject("menu_depth1", "11");
 			mv.addObject("menu_depth2", "6");
 			mv.addObject("title", "윈도우 10");
+			mv.addObject("categ", "1");  // SW자료=> 카테고리 1:SW자료, 2:드라이버공유, 3:교육자료
 			//페이징처리
 			mv.addObject("totalCnt", totalCnt);
 			mv.addObject("paging", commonDto);
@@ -387,6 +378,7 @@ public class BoardController extends BaseController{
 		{
 			mv.addObject("menu_depth2", menuDepth[5]);
 			mv.addObject("title",       boardTitle[5]);
+			mv.addObject("categ", boardDto.getCateg());		// 카테고리 1:SW자료, 2:드라이버공유, 3:교육자료
 		}
 		
 		//페이징처리
@@ -405,7 +397,7 @@ public class BoardController extends BaseController{
 	 * @return
 	 */
 	@RequestMapping("/bbsWrite.do")
-	public ModelAndView bbsWrite(@RequestParam String bbsid, HttpServletRequest request)
+	public ModelAndView bbsWrite(@RequestParam String bbsid, @RequestParam String categ, HttpServletRequest request)
 	{
 		ModelAndView mv = new ModelAndView();
 		BoardDto commonDto = new BoardDto();
@@ -436,6 +428,7 @@ public class BoardController extends BaseController{
 		{
 			mv.addObject("menu_depth2", "6");
 			mv.addObject("title", "윈도우 10");
+			mv.addObject("categ", categ);		// 카테고리 1:SW자료, 2:드라이버공유, 3:교육자료
 		}
 		
 		
@@ -474,6 +467,7 @@ public class BoardController extends BaseController{
 			System.out.println("ip : " + boardDto.getIp());
 			System.out.println("userid : " + boardDto.getUserid());
 			System.out.println("notice : " + boardDto.getNotice());
+			System.out.println("categ : " + boardDto.getCateg());
 			//seq,     bbsid,     writer,    subject,     content, 
 			//hit,     wtime,     ip,        userid,      notice
 			retVal = Integer.toString(boardService.boardInsert(boardDto));
@@ -486,7 +480,59 @@ public class BoardController extends BaseController{
 			res.getWriter().write(retVal);
 		}
 	}
-	
+	/**
+	 * 게시글 수정 폼을 출력한다.
+	 * 
+	 * @param req
+	 * @param res
+	 * @param boardDto
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/bbsUpdate.do")
+	public ModelAndView noticeUpdate(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
+		ModelAndView mv = new ModelAndView();
+		
+		String bbsid = boardDto.getBbsid();
+		int pageNo = boardDto.getPageNo(); 
+		
+		mv.addObject("bbsid", bbsid);
+		mv.addObject("menu_depth1", "11");
+		if (bbsid.equals("10022"))		// 공개소프트웨어
+		{
+			mv.addObject("menu_depth2", "1");
+			mv.addObject("title", "공개소프트웨어");
+		}else if(bbsid.equals("10023"))	// 업무소프트웨어
+		{
+			mv.addObject("menu_depth2", "2");
+			mv.addObject("title", "업무소프트웨어");
+		}else if(bbsid.equals("10024"))	// 드라이버
+		{
+			mv.addObject("menu_depth2", "3");
+			mv.addObject("title", "드라이버");
+		}else if(bbsid.equals("10025"))	// 패치/업데이트
+		{
+			mv.addObject("menu_depth2", "4");
+			mv.addObject("title", "패치/업데이트");
+		}else if(bbsid.equals("10026"))	// 멀티미디어
+		{
+			mv.addObject("menu_depth2", "5");
+			mv.addObject("title", "멀티미디어");
+		}else if(bbsid.equals("10027"))	// 윈도우 10
+		{
+			mv.addObject("menu_depth2", "6");
+			mv.addObject("title", "윈도우 10");
+			mv.addObject("categ", boardDto.getCateg());
+		}
+		
+		mv.setViewName("/board/bbsModify");
+		BoardDto resultDetail = new BoardDto();
+		resultDetail = boardService.getSelectBoardDetail(boardDto);
+		resultDetail.setPageNo(pageNo);
+		mv.addObject("resultDetail", resultDetail);
+		mv.addObject("paging", boardDto);
+		return mv;
+	}
 
 	/**
 	 * 게시판 상세 보기
@@ -545,6 +591,34 @@ public class BoardController extends BaseController{
 	}
 	
 	/**
+	 * 게시글 수정하기 
+	 * 
+	 * @param req
+	 * @param res
+	 * @param noticeDto
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping("/bbsUpdate.do")
+	public void bbsUpdate(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
+		String retVal = "0";
+		
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
+		
+		try{
+			retVal = Integer.toString(boardService.boardUpdate(boardDto));
+			dataSourceTransactionManager.commit(status);
+		}catch (Exception e) {
+			retVal = "-1";
+			dataSourceTransactionManager.rollback(status);
+		}finally {
+			res.getWriter().write(retVal);
+		}
+	}
+	
+	/**
 	 * 게시글 상세 보기에서 게시글을 삭제한다. 
 	 * 파일이 있으면 파일을 삭제해야 한다.
 	 * 
@@ -591,7 +665,7 @@ public class BoardController extends BaseController{
 	 */
 	@ResponseBody
 	@RequestMapping("/deleteBoardAttatch.do")
-	public void removeAttatch(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
+	public void deleteBoardAttatch(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
 		String retVal = "0";
 		
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();

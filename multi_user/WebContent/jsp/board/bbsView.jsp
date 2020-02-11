@@ -122,7 +122,7 @@ $(document).ready(function() {
 	load_fnc('2', '0', '0'); //menu script
 });
 function goUpdate(){
-	$('#frm').attr('action', '/admin/noticeUpdate.do');
+	$('#frm').attr('action', '/bbsUpdate.do');
 	$('#frm').submit();
 }
 

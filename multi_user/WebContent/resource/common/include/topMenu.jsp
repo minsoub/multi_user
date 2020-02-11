@@ -66,7 +66,7 @@
 					<li id="topmenu4"><a href="/swlicense.do">S/W라이센스</a>
 						<ul>
 							<li class="menu-on"><a href="/swlicense.do">라이센스등록</a></li>
-							<li><a href="#">소프트웨어관리</a></li>
+							<li><a href="/swmng.do">소프트웨어관리</a></li>
 						</ul>
 					</li>    
 					
@@ -81,7 +81,7 @@
 						</ul>
 					</li>    
 					
-					<li id="topmenu6"><a href="#">게시판</a>
+					<li id="topmenu6"><a href="/notice.do">게시판</a>
 						<ul>
 							<li class="menu-on"><a href="/notice.do">공지사항</a></li>
 							<li><a href="/freeboard.do">자유게시판</a></li>

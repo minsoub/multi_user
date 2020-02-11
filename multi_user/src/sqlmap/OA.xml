@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="OaDto">
+    <typeAlias alias="OaDto" type="kr.co.neodreams.multi_user.dto.OaDto"/>
+
+    <select id="OA#getSelectOAList" resultClass="OaDto">
+        <![CDATA[
+            SELECT 
+            	   RSRV_ID, SABUN, convert(nchar(10), RSRV_DT, 120) as RSRV_DT
+              FROM [TB_OA_RSRV]
+             WHERE                   
+        ]]>
+                  RSRV_DT BETWEEN TO_DATE(#date#,'YYYYMMDD') AND TO_DATE(#date#,'YYYYMMDD')+5 AND DEL_FLAG='N'
+			 ORDER BY RSRV_ID DESC
+    </select>
+</sqlMap>   

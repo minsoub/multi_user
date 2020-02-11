@@ -5,7 +5,7 @@
 
     <select id="Board#getSelectBoardList" parameterClass="BoardDto" resultClass="BoardDto">
         <![CDATA[
-            SELECT seq,subject, writer, convert(nchar(10) , WTIME ,120 ) as wtime ,hit
+            SELECT seq,subject, writer, convert(nchar(10) , WTIME ,120 ) as wtime ,hit, categ
             FROM [SPLAZA_BOARD]
             WHERE
         ]]>
@@ -16,6 +16,10 @@
                 (Subject LIKE '%$searchString$%'
                 or Content LIKE '%$searchString$%')
         </isNotEmpty>
+        <isNotEmpty prepend="and" property="categ">
+                categ = #categ#
+        </isNotEmpty>        
+        
         	AND BBSID = #bbsid#                
         order by WTIME desc
         OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
@@ -25,6 +29,7 @@
 	<resultMap class="kr.co.neodreams.multi_user.dto.BoardDto" id="bbsResult">
 		<result property="seq" 			column="seq"/>
 		<result property="bbsid" 		column="bbsid"/>
+		<result property="categ" 		column="categ"/>
 		<result property="subject" 		column="subject"/>
 		<result property="content"	 	column="content"/>
 		<result property="writer" 		column="writer"/>
@@ -44,7 +49,7 @@
     
     <select id="Board#getSelectBoardDetail" resultMap="bbsResult">
             SELECT 
-            		seq, bbsid, subject, content, writer, 
+            		seq, bbsid, categ, subject, content, writer, 
             		convert(nchar(10) , WTIME ,120 ) as wtime ,hit, '0' as freq
               FROM [SPLAZA_BOARD]
              WHERE 
@@ -92,10 +97,10 @@
 			SELECT COALESCE(max(seq), 0)+1 FROM SPLAZA_BOARD
 		</selectKey>
 		INSERT INTO SPLAZA_BOARD (
-			seq,     bbsid,     writer,    subject,     content, 
+			seq,     bbsid,     categ,     writer,    subject,     content, 
 			hit,     wtime,     ip,        userid,      notice
 		) VALUES (
-			#seq#,	 #bbsid#,   #writer#,  #subject#,   #content#, 
+			#seq#,	 #bbsid#,   #categ#,   #writer#,  #subject#,   #content#, 
 			0,       getDate(), #ip#,      #userid#,    #notice#
 		)
 	</insert>		
