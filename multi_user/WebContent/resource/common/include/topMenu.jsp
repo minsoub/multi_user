@@ -7,6 +7,7 @@
 		alert("서비스 준비중 입니다.!");
 	}
 </SCRIPT>
+
 <div class="gnbmenu-box">
     <div class="header-visualbox">
         <div class="site-framebox">
@@ -57,6 +58,7 @@
 							<li><a href="/equipRentList.do">설비현황</a></li>
 							<li><a href="/appList.do">마이페이지</a></li>
 							<li><a href="/basketList.do">장바구니</a></li>
+							<c:set var="isGetAdmin" value="${sessionScope.SESS_USER_INFO['rentAdmin']}"></c:set>
 							<c:if test="${isGetAdmin != null}">
 							<li><a href="/admin/equipRentStatus.do">관리메뉴</a></li>
 							</c:if>
