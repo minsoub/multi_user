@@ -31,11 +31,11 @@
 			<div class="clearfix">
 				<div class="ctrlCal fl">
 					<span class="btnWrap">
-						<a href="location.href='/oalist.do?date=${pDate}" class="btnColorA sizeSm">지난 주</a>
+						<a href="/oalist.do?date=${pDate}" class="btnColorA sizeSm">지난 주</a>
 					</span>
 					<div class="date">${year}년 ${month}월</div>
 					<span class="btnWrap">
-						<a href="location.href='/oalist.do?date=${nDate}" class="btnColorA sizeSm">다음 주</a>
+						<a href="/oalist.do?date=${nDate}" class="btnColorA sizeSm">다음 주</a>
 					</span>
 				</div>
 				<div class="fr">
@@ -49,12 +49,13 @@
 					<thead>
 						<tr>
 							<th scope="col"></th>
-							<c:forEach var="_date" items="$dateList" varStatus="status">								
-								<c:if test="${status.Index == 0}"><c:set var="week" value="월" /></c:if>
-								<c:if test="${status.Index == 1}"><c:set var="week" value="화" /></c:if>
-								<c:if test="${status.Index == 2}"><c:set var="week" value="수" /></c:if>
-								<c:if test="${status.Index == 3}"><c:set var="week" value="목" /></c:if>
-								<c:if test="${status.Index == 4}"><c:set var="week" value="금" /></c:if>
+							<c:set var="week" value="" />
+							<c:forEach var="_date" items="${dateList}" varStatus="status">								
+								<c:if test="${status.index == 0}"><c:set var="week" value="월" /></c:if>
+								<c:if test="${status.index == 1}"><c:set var="week" value="화" /></c:if>
+								<c:if test="${status.index == 2}"><c:set var="week" value="수" /></c:if>
+								<c:if test="${status.index == 3}"><c:set var="week" value="목" /></c:if>
+								<c:if test="${status.index == 4}"><c:set var="week" value="금" /></c:if>
 								
 								<th scope="col">${fn:substring(_date, 4, 6)}월 ${fn:substring(_date, 6, 8)} 일(${week})</th>
 							</c:forEach>
@@ -64,109 +65,38 @@
 						<c:forEach var="idx" begin="9" end="18" varStatus="loop">
 						<tr>
 							<td>${idx}시 ~ ${idx + 1 }시</td>
-							<c:forEach var="_date" items="$dateList" varStatus="status">
-								<c:if test="{idx == 9}"><c:set var="t1" value="09" /></c:if>
-								<c:if test="{idx > 9}"><c:set var="t1" value="0${idx}"/></c:if>
+							<c:forEach var="_date" items="${dateList}" varStatus="status">
+								<c:set var="t1" />
+								<c:if test="${idx == 9}"><c:set var="t1" value="09" /></c:if>
+								<c:if test="${idx > 9}"><c:set var="t1" value="${idx}"/></c:if>
 								<c:set var="tmp" value="${_date}${t1}" />
 								<!--  KEPCO-EP 활성화, 한전직원만 예약이 가능함 (해당 데이터 확인 여부 필요) -->
 								
 								<c:set var="btnText" value="예약신청" />
 								<c:set var="btnClass" value="btnColorB" />
-								<c:set var="btnClick" value="oaForm('${tmp}');" />		
+								<c:set var="btnClick" value="javascript:oaForm('${tmp}');" />		
 								
-								<c:if test="${not empty rsrvMap['${tmp}']}">
-									<c:if test="${rsrvMap['${tmp}'] eq ${SESS_EMPNO} }">
+								<c:if test="${not empty rsrvMap[tmp]}">
+									<c:if test="${rsrvMap[tmp] eq SESS_EMPNO }">
 										<c:set var="btnText" value="내 예약" />
 										<c:set var="btnClass" value="green" />
-										<c:set var="btnClick" value="oaForm('${idMap[${tmp]}');" />		
+										<c:set var="btnClick" value="javascript:oaView('${idMap[tmp]}');" />		
 									</c:if>
-									<c:if test="${rsrvMap['${tmp}'] ne ${SESS_EMPNO} }">
+									<c:if test="${rsrvMap[tmp]}'] ne SESS_EMPNO }">
 										<c:set var="btnText" value="예약불가" />
 										<c:set var="btnClass" value="btnDefault" />
-										<c:set var="btnClick" value="oaForm('${idMap[${tmp]}');" />		
+										<c:set var="btnClick" value="javascript:oaView('${idMap[tmp]}');" />		
 									</c:if>									
 								</c:if>		
-								<c:if test="${reserveInterval <  _date}">
+								<c:if test="${reserveInterval >  _date}">
 									<c:set var="btnText" value="기간초과" />
 									<c:set var="btnClass" value="btnLight" />
-									<c:set var="btnClick" value="oaForm('신청하실 수 없는 일자 입니다.');" />											
+									<c:set var="btnClick" value="javascript:alert('신청하실 수 없는 일자 입니다.');" />											
 								</c:if>
 							<td><p class="btnWrap"><a href="${btnClick}" class="${btnClass}">${btnText}</a></p></td>
 							</c:forEach>
 						</tr>
-						</c:forEach>
-						<!-- tr>
-							<td>09시~10시</td>
-							<td><p class="btnWrap"><a href="" class="btnColorB">예약가능</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnLight">기간초과</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-						</tr>
-						<tr>
-							<td>10시~11시</td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-						</tr>
-						<tr>
-							<td>11시~12시</td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-						</tr>
-						<tr>
-							<td>12시~13시</td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-						</tr>
-						<tr>
-							<td>13시~14시</td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-						</tr>
-						<tr>
-							<td>14시~15시</td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-						</tr>
-						<tr>
-							<td>15시~16시</td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-						</tr>
-						<tr>
-							<td>16시~17시</td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-						</tr>
-						<tr>
-							<td>17시~18시</td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-							<td><p class="btnWrap"><a href="" class="btnDefault">예약불가</a></p></td>
-						</tr  -->
+						</c:forEach> 
 					</tbody>
 				</table>
 			</div>
@@ -174,25 +104,34 @@
 		<!--content end-->
 	</div>
 </div>
+<form name="frm" id="frm" method="post">
+	<input type="hidden" id="date" name="date">
+	<input type="hidden" id="rsrv_id" name="rsrv_id" value="0">
+</form>
+<script type="text/javascript">
 
-<footer>
-	<div class="footerFrame">
-		<div class="footerFrame-center">
-			<div class="footer-tel">
-				<ul>
-					<li>장비대여&nbsp;&nbsp;<span>061-6383</span>&nbsp;&nbsp;&nbsp;<span>/</span>&nbsp;&nbsp;&nbsp;</li>
-					<li>PPT제작&nbsp;&nbsp;<span>061-6381,6384</span>&nbsp;&nbsp;&nbsp;<span>/</span>&nbsp;&nbsp;&nbsp;</li>
-					<li>이미지제작&nbsp;&nbsp;<span>061-6382</span>&nbsp;&nbsp;&nbsp;<span>/</span>&nbsp;&nbsp;&nbsp;</li>
-					<li>전광판게시&nbsp;&nbsp;<span>061-6382</span>&nbsp;&nbsp;&nbsp;<span>/</span>&nbsp;&nbsp;&nbsp;</li>
-					<li>영상제작&nbsp;&nbsp;<span>061-6386</span>&nbsp;&nbsp;&nbsp;<span>/</span>&nbsp;&nbsp;&nbsp;</li>
-					<li>기술지원&nbsp;&nbsp;<span>061-6385</span></li>
-				</ul>
-			</div>
-			<div class="footer-logo"><img alt="" src="/resource/images/logo1.png"></div>
-			<div class="footer-addr">(우) 58217 전라남도 나주시 전력로 55 (빛가람동 120)  멀티미디어센터    Copyright@2016 KEPCO. All Rights Reserved. </div>
-		</div>
-	</div>
-</footer>
+	$(document).ready(function(){
+		load_fnc('2', '0', '0'); //menu script
+	});
 
-</body>
-</html>
+	function oaForm(dd)
+	{
+		if("${SESS_EMPNO}" == "")
+		{
+			alert("사용자 세션정보가 없습니다. 신청이 불가능합니다!!")
+			return;
+		}
+		$("#date").val(dd);
+		frm.action = "/oaWrite.do";
+		frm.submit();
+	}
+	
+	function oaView(rsv_key)
+	{
+		$("#rsrv_id").val(rsv_key);
+		frm.action = "/oaView.do";
+		frm.submit();
+	}
+
+</script>
+<c:import url="/resource/common/include/bottom.jsp" />

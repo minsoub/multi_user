@@ -5,7 +5,7 @@
 
     <select id="Board#getSelectBoardList" parameterClass="BoardDto" resultClass="BoardDto">
         <![CDATA[
-            SELECT seq,subject, writer, convert(nchar(10) , WTIME ,120 ) as wtime ,hit, categ
+            SELECT seq,subject, writer, convert(nchar(10) , WTIME ,120 ) as wtime ,hit, categ, sts
             FROM [SPLAZA_BOARD]
             WHERE
         ]]>
@@ -36,6 +36,9 @@
 		<result property="wtime" 		column="wtime"/>
 		<result property="hit" 			column="hit"/>
 		<result property="freq" 		column="freq"/>
+		<result property="usertel" 		column="usertel"/>
+		<result property="sts" 			column="sts"/>
+		<result property="userid" 		column="userid"/>
 		<result property="attachList" 	column="{seq=seq, freq=freq}" select="Board#getAttatchList" />
 	</resultMap>
 	
@@ -49,12 +52,13 @@
     
     <select id="Board#getSelectBoardDetail" resultMap="bbsResult">
             SELECT 
-            		seq, bbsid, categ, subject, content, writer, 
-            		convert(nchar(10) , WTIME ,120 ) as wtime ,hit, '0' as freq
-              FROM [SPLAZA_BOARD]
+            		a.seq, a.bbsid, a.categ, a.subject, a.content, a.writer, 
+            		convert(nchar(10) , a.WTIME ,120 ) as wtime ,a.hit, '0' as freq, a.sts,
+            		b.telno as usertel, a.userid
+              FROM [SPLAZA_BOARD] a LEFT OUTER JOIN tbSVC_TDMSEMP b ON a.userid = b.empno
              WHERE 
-            	   seq = #seq#
-               AND bbsid = #bbsid#  	
+            	   a.seq = #seq#
+               AND a.bbsid = #bbsid#  	
     </select>
     
 	<select id="Board#getAttatchList" resultMap="attatchResult">
@@ -98,10 +102,10 @@
 		</selectKey>
 		INSERT INTO SPLAZA_BOARD (
 			seq,     bbsid,     categ,     writer,    subject,     content, 
-			hit,     wtime,     ip,        userid,      notice
+			hit,     wtime,     ip,        userid,      notice,    sts
 		) VALUES (
 			#seq#,	 #bbsid#,   #categ#,   #writer#,  #subject#,   #content#, 
-			0,       getDate(), #ip#,      #userid#,    #notice#
+			0,       getDate(), #ip#,      #userid#,    #notice#,  0
 		)
 	</insert>		
 	

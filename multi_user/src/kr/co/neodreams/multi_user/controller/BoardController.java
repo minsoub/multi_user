@@ -466,10 +466,15 @@ public class BoardController extends BaseController{
 			System.out.println("hit : " + boardDto.getHit());
 			System.out.println("ip : " + boardDto.getIp());
 			System.out.println("userid : " + boardDto.getUserid());
+			System.out.println("writer : " + boardDto.getWriter());
 			System.out.println("notice : " + boardDto.getNotice());
 			System.out.println("categ : " + boardDto.getCateg());
 			//seq,     bbsid,     writer,    subject,     content, 
 			//hit,     wtime,     ip,        userid,      notice
+			
+			// IP
+			String ip = req.getRemoteAddr();
+			boardDto.setIp(ip);   // IP 주소
 			retVal = Integer.toString(boardService.boardInsert(boardDto));
 			System.out.println("retVal : " + retVal);
 			dataSourceTransactionManager.commit(status);

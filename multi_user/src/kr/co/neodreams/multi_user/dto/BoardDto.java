@@ -35,7 +35,16 @@ public class BoardDto  extends BasePagingDto{
 	private String notice;				// 공지여부 (Y = 공지)
 	private String exist;				// 삭제여부 (Y : 삭제안됨, N : 삭제됨)
 	private String comment_cnt;			// 댓글 개수
+	private String usertel;
 	
+	
+	
+	public String getUsertel() {
+		return usertel;
+	}
+	public void setUsertel(String usertel) {
+		this.usertel = usertel;
+	}
 	private String searchString;
 	
 	// 파일

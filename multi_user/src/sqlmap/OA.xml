@@ -10,7 +10,50 @@
               FROM [TB_OA_RSRV]
              WHERE                   
         ]]>
-                  RSRV_DT BETWEEN TO_DATE(#date#,'YYYYMMDD') AND TO_DATE(#date#,'YYYYMMDD')+5 AND DEL_FLAG='N'
+                  CONVERT(nchar(8), RSRV_DT, 120) BETWEEN CONVERT(DATE, #date#) AND DATEADD(DD, 5, CONVERT(DATE, #date#)) AND DEL_FLAG='N'
 			 ORDER BY RSRV_ID DESC
     </select>
+    
+    <select id="OA#getRsvCheckSelect" parameterClass="java.lang.String" resultClass="int">
+    	SELECT
+    	       COUNT(*)
+    	  FROM [TB_OA_RSRV]
+    	 WHERE
+    	       RSRV_DT IN (#rsrv_dt#) AND DEL_FLAG = 'N'
+    </select>
+    
+    <update id="OA#oaCancel">
+    	UPDATE TB_OA_RSRV
+    	   SET APRV_STATUS = #aprv_status#, DEL_FLAG = 'Y'
+    	 WHERE
+    	       RSRV_ID = #rsrv_id#
+    </update>
+    
+    
+    <insert id="OA#oaInsert">
+		<selectKey keyProperty="rsrv_id" resultClass="int">
+			SELECT COALESCE(max(RSRV_ID), 0)+1 FROM TB_OA_RSRV
+		</selectKey>
+		INSERT INTO TB_OA_RSRV (
+			RSRV_ID,     SABUN,     PLACE_ID,     RSRV_DT,    SUBJECT,     PEOPLE_CNT, 
+			REG_DTTM,     DEL_FLAG, APRV_STATUS
+		) VALUES (
+			#rsrv_id#,	 #sabun#,   #place_id#,   #rsrv_dt#,  #subject#,   #people_cnt#, 
+			getDate(),    'N',      'R'
+		)
+	</insert>	
+	
+	<select id="OA#getSelectOADetail" resultClass="OaDto">
+        <![CDATA[
+            SELECT 
+            	   a.RSRV_ID, a.SABUN, convert(nchar(10), a.RSRV_DT, 120) as RSRV_DT,
+            	   a.SUBJECT, a.PEOPLE_CNT, a.APRV_STATUS, 
+            	   b.name as user_name, b.telno as user_tel
+              FROM TB_OA_RSRV a, tbSVC_TDMSEMP b
+             WHERE                   
+        ]]>	
+        		   a.RSRV_ID =#rsrv_id#
+        	   AND a.DEL_FLAG = 'N'
+        	   AND a.SABUN = b.empno
+	</select>    
 </sqlMap>   

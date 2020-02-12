@@ -12,6 +12,7 @@ public class OaDto {
 	private String	place_id;				// 교육장아이디
 	private String	rsrv_dt;				// 예약일자(yyyyMMddHH24)
 	private String	subject;				// 신청 제목
+	private String  people_cnt;				// 예약인원수
 	private String	reg_dttm;				// 예약일자(datetime)
 	private String	admin_id;				// 승인자 아이디
 	private String	aprv_ip;				// 승인자 아이피 주소
@@ -20,7 +21,37 @@ public class OaDto {
 	private String	del_flag;				// 삭제여부(Y:삭제, N)
 	private String	memo;					// 취소 처리 메모
 	private String  date;					// 검색일자
+	private String  hour;					// 예약시간+
+	
+	private String  user_name;
+	private String  user_tel;
 
+	
+	
+	public String getUser_name() {
+		return user_name;
+	}
+	public void setUser_name(String user_name) {
+		this.user_name = user_name;
+	}
+	public String getUser_tel() {
+		return user_tel;
+	}
+	public void setUser_tel(String user_tel) {
+		this.user_tel = user_tel;
+	}
+	public String getPeople_cnt() {
+		return people_cnt;
+	}
+	public void setPeople_cnt(String people_cnt) {
+		this.people_cnt = people_cnt;
+	}
+	public String getHour() {
+		return hour;
+	}
+	public void setHour(String hour) {
+		this.hour = hour;
+	}
 	public int getRsrv_id() {
 		return rsrv_id;
 	}

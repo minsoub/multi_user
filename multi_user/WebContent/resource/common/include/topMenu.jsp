@@ -45,8 +45,8 @@
                     		<li class="menu-on"><a href="/contentsInfo.do">컨텐츠제작</a></li>
                     		<li><a href="/displayBoardInfo.do">전광판게시</a></li>
                     		<li><a href="/admin/noticeList.do">업무자료실</a></li>
-                    		<li><a href="#">출력요청</a></li>
-                    		<li><a href="#">사진촬영</a></li>
+                    		<li><a href="/printlist.do">출력요청</a></li>
+                    		<li><a href="/photolist.do">사진촬영</a></li>
                     		<li><a href="/oalist.do">OA교육장</a></li>
                     	</ul>
                     </li>

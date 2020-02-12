@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import kr.co.neodreams.multi_user.base.dao.BaseDao;
+import kr.co.neodreams.multi_user.dto.BoardDto;
 import kr.co.neodreams.multi_user.dto.OaDto;
 
 /**
@@ -26,5 +27,45 @@ public class OaDao extends BaseDao {
 	public List<OaDto> getSelectOAList (OaDto dto)  throws Exception{
         return (List<OaDto>) list("OA#getSelectOAList", dto);
     }
+    
+    /**
+     * OA 교육장 신청을 접수한다.
+     * 
+     * @param dto
+     * @return
+     */
+	public Object oaInsert(OaDto dto) {
+		return insert("OA#oaInsert", dto);
+	}
+	
+	/**
+	 * OA 교육장 신청내역을 취소한다.
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	public Object oaCancel(OaDto dto) {
+		return update("OA#oaCancel", dto);
+	}
+	
+	/**
+	 * OA 교육장 신청 예약 여부를 체크한다.
+	 * 
+	 * @param rsrv_dt
+	 * @return
+	 */
+	public int getRsvCheckSelect(String rsrv_dt) {
+		return (int) select("OA#getRsvCheckSelect", rsrv_dt);
+	}
+	
+	/**
+	 * OA 교육장 신청 상세 내역을 조회한다.
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	public OaDto getSelectOADetail(OaDto dto) {
+		return (OaDto) select("OA#getSelectOADetail", dto);
+	}
 
 }

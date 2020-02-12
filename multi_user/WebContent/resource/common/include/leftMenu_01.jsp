@@ -198,7 +198,7 @@
                 
                 <!-- 출력요청 (IT플라자)  -->
                 <li>
-                    <a href="#">
+                    <a href="/printlist.do">
                     <c:choose>
                     	<c:when test="${param.left_depth_2 eq 4 }"><img alt="출력요청" src="/resource/images/sub/sub2_leftmenu_03b.png"></c:when>
                     	<c:otherwise><img alt="출력요청" src="/resource/images/sub/sub2_leftmenu_03.png"></c:otherwise>
@@ -208,7 +208,7 @@
                 
                 <!--  사진촬영 (IT플라자) -->
                 <li>
-                    <a href="#">
+                    <a href="/photolist.do">
                     <c:choose>
                     	<c:when test="${param.left_depth_2 eq 5 }"><img alt="사진촬영" src="/resource/images/sub/sub2_leftmenu_04b.png"></c:when>
                     	<c:otherwise><img alt="사진촬영" src="/resource/images/sub/sub2_leftmenu_04.png"></c:otherwise>
@@ -218,7 +218,7 @@
                 
                 <!-- OA 교육장 (IT플라자) -->
                 <li>
-                    <a href="#">
+                    <a href="/oalist.do">
                     <c:choose>
                     	<c:when test="${param.left_depth_2 eq 6 }"><img alt="OA 교육장" src="/resource/images/sub/sub2_leftmenu_05b.png"></c:when>
                     	<c:otherwise><img alt="OA 교육장" src="/resource/images/sub/sub2_leftmenu_05.png"></c:otherwise>
