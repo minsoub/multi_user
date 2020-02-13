@@ -167,4 +167,23 @@ public class BoardServiceImpl implements BoardService {
 	{
 		return boardDao.boardFileDelete(boardDto);
 	}
+	
+    /** 관리자 상태값 업데이트(출력요청, 사진촬영)
+     * 
+     * @param boardDto
+     * @return
+     * @throws Exception
+     */
+    public int boardStsUpdate(BoardDto boardDto) throws Exception
+    {
+		int retVal = boardDao.boardStsUpdate(boardDto);
+		if(retVal > 0) {
+			int attatchFileChk = boardAttatchInsert(boardDto);
+			
+			if(attatchFileChk < 0) {
+				throw new Exception("-1"); 
+			}
+		}
+		return retVal;
+    }	
 }

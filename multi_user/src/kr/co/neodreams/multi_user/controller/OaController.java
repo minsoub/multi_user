@@ -488,8 +488,73 @@ public class OaController extends BaseController{
 		// 게시글 조회수증가 
 		int result = boardService.boardHitUpdate(boardDto);
 		
-		mv.setViewName("/board/bbsView");
+		mv.setViewName("/oa/reqView");
 		
 		return mv;
+	}	
+	
+	/**
+	 * 게시글 수정 폼을 출력한다.
+	 * 
+	 * @param req
+	 * @param res
+	 * @param boardDto
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/reqUpdate.do")
+	public ModelAndView reqUpdate(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
+		ModelAndView mv = new ModelAndView();
+		
+		String bbsid = boardDto.getBbsid();
+		int pageNo = boardDto.getPageNo(); 
+		
+		mv.addObject("bbsid", bbsid);
+		mv.addObject("menu_depth1", "2");
+		if (bbsid.equals("10028"))		// 출력요청
+		{
+			mv.addObject("menu_depth2", "4");
+			mv.addObject("title", "출력요청");
+		}else if(bbsid.equals("10029"))	// 사진촬영
+		{
+			mv.addObject("menu_depth2", "5");
+			mv.addObject("title", "사진촬영");
+		}
+		
+		mv.setViewName("/oa/reqModify");
+		BoardDto resultDetail = new BoardDto();
+		resultDetail = boardService.getSelectBoardDetail(boardDto);
+		resultDetail.setPageNo(pageNo);
+		mv.addObject("resultDetail", resultDetail);
+		mv.addObject("paging", boardDto);
+		return mv;
+	}	
+	
+	/**
+	 * 관리자 상태값 수정하기 
+	 * 
+	 * @param req
+	 * @param res
+	 * @param noticeDto
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping("/reqStsUpdate.do")
+	public void bbsUpdate(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
+		String retVal = "0";
+		
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
+		
+		try{
+			retVal = Integer.toString(boardService.boardStsUpdate(boardDto));
+			dataSourceTransactionManager.commit(status);
+		}catch (Exception e) {
+			retVal = "-1";
+			dataSourceTransactionManager.rollback(status);
+		}finally {
+			res.getWriter().write(retVal);
+		}
 	}	
 }

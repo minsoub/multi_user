@@ -67,12 +67,76 @@ public class BoardController extends BaseController{
 	 * @return
 	 */
     @RequestMapping("/swlicense.do")
-    public ModelAndView equipManual() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("/board/license");
-        return mv;
+    public ModelAndView swlicense(BoardDto commonDto, HttpServletRequest request) throws Exception{
+		ModelAndView mv = new ModelAndView();
+		
+		try{
+			
+			List<BoardDto> noticeList = null;
+			
+			int totalCnt = 0;
+			commonDto.setBbsid("10030");		// 라이센스등록
+
+			noticeList = boardService.getSelectBoardList(commonDto);
+			totalCnt = boardService.getSelectBoardListCnt(commonDto);
+
+			mv.setViewName("/board/license");
+			mv.addObject("noticeList", noticeList);	
+			
+			mv.addObject("bbsid", "10030");
+			mv.addObject("menu_depth1", "13");
+			mv.addObject("menu_depth2", "1");
+			mv.addObject("title", "라이센스등록");
+			//페이징처리
+			mv.addObject("totalCnt", totalCnt);
+			mv.addObject("paging",   commonDto);
+			
+			System.out.println("paging : " + commonDto.getPageNo());
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			mv.setViewName("/error/error");
+		}	
+		return mv;
     }
     
+	/**
+	 * S/W 라이센스 리스트
+	 * @return
+	 */
+    @RequestMapping("/swmng.do")
+    public ModelAndView swmng(BoardDto commonDto, HttpServletRequest request) throws Exception{
+		ModelAndView mv = new ModelAndView();
+		
+		try{
+			
+			List<BoardDto> noticeList = null;
+			
+			int totalCnt = 0;
+			commonDto.setBbsid("10029");		// 소프트웨어관리
+
+			noticeList = boardService.getSelectBoardList(commonDto);
+			totalCnt = boardService.getSelectBoardListCnt(commonDto);
+
+			mv.setViewName("/board/swlist");
+			mv.addObject("noticeList", noticeList);	
+			
+			mv.addObject("bbsid", "10029");
+			mv.addObject("menu_depth1", "13");
+			mv.addObject("menu_depth2", "2");
+			mv.addObject("title", "소프트웨어관리");
+			//페이징처리
+			mv.addObject("totalCnt", totalCnt);
+			mv.addObject("paging",   commonDto);
+			
+			System.out.println("paging : " + commonDto.getPageNo());
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			mv.setViewName("/error/error");
+		}	
+		return mv;
+    }    
    
 	/**
 	 * 다운로드 > 공개소프트웨어 리스트 조회 

@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="PrintReq">    
+    <typeAlias alias="PrintReqDto" type="kr.co.neodreams.multi_user.dto.PrintReqDto"/>
+    
+    <select id="PrintReq#getPrintList" parameterClass="PrintReqDto" resultClass="PrintReqDto">
+        <![CDATA[
+            SELECT 
+                   SEQ, REQ_SIZE, SIZE_ETC, REQ_HEIGHT, HEIGHT_ETC, CONTENT,  
+                   REG_ID,   REG_NM,   REG_IP, convert(nchar(10) , REG_DT ,120 ) as REG_DT, 
+                   DEL_YN, APRV_ID, APRV_IP, APRV_STATUS, convert(nchar(10) , APRV_DT ,120 ) as APRV_DT, 
+                   MEMO
+            FROM [TB_PRINT_REQ]
+            WHERE 1=1
+        ]]>
+
+        <isNotEmpty prepend="and" property="searchString">
+                (Content LIKE '%$searchString$%')
+        </isNotEmpty>                 
+               
+        order by REG_DT desc
+        OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+    </select>
+    
+  
+	<resultMap class="kr.co.neodreams.multi_user.dto.PrintReqDto" id="printResult">
+		<result property="seq" 			column="seq"/>
+		<result property="req_size" 	column="bbsid"/>
+		<result property="size_etc" 	column="categ"/>
+		<result property="req_height" 	column="subject"/>
+		<result property="height_etc"	column="content"/>
+		<result property="content" 		column="writer"/>
+		<result property="reg_id" 		column="wtime"/>
+		<result property="reg_nm" 		column="hit"/>
+		<result property="reg_ip" 		column="freq"/>
+		<result property="reg_dt" 		column="usertel"/>
+		<result property="del_yn" 		column="sts"/>
+		<result property="aprv_id" 		column="userid"/>
+		<result property="aprv_status" 	column="userid"/>
+		<result property="aprv_dt" 		column="userid"/>
+		<result property="aprv_memo" 	column="userid"/>
+		<result property="attachList" 	column="{seq=seq, freq=freq}" select="PrintReq#getAttatchList" />
+	</resultMap>
+	
+	<resultMap class="kr.co.neodreams.multi_user.dto.PrintReqDto" id="attatchResult" >
+		<result property="seq" 			column="seq"/>
+		<result property="freq" 		column="freq"/>
+		<result property="bbsid" 		column="bbsid"/>
+		<result property="filename" 	column="filename"/>
+		<result property="phy_path"		column="phy_path"/>
+	</resultMap>   
+  
+  
+    <select id="PrintReq#getPrintReqDetail" resultMap="printResult">
+            SELECT 
+                   SEQ, REQ_SIZE, SIZE_ETC, REQ_HEIGHT, HEIGHT_ETC, CONTENT,  
+                   REG_ID,   REG_NM,   REG_IP, convert(nchar(10) , REG_DT ,120 ) as REG_DT, 
+                   DEL_YN, APRV_ID, APRV_IP, APRV_STATUS, convert(nchar(10) , APRV_DT ,120 ) as APRV_DT, 
+                   MEMO
+              FROM [TB_PRINT_REQ]
+             WHERE SEQ = #seq# 	
+    </select>
+    
+	<select id="PrintReq#getAttatchList" resultMap="attatchResult">
+		SELECT
+			a.seq,
+			a.freq, 
+			a.bbsid, 
+			b.filename, 
+			b.phy_path
+		FROM
+			SPLAZA_Attatch a
+		INNER JOIN SPLAZA_FILEINFO b ON a.freq = b.freq 
+		WHERE
+			a.seq = #seq#
+		<isNotNull property="freq">
+			<isNotEqual property="freq" compareValue="0" prepend="AND">
+			b.freq = #freq#
+			</isNotEqual>
+		</isNotNull>
+	</select>    
+
+    <select id="PrintReq#getPrintListCnt" parameterClass="PrintReqDto" resultClass="int">
+        <![CDATA[
+            SELECT count(*) as totalCnt
+            FROM [TB_PRINT_REQ]
+            WHERE
+                  1=1
+        ]]>
+        <isNotEmpty prepend="and" property="searchString">
+                Content LIKE '%$searchString$%')
+        </isNotEmpty>
+    </select>
+    
+    <insert id="PrintReq#printInsert">
+		<selectKey keyProperty="seq" resultClass="int">
+			SELECT COALESCE(max(seq), 0)+1 FROM TB_PRINT_REQ
+		</selectKey>
+		INSERT INTO TB_PRINT_REQ (
+			seq,        req_size,     size_etc,     req_height,    height_etc,     content, 
+			reg_id,     reg_nm,       reg_ip,        reg_dt,       del_yn,         aprv_status
+		) VALUES (
+			#seq#,	     #req_size#,   #size_etc#,   #req_height#,  #height_etc#,   #content#, 
+			#reg_id#,    #reg_nm#,     #reg_ip#,     getDate(),    'N',            'R'
+		)
+	</insert>		
+	
+	<insert id="PrintReq#printAttatchInsert" parameterClass="java.util.ArrayList">
+		INSERT INTO SPLAZA_ATTATCH(
+			FREQ,				SEQ,      BBSID
+		)VALUES
+		<iterate conjunction=",">
+		(
+			#List[].freq#,	#List[].seq#,   #List[].bbsid#
+		)
+		</iterate>
+	</insert>
+	
+	<update id="PrintReq#printUpdate">
+		UPDATE 
+			TB_PRINT_REQ 
+		SET
+			REQ_SIZE = #req_size#,
+			SIZE_ETC = #size_etc#,
+			REQ_HEIGHT = #req_height#,
+			HEIGHT_ETC = #height_etc#,			
+			CONTENT = #content#
+		WHERE
+			  seq = #seq#
+	</update>	
+	
+	<update id="PrintReq#printUpdateSts">
+		UPDATE 
+			TB_PRINT_REQ 
+		SET
+			aprv_id  = #aprv_id#,
+			aprv_ip  = #aprv_ip#,
+			aprv_sts = #aprv_sts#,
+			aprv_dt  = getDate(),
+			memo     = #memo#
+		WHERE
+			  seq = #seq#
+	</update>	
+	
+	<select id="PrintReq#garbageAttatch" resultClass="PrintReqDto">
+		SELECT
+			ISNULL(b.seq, 0) AS seq,
+			a.freq, 
+			a.filename, 
+			a.phy_path, 
+			b.bbsid
+		FROM 
+			SPLAZA_FILEINFO a LEFT JOIN SPLAZA_Attatch b ON a.freq = b.freq
+		WHERE
+			<isNotEqual property="seq" compareValue="0" >
+			b.seq = #seq#
+				<isNotEqual property="freq" compareValue="0" prepend="AND" >
+				a.freq = #freq#
+				</isNotEqual>
+			</isNotEqual>
+			<isEqual property="seq" compareValue="0" >
+				<isNotEqual property="freq" compareValue="0" >
+					a.freq = #freq#
+				</isNotEqual>
+				<isEqual property="freq" compareValue="0" >
+				b.seq IS NULL
+				</isEqual>
+			</isEqual>
+	</select>	
+	
+	<delete id="PrintReq#printDelete">
+		DELETE FROM TB_PRINT_REQ WHERE seq = #seq#
+	</delete>
+	
+	<delete id="PrintReq#attatchDelete">
+		DELETE FROM SPLAZA_Attatch WHERE seq = #seq# and bbsid=#bbsid#
+	</delete>
+		
+	<delete id="PrintReq#printFileDelete">
+		<isEqual property="seq" compareValue="0" >
+			<isNotEqual property="freq" compareValue="0" >
+				DELETE FROM SPLAZA_FILEINFO WHERE freq = #freq#;
+			</isNotEqual>
+		</isEqual>
+		
+		<isNotEqual property="seq" compareValue="0" >
+			<isEqual property="freq" compareValue="0" >
+			DELETE FROM SPLAZA_FILEINFO WHERE freq IN (SELECT freq FROM SPLAZA_Attatch WHERE seq = #seq#);
+			DELETE FROM SPLAZA_Attatch WHERE seq = #seq#;
+			</isEqual>
+		</isNotEqual>
+		
+		<isNotEqual property="seq" compareValue="0" >
+			<isNotEqual property="freq" compareValue="0" >
+				DELETE FROM SPLAZA_FILEINFO WHERE freq = #freq#;
+				DELETE FROM SPLAZA_Attatch WHERE seq = #seq# AND freq = #freq#;
+			</isNotEqual>
+		</isNotEqual>
+	</delete>		
+	
+	  
+  
+  	<typeAlias alias="PhotoReqDto" type="kr.co.neodreams.multi_user.dto.PhotoReqDto"/>
+  	
+    <select id="PrintReq#getPhotoList" parameterClass="PhotoReqDto" resultClass="PhotoReqDto">
+        <![CDATA[
+            SELECT 
+                   SEQ, REQ_TYPE, REQ_CONTENT,  
+                   REG_ID,   REG_NM,   REG_IP, convert(nchar(10) , REG_DT ,120 ) as REG_DT, 
+                   DEL_YN, APRV_ID, APRV_IP, APRV_STATUS, convert(nchar(10) , APRV_DT ,120 ) as APRV_DT, 
+                   MEMO
+            FROM [TB_PHOTO_REQ]
+            WHERE 1=1
+        ]]>
+
+        <isNotEmpty prepend="and" property="searchString">
+                (REQ_CONTENT LIKE '%$searchString$%')
+        </isNotEmpty>                 
+               
+        order by REG_DT desc
+        OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+    </select> 
+    
+    <select id="PrintReq#getPhotoReqDetail" resultClass="PhotoReqDto">
+            SELECT 
+                   SEQ, REQ_TYPE, REQ_CONTENT,  
+                   REG_ID,   REG_NM,   REG_IP, convert(nchar(10) , REG_DT ,120 ) as REG_DT, 
+                   DEL_YN, APRV_ID, APRV_IP, APRV_STATUS, convert(nchar(10) , APRV_DT ,120 ) as APRV_DT, 
+                   MEMO
+              FROM [TB_PHOTO_REQ]
+             WHERE SEQ = #seq# 	
+    </select>   
+    
+        
+    <select id="PrintReq#getPhotoListCnt" parameterClass="PhotoReqDto" resultClass="int">
+        <![CDATA[
+            SELECT count(*) as totalCnt
+            FROM [TB_PHOTO_REQ]
+            WHERE
+                  1=1
+        ]]>
+        <isNotEmpty prepend="and" property="searchString">
+                Content LIKE '%$searchString$%')
+        </isNotEmpty>
+    </select>
+    
+    <insert id="PrintReq#photoInsert">
+		<selectKey keyProperty="seq" resultClass="int">
+			SELECT COALESCE(max(seq), 0)+1 FROM TB_PHOTO_REQ
+		</selectKey>
+		INSERT INTO TB_PHOTO_REQ (
+			seq,        req_type,     req_content, 
+			reg_id,     reg_nm,       reg_ip,        reg_dt,       del_yn,         aprv_status
+		) VALUES (
+			#seq#,	     #req_type#,   #req_content#,  
+			#reg_id#,    #reg_nm#,     #reg_ip#,     getDate(),    'N',            'R'
+		)
+	</insert>	
+	
+	<update id="PrintReq#photoUpdate">
+		UPDATE 
+			TB_PHOTO_REQ 
+		SET
+			REQ_TYPE    = #req_type#,
+			REQ_CONTENT = #req_content#
+		WHERE
+			  seq = #seq#
+	</update>	
+	
+	<update id="PrintReq#photoUpdateSts">
+		UPDATE 
+			TB_PHOTO_REQ 
+		SET
+			aprv_id  = #aprv_id#,
+			aprv_ip  = #aprv_ip#,
+			aprv_sts = #aprv_sts#,
+			aprv_dt  = getDate(),
+			memo     = #memo#
+		WHERE
+			  seq = #seq#
+	</update>
+	
+	<delete id="PrintReq#photoDelete">
+		DELETE FROM TB_PHOTO_REQ WHERE seq = #seq#
+	</delete>			            
+    
+</sqlMap>

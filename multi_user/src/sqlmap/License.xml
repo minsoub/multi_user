@@ -1,54 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
-<sqlMap namespace="BoardDto">
-    <typeAlias alias="BoardDto" type="kr.co.neodreams.multi_user.dto.BoardDto"/>
+<sqlMap namespace="License">
+    <typeAlias alias="LicenseDto" type="kr.co.neodreams.multi_user.dto.LicenseDto"/>
+    <typeAlias alias="SwmngDto" type="kr.co.neodreams.multi_user.dto.SwmngDto"/>
 
-    <select id="Board#getSelectBoardList" parameterClass="BoardDto" resultClass="BoardDto">
+    <select id="License#getSwList" parameterClass="SwmngDto" resultClass="SwmngDto">
         <![CDATA[
-            SELECT seq,subject, writer, convert(nchar(10) , WTIME ,120 ) as wtime ,hit, categ, sts
-            FROM [SPLAZA_BOARD]
+            SELECT 
+                   SW_ID,   SW_NAME,  LEVEL1,  LEVEL2,  LEVEL3, 
+                   CONTENT, REG_ID,   REG_NM,   REG_IP, convert(nchar(10) , REG_DT ,120 ) as REG_DT, 
+                   DEL_YN
+            FROM [TB_SW_MNG]
             WHERE
         ]]>
-        <![CDATA[
-                YEAR ( WTIME) > 2014
-        ]]>
+
         <isNotEmpty prepend="and" property="searchString">
-                (Subject LIKE '%$searchString$%'
+                (SW_NMG LIKE '%$searchString$%'
                 or Content LIKE '%$searchString$%')
         </isNotEmpty>
-        <isNotEmpty prepend="and" property="categ">
-                categ = #categ#
+        <isNotEmpty prepend="and" property="level1">
+                LEVEL1 = #level1#
         </isNotEmpty>        
-        
-        	AND BBSID = #bbsid#                
-        order by WTIME desc
+        <isNotEmpty prepend="and" property="level2">
+                LEVEL2 = #level2#
+        </isNotEmpty> 
+        <isNotEmpty prepend="and" property="level3">
+                LEVEL3 = #level3#
+        </isNotEmpty>                 
+               
+        order by REG_DT desc
         OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
          FETCH NEXT #perPageCnt# ROWS ONLY
     </select>
     
-	<resultMap class="kr.co.neodreams.multi_user.dto.BoardDto" id="bbsResult">
-		<result property="seq" 			column="seq"/>
-		<result property="bbsid" 		column="bbsid"/>
-		<result property="categ" 		column="categ"/>
-		<result property="subject" 		column="subject"/>
-		<result property="content"	 	column="content"/>
-		<result property="writer" 		column="writer"/>
-		<result property="wtime" 		column="wtime"/>
-		<result property="hit" 			column="hit"/>
-		<result property="freq" 		column="freq"/>
-		<result property="usertel" 		column="usertel"/>
-		<result property="sts" 			column="sts"/>
-		<result property="userid" 		column="userid"/>
-		<result property="attachList" 	column="{seq=seq, freq=freq}" select="Board#getAttatchList" />
+	<resultMap class="kr.co.neodreams.multi_user.dto.SwmngDto" id="swResult">
+		<result property="sw_id" 		column="sw_id"/>
+		<result property="sw_name" 		column="sw_name"/>
+		<result property="level1" 		column="level1"/>
+		<result property="level2" 		column="level2"/>
+		<result property="level3"	 	column="level3"/>
+		<result property="content" 		column="content"/>
+		<result property="reg_id" 		column="reg_id"/>
+		<result property="reg_nm" 		column="reg_nm"/>
+		<result property="reg_ip" 		column="reg_ip"/>
+		<result property="reg_dt" 		column="reg_dt"/>
+		<result property="del_yn" 		column="del_yn"/>
 	</resultMap>
 	
-	<resultMap class="kr.co.neodreams.multi_user.dto.BoardDto" id="attatchResult" >
+	<resultMap class="kr.co.neodreams.multi_user.dto.LicenseDto" id="licenseResult">
 		<result property="seq" 			column="seq"/>
-		<result property="freq" 		column="freq"/>
-		<result property="bbsid" 		column="bbsid"/>
-		<result property="filename" 	column="filename"/>
-		<result property="phy_path"		column="phy_path"/>
-	</resultMap>    
+		<result property="sw_id" 		column="sw_id"/>
+		<result property="ver_nm" 		column="ver_nm"/>
+		<result property="qty" 			column="qty"/>
+		<result property="content" 		column="content"/>
+		<result property="reg_id" 		column="reg_id"/>
+		<result property="reg_nm" 		column="reg_nm"/>
+		<result property="reg_ip" 		column="reg_ip"/>
+		<result property="reg_dt" 		column="reg_dt"/>
+		<result property="del_yn" 		column="del_yn"/>
+	</resultMap>       
+    
+    <select id="License#getLicenseList" parameterClass="LicenseDto" resultClass="LicenseDto">
+        <![CDATA[
+            SELECT 
+                   b.SEQ,     b.SW_ID,     b.VER_NM,      b.QTY, 
+                   b.CONTENT, b.REG_ID,    b.REG_NM,      b.REG_IP, 
+                   convert(nchar(10) , b.REG_DT ,120 ) as REG_DT,  b.DEL_YN
+              FROM TB_LICENSE a, TB_LICENSE b
+             WHERE
+        ]]>
+
+        <isNotEmpty prepend="and" property="searchString">
+                (b.VER_NM LIKE '%$searchString$%'
+                or b.Content LIKE '%$searchString$%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="level1">
+                a.LEVEL1 = #level1#
+        </isNotEmpty>        
+        <isNotEmpty prepend="and" property="level2">
+                a.LEVEL2 = #level2#
+        </isNotEmpty> 
+        <isNotEmpty prepend="and" property="level3">
+                a.LEVEL3 = #level3#
+        </isNotEmpty>                 
+               
+        order by a.REG_DT desc
+        OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+    </select>    
+    
+
     
     <select id="Board#getSelectBoardDetail" resultMap="bbsResult">
             SELECT 

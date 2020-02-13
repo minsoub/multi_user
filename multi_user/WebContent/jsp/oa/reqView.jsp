@@ -119,8 +119,11 @@
 								</div>
 								<div class="btn-zone">
 									<ul>
-										<li><input type="submit" class="search_btn" value="수정" onclick="goUpdate(); return false;"></li>
+									<!-- 내가 쓴글 또는 관리자인 경우 -->
+									<c:if test="${isGetAdmin != null or SESS_EMPNO eq boardInfo.userid}">
+										<li><input type="submit" class="search_btn" value="수정" onclick="goUpdate(); return false;"></li>									
 										<li><input type="submit" class="search_btn" value="삭제" onclick="goDelete(); return false;"></li>
+									</c:if>
 										<li><input type="button" onclick="goList();" class="search_btn" value="목록"></li>
 									</ul>
 								</div>

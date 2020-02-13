@@ -138,5 +138,15 @@ public class BoardDao  extends BaseDao {
 	 */
 	public BoardDto getAttatch(BoardDto boardDto) {
 		return (BoardDto) select("Board#getAttatchList", boardDto);
+	}
+	
+	/**
+	 * 관리자 상태 값 업데이트 (출력요청, 사진촬영)
+	 * 
+	 * @param boardDto
+	 * @return
+	 */
+	public int boardStsUpdate(BoardDto boardDto) {
+		return update("Board#boardStsUpdate", boardDto);
 	}	
 }

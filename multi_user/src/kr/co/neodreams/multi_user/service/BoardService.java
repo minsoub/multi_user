@@ -93,4 +93,13 @@ public interface BoardService {
 	 * @throws Exception
 	 */
 	public int boardFileDelete(BoardDto boardDto) throws Exception;
+	
+    /**
+     * 관리자 상태 값 업데이트 (출력요청, 사진촬영)
+     * 
+     * @param boardDto
+     * @return
+     * @throws Exception
+     */
+    public int boardStsUpdate(BoardDto boardDto) throws Exception;
 }
