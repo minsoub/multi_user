@@ -11,9 +11,13 @@ public class ItBaseDto {
 	
 	private String sort;			// 정렬조건
 	private int menuID;
+	private String bbsid;			// 게시판구분 : 10028 플로터요청  10029  사진촬영
 	
 	private String reg_id;			// 등록자 ID
 	private String reg_nm;			// 등록자명
+	private String reg_dept_nm;		// 등록자부서명 
+	private String reg_tel;			// 등록자 전화번호
+	private String reg_email;		// 등록자 메일주소
 	private String reg_ip;			// 등록자 IP
 	private String reg_dt;			// 등록일자
 	private String del_yn;			// 삭제여부
@@ -22,6 +26,38 @@ public class ItBaseDto {
 	private String aprv_status;		// 처리 상태
 	private String aprv_dt;			// 승인일자
 	private String memo;			// 승인 메모
+	
+	public ItBaseDto()
+	{
+		this.pageNo = 1;
+		this.perPageCnt = 10;
+		this.pageRange = 10;
+		this.sort = "";
+	}
+	public String getBbsid() {
+		return bbsid;
+	}
+	public void setBbsid(String bbsid) {
+		this.bbsid = bbsid;
+	}
+	public String getReg_dept_nm() {
+		return reg_dept_nm;
+	}
+	public void setReg_dept_nm(String reg_dept_nm) {
+		this.reg_dept_nm = reg_dept_nm;
+	}
+	public String getReg_tel() {
+		return reg_tel;
+	}
+	public void setReg_tel(String reg_tel) {
+		this.reg_tel = reg_tel;
+	}
+	public String getReg_email() {
+		return reg_email;
+	}
+	public void setReg_email(String reg_email) {
+		this.reg_email = reg_email;
+	}
 	public int getPageNo() {
 		return pageNo;
 	}

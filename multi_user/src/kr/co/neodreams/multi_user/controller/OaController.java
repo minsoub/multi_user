@@ -31,8 +31,10 @@ import kr.co.neodreams.multi_user.common.CommonUtil;
 import kr.co.neodreams.multi_user.common.StringUtil;
 import kr.co.neodreams.multi_user.dto.BoardDto;
 import kr.co.neodreams.multi_user.dto.OaDto;
+import kr.co.neodreams.multi_user.dto.PrintReqDto;
 import kr.co.neodreams.multi_user.service.BoardService;
 import kr.co.neodreams.multi_user.service.OaService;
+import kr.co.neodreams.multi_user.service.PrintReqService;
 
 /**
  * OA 교육장 Controller Class
@@ -50,6 +52,9 @@ public class OaController extends BaseController{
 	
 	@Autowired
 	BoardService boardService;	
+	
+	@Autowired
+	PrintReqService prtService;
 	
     @Resource(name = "commonUtil")
     private CommonUtil commonUtil;
@@ -348,29 +353,77 @@ public class OaController extends BaseController{
 	 * @throws Exception
 	 */
 	@RequestMapping("/printlist.do")
-	public ModelAndView printlist(BoardDto commonDto, HttpServletRequest request) throws Exception{
+	public ModelAndView printlist(PrintReqDto commonDto, HttpServletRequest request) throws Exception{
 	
 		ModelAndView mv = new ModelAndView();
 		
 		try{
 			
-			List<BoardDto> noticeList = null;
+			List<PrintReqDto> noticeList = null;
 			
 			int totalCnt = 0;
-			commonDto.setBbsid("10028");		// 출력요청
-
-			noticeList = boardService.getSelectBoardList(commonDto);
-			totalCnt = boardService.getSelectBoardListCnt(commonDto);
+			commonDto.setBbsid("10028");		// 플로터출력
 			
-			mv.setViewName("/oa/reqList");
+			// 검색 조건에서 출력 타입
+			if (commonDto.getSts2() != null || commonDto.getSts3() != null || commonDto.getSts4() != null || commonDto.getSts5() != null)
+			{
+				List<String> arrList = new ArrayList<String>();
+				if (commonDto.getSts2() != null)
+					arrList.add("'"+commonDto.getSts2()+"'");
+				if (commonDto.getSts3() != null)
+					arrList.add("'"+commonDto.getSts3()+"'");
+				if (commonDto.getSts4() != null)
+					arrList.add("'"+commonDto.getSts4()+"'");
+				if (commonDto.getSts5() != null)
+					arrList.add("'"+commonDto.getSts5()+"'");
+
+				commonDto.setStsList(arrList);
+			}
+
+			noticeList = prtService.getPrintList(commonDto);
+			totalCnt = prtService.getPrintListCnt(commonDto);
+			
+			mv.setViewName("/oa/printList");
 			mv.addObject("noticeList", noticeList);
 			
 			mv.addObject("bbsid", "10028");
 			mv.addObject("menu_depth1", "2");
 			mv.addObject("menu_depth2", "4");
-			mv.addObject("title", "출력요청");
+			mv.addObject("title", "플로터출력");
 			//페이징처리
 			mv.addObject("totalCnt", totalCnt);
+			mv.addObject("paging", commonDto);
+					
+		}catch(Exception e){
+			e.printStackTrace();
+			mv.setViewName("/error/error");
+		}	
+		return mv;
+	} 
+	
+	/**
+	 * 플로터 출력 요청 폼 
+	 * 
+	 * @param commonDto
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/printWrite.do")
+	public ModelAndView printWrite(PrintReqDto commonDto, HttpServletRequest request) throws Exception{
+	
+		ModelAndView mv = new ModelAndView();
+		
+		try{
+			int totalCnt = 0;
+			commonDto.setBbsid("10028");		// 플로터출력
+
+			mv.setViewName("/oa/printWrite");
+
+			mv.addObject("bbsid", "10028");
+			mv.addObject("menu_depth1", "2");
+			mv.addObject("menu_depth2", "4");
+			mv.addObject("title", "플로터출력");
 			mv.addObject("paging", commonDto);
 			
 		}catch(Exception e){
@@ -378,7 +431,39 @@ public class OaController extends BaseController{
 			mv.setViewName("/error/error");
 		}	
 		return mv;
-	} 	
+	} 
+	
+	/**
+	 * 플로터 출력요청을 저장한다.
+	 * 
+	 * @param req
+	 * @param res
+	 * @param boardDto
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping("/registPrint.do")
+	public void registPrint(HttpServletRequest req, HttpServletResponse res, PrintReqDto dto) throws Exception{
+		String retVal = "0";
+		
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
+		
+		try{
+			// IP
+			String ip = req.getRemoteAddr();
+			dto.setReg_ip(ip);
+			retVal = Integer.toString(prtService.printInsert(dto));
+			System.out.println("retVal : " + retVal);
+			dataSourceTransactionManager.commit(status);
+		}catch (Exception e) {
+			retVal = "-1";
+			dataSourceTransactionManager.rollback(status);
+		}finally {
+			res.getWriter().write(retVal);
+		}
+	}
 	
 	/**
 	 * 사진촬영 리스트 조회

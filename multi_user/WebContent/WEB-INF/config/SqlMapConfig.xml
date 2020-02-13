@@ -8,6 +8,7 @@
     <sqlMap resource="/sqlmap/Common.xml"/>
     <sqlMap resource="/sqlmap/Board.xml"/>
     <sqlMap resource="/sqlmap/OA.xml"/>
+    <sqlMap resource="/sqlmap/PrintReq.xml"/>
     <sqlMap resource="/sqlmap/Broadcast.xml"/>
     <sqlMap resource="/sqlmap/Contents.xml"/>
     <sqlMap resource="/sqlmap/Statistics.xml"/>

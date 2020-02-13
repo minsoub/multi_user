@@ -46,12 +46,17 @@
 					<div class="nav-list">
 						<img src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;서비스요청&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">${title}</b>
 					</div>
-					<div class="nav-title">${title}</div>
+					<div class="nav-title">${title}</div>					
 				</div>
-				<div class="sub-nav-title">${title}</div>
+				<div class="sub-nav-title">출력요청</div>
+				
 
-				<div class="basic-list">
-					
+			<div class="tabNav sub5">
+				<li><a href="#"  class="active">출력요청</a></li>
+				<li><a href="javascript:goList();">진행사항</a></li>
+			</div>	
+			
+				<div class="basic-list">					
 						<div class="insrtfrom-framebox">
 							<div class="insert-step1-box">
 								<div class="form-step1">
@@ -61,27 +66,67 @@
 										<form id="frm" name="frm" method="post">
 											<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo}" />
 											<input type="hidden" id="bbsid" name="bbsid" value="${bbsid}" />
-											<input type="hidden" id="userid" name="userid" value="${SESS_EMPNO}" />
-											<input type="hidden" id="writer" name="writer" value="${SESS_USER_NAME}" />
+											<input type="hidden" id="seq" name="seq" value="0" />	
+											<input type="hidden" id="reg_id" name="reg_id" value="${SESS_EMPNO}" />
+											
 											<dl class="insert_ready">
-												<dt class="must-option"><label>직원번호</label></dt>
-												<dd style="width: 200px;">${SESS_EMPNO }</dd>
+												<dt class="must-option"><label>신청부서</label></dt>
+												<dd style="width: 150px;"><input type="text" id="reg_dept_nm" name="reg_dept_nm" value="${SESS_USER_INFO.user_dept_name }" readonly></dd>
+												<dt class="must-option"><label>신청자</label></dt>
+												<dd style="width: 150px;"><input type="text" id="reg_nm" name="reg_nm" value="${SESS_USER_NAME}" readonly></dd>
 											</dl>																					
 											<dl class="insert_ready">
-												<dt class="must-option"><label>성명</label></dt>
-												<dd style="width: 200px;">${SESS_USER_NAME }</dd>
-											</dl>												
+												<dt class="must-option"><label>전화번호</label></dt>
+												<dd style="width: 150px;"><input type="text" id="reg_tel" name="reg_tel" value="${SESS_USER_TELNO}" readonly></dd>
+
+												<dt class="must-option"><label>E-MAIL</label></dt>
+												<dd style="width: 150px;"><input type="text" id="reg_email" name="reg_email" value="${SESS_USER_TELNO}" readonly></dd>
+											</dl>	
+											
 											<dl class="insert_ready">
-												<dt class="must-option"><label>연락처</label></dt>
-												<dd style="width: 200px;">${SESS_USER_TELNO }</dd>
-											</dl>												
+												<dt class="must-option"><label>출력요청일</label></dt>
+												<dd style="width:150px;"><input type="text" name="prt_req_dt" id="prt_req_dt" readonly="readonly"/></dd>
+												<dt class="must-option"><label>희망 요청완료일</label></dt>
+												<dd style="width:150px;"><input type="text" name="want_req_dt" id="want_req_dt" readonly="readonly"/></dd>
+											</dl>	
+											
+																					
 											<dl class="insert_ready">
 												<dt class="must-option"><label>제목</label></dt>
-												<dd style="width: 200px;"><input type="text" id="subject" name="subject" value=""></dd>
+												<dd style="width: 300px;"><input type="text" id="subject" name="subject" value="[출력요청]"></dd>
 											</dl>
 											<dl class="insert_ready">
-												<dt class="must-option"><label>내용</label></dt>
-												<dd><textarea class="textarea-style" rows="10" cols="88" id="content" name="content" style="width: 618px;"></textarea></dd>
+												<dt class="must-option"><label>출력종류</label></dt>
+												<dd style="width: 150px;">
+													<input type="radio" id="req_type" name="req_type" value="1" checked>현수막
+													<input type="radio" id="req_type" name="req_type" value="2">A0
+													<input type="radio" id="req_type" name="req_type" value="3">A1
+													<input type="radio" id="req_type" name="req_type" value="4">A2
+													<input type="radio" id="req_type" name="req_type" value="5">기타
+												</dd>
+												<dt class="must-option"><label>출력부수</label></dt>
+												<dd style="width: 50px;"><input type="number" id="prt_cnt" name="prt_cnt" value=""></dd>
+											</dl>	
+											<dl class="insert_ready">
+												<dt class="must-option"><label>규격</label></dt>
+												<dd style="width: 120px;">
+												   <select id="prt_size" name="prt_size" onChange="javascript:PrtSizeChange(this.value);">
+												   	 <option value="">규격선택</option>
+												   	 <option value="1">24 Inch</option>
+												   	 <option value="2">36 Inch</option>
+												   	 <option value="3">42 Inch</option>
+												   	 <option value="4">기타 </option>
+												   </select>
+												</dd>
+												<dt class="must-option"><label>가로</label></dt>
+												<dd style="width: 100px;"><input type="text" id="prt_size1" name="prt_size1" readonly maxlength="6" style="width:60px;">cm</dd>
+												<dt class="must-option"><label>세로</label></dt>
+												<dd style="width: 100px;"><input type="text" id="prt_size2" name="prt_size2" readonly maxlength="6" style="width:60px;">cm</dd>												
+											</dl>																					
+																																
+											<dl class="insert_ready">
+												<dt class="must-option"><label>요청사항</label></dt>
+												<dd><textarea class="textarea-style" rows="6" cols="88" id="content" name="content" style="width: 618px;"></textarea></dd>
 											</dl>
 										</form>
 										<dl class="insert_ready" id="attatchArea">
@@ -109,7 +154,7 @@
 									<div class="btn-zone">
 										<ul>
 											<li><input type="submit" class="search_btn" value="등록" onclick="goSubmit(); return false;"></li>
-											<li><input type="button" onclick="goList();" class="search_btn" value="목록"></li>
+											<li><input type="button" onclick="goList();" class="search_btn" value="취소"></li>
 										</ul>
 									</div>
 								</fieldset>
@@ -134,7 +179,14 @@
 <script type="text/javascript">
 
 $(document).ready(function(){
-	load_fnc('6', '0', '0'); //menu script
+	load_fnc('2', '0', '0'); //menu script
+	
+	$("#prt_req_dt").datepicker({ dateFormat: 'yy-mm-dd' });
+	$("#want_req_dt").datepicker({ dateFormat: 'yy-mm-dd' });
+	
+	$('#prt_req_dt').datepicker('setDate', 'today');
+	$('#prt_req_dt').datepicker('option', 'disabled', true);	// 관리자인 경우 수정이 가능해야 한다.
+
 	$(document).on('change', 'input[name="uploadFile"]', function(event){
 		var ua = window.navigator.userAgent;
 		var rowIdx = $(this).closest('dd').index();
@@ -180,6 +232,34 @@ $(document).ready(function(){
 	});
 })
 
+function PrtSizeChange(data)
+{
+	if (data == "") {
+		$("#prt_size1").val("");
+		$("#prt_size2").val("");
+		$("#prt_size1").attr("readonly", true);
+		$("#prt_size2").attr("readonly", true);
+	}else if(data == "1") {
+		$("#prt_size1").val("");
+		$("#prt_size2").val("60.9");
+		$("#prt_size1").attr("readonly", true);
+		$("#prt_size2").attr("readonly", true);		
+	}else if(data == "2") {
+		$("#prt_size1").val("");
+		$("#prt_size2").val("91.4");
+		$("#prt_size1").attr("readonly", true);
+		$("#prt_size2").attr("readonly", true);	
+	}else if(data == "3") {
+		$("#prt_size1").val("");
+		$("#prt_size2").val("106.6");
+		$("#prt_size1").attr("readonly", true);
+		$("#prt_size2").attr("readonly", true);	
+	}else if(data == "4") {
+		$("#prt_size1").attr("readonly", false);
+		$("#prt_size2").attr("readonly", false);		
+	}
+}
+
 function goSubmit(){
 	var attatch_Ids = [];
 	var progressChk = true;
@@ -192,6 +272,25 @@ function goSubmit(){
 	})
 	
 	if(progressChk){
+		if ($("#prt_cnt").val() == "")
+		{
+			alert("출력 부수를 입력하세요!!!");
+			$("#prt_cnt").focus();
+			return false;
+		}
+		if ($("#prt_size").val() == "")
+		{
+			alert("규격은 필수입니다!!!");
+			$("#prt_size").focus();
+			return false;
+		}
+		if ($("#prt_size").val() == "4" && ($("prt_size1").val() == "" || $("prt_size2").val() == ""))
+		{
+			alert("규격이 기타일 경우 가로/세로를 입력하셔야 합니다!!!");
+			$("#prt_size").focus();
+			return false;
+		}
+		
 		if($.trim($('#subject').val()) == ''){
 			alert('제목을 작성해주세요.');
 			$('#subject').focus();
@@ -205,25 +304,35 @@ function goSubmit(){
 		});
 		var params = {
 				"freqs" : attatch_Ids.join('|'),
-				"writer": $('#writer').val(),
-				"userid": $('#userid').val(),
-				"bbsid" : "${bbsid}",
-				"subject" : $('#subject').val(),
+				"subject": $('#subject').val(),
+				"prt_req_dt": $('#prt_req_dt').val(),
+				"want_req_dt" : $('#want_req_dt').val(),
+				"req_type" : $('#req_type').val(),
+				"prt_cnt" : $('#prt_cnt').val(),
+				"prt_size" : $('#prt_size').val(),
+				"prt_size1" : $('#prt_size1').val(),
+				"prt_size2" : $('#prt_size2').val(),						
 				"content" : escapeHtml($('#content').text()),
+				"reg_id" : $('#reg_id').val(),
+				"reg_nm" : $('#reg_nm').val(),
+				"reg_dept_nm" :  $('#reg_dept_nm').val(), 
+				"reg_tel" : $("#reg_tel").val(),
+				"reg_email" : $("#reg_email").val(),
+				"aprv_status" : "R"
 		}
 		
 		if(confirm('등록하시겠습니까?')){
 			$.ajax({
 				type : 'post',
-				url : '/registBoard.do',	// 공통으로 사용한다.=> BoardController
+				url : '/registPrint.do',	
 				dataType : 'json',
 				data : params,
 				success : function(result){					
 					alert('등록되었습니다.' + result);
 		// 작업필요		
-					$('#frm').append('<input type="hidden" name="seq" value="'+result+'" />');
-					$('#frm').attr('action', '/reqDetail.do');
-					$('#frm').submit();
+			//		$('#frm').append('<input type="hidden" name="seq" value="'+result+'" />');
+			//		$('#frm').attr('action', '/printDetail.do');
+			//		$('#frm').submit();
 				},
 				error : function(e){
 				}
@@ -331,11 +440,7 @@ function escapeHtml (string) {
 } 
 
 function goList(){
-	if ("${bbsid}" == "10028") {
-		$('#frm').attr('action', '/printlist.do');
-	}else {
-		$('#frm').attr('action', '/photolist.do');
-	}
+	$('#frm').attr('action', '/printlist.do');
 	$('#frm').submit();
 }
 

@@ -6,16 +6,42 @@
     <select id="PrintReq#getPrintList" parameterClass="PrintReqDto" resultClass="PrintReqDto">
         <![CDATA[
             SELECT 
-                   SEQ, REQ_SIZE, SIZE_ETC, REQ_HEIGHT, HEIGHT_ETC, CONTENT,  
-                   REG_ID,   REG_NM,   REG_IP, convert(nchar(10) , REG_DT ,120 ) as REG_DT, 
-                   DEL_YN, APRV_ID, APRV_IP, APRV_STATUS, convert(nchar(10) , APRV_DT ,120 ) as APRV_DT, 
-                   MEMO
+                   SEQ,  SUBJECT,  PRT_REQ_DT,  WANT_REQ_DT,  REQ_TYPE, 
+                   REG_NM, REG_ID, APRV_STATUS, 
+                   CASE REQ_TYPE WHEN '1' THEN '현수막'
+                                 WHEN '2' THEN 'A2'
+                                 WHEN '3' THEN 'A1'
+                                 WHEN '4' THEN 'A0'
+                                 WHEN '5' THEN '기타'
+                   END REQ_TYPE_NM,
+                   CASE APRV_STATUS WHEN 'R' THEN '신청'
+                                    WHEN 'Y' THEN '진행'
+                                    WHEN 'A' THEN '완료'
+                                    WHEN 'C' THEN '취소'
+                   END APRV_STATUS_NM                 
             FROM [TB_PRINT_REQ]
             WHERE 1=1
-        ]]>
-
+        ]]>  
+        <isNotEmpty prepend="and" property="stsList">                   
+					<iterate  prepend=" APRV_STATUS in  " property="stsList" open="(" close=")" conjunction="," >
+       					$stsList[]$
+       				</iterate>   
+  		</isNotEmpty>
+        
+        <isNotEmpty prepend="and" property="req_type">
+                REQ_TYPE = #req_type#
+        </isNotEmpty>  
+       
+       	<isNotEmpty property="searchFromDt">
+       	   <isNotEmpty prepend="AND" property="searchToDt">
+                    <![CDATA[
+                       CONVERT(date, PRT_REQ_DT)) BETWEEN  CONVERT(date, #searchFromDt#) AND CONVERT(date, #searchToDt#)
+                    ]]>                         
+           </isNotEmpty> 
+       	</isNotEmpty>
+            
         <isNotEmpty prepend="and" property="searchString">
-                (Content LIKE '%$searchString$%')
+                (Content LIKE '%$searchString$%' or SUBJECT LIKE '%$searchString$%')
         </isNotEmpty>                 
                
         order by REG_DT desc
@@ -26,20 +52,27 @@
   
 	<resultMap class="kr.co.neodreams.multi_user.dto.PrintReqDto" id="printResult">
 		<result property="seq" 			column="seq"/>
-		<result property="req_size" 	column="bbsid"/>
-		<result property="size_etc" 	column="categ"/>
-		<result property="req_height" 	column="subject"/>
-		<result property="height_etc"	column="content"/>
-		<result property="content" 		column="writer"/>
-		<result property="reg_id" 		column="wtime"/>
-		<result property="reg_nm" 		column="hit"/>
+		<result property="subject" 		column="subject"/>
+		<result property="prt_req_dt" 	column="prt_req_dt"/>
+		<result property="want_req_dt" 	column="want_req_dt"/>
+		<result property="req_type"		column="req_type"/>
+		<result property="prt_cnt"		column="prt_cnt"/>
+		<result property="prt_size"		column="prt_size"/>
+		<result property="prt_size1"	column="prt_size1"/>
+		<result property="prt_size2"	column="prt_size2"/>
+		<result property="content" 		column="content"/>
+		<result property="reg_id" 		column="reg_id"/>
+		<result property="reg_nm" 		column="reg_nm"/>
+		<result property="reg_dept_nm" 	column="reg_dept_nm"/>
+		<result property="reg_tel" 		column="reg_tel"/>
+		<result property="reg_email" 	column="reg_email"/>
 		<result property="reg_ip" 		column="freq"/>
 		<result property="reg_dt" 		column="usertel"/>
 		<result property="del_yn" 		column="sts"/>
-		<result property="aprv_id" 		column="userid"/>
-		<result property="aprv_status" 	column="userid"/>
-		<result property="aprv_dt" 		column="userid"/>
-		<result property="aprv_memo" 	column="userid"/>
+		<result property="aprv_id" 		column="aprv_id"/>
+		<result property="aprv_status" 	column="aprv_status"/>
+		<result property="aprv_dt" 		column="aprv_dt"/>
+		<result property="memo" 		column="memo"/>
 		<result property="attachList" 	column="{seq=seq, freq=freq}" select="PrintReq#getAttatchList" />
 	</resultMap>
 	
@@ -88,9 +121,25 @@
             WHERE
                   1=1
         ]]>
+        <isNotEmpty prepend="and" property="aprv_status">
+                APRV_STATUS in ( #aprv_status# ) 
+        </isNotEmpty> 
+        
+        <isNotEmpty prepend="and" property="req_type">
+                REQ_TYPE = #req_type#
+        </isNotEmpty>  
+       
+       	<isNotEmpty property="searchFromDt">
+       	   <isNotEmpty prepend="AND" property="searchToDt">
+                    <![CDATA[
+                       CONVERT(date, PRT_REQ_DT)) BETWEEN  CONVERT(date, #searchFromDt#) AND CONVERT(date, #searchToDt#)
+                    ]]>                         
+           </isNotEmpty> 
+       	</isNotEmpty>
+            
         <isNotEmpty prepend="and" property="searchString">
-                Content LIKE '%$searchString$%')
-        </isNotEmpty>
+                (Content LIKE '%$searchString$%' or SUBJECT LIKE '%$searchString$%')
+        </isNotEmpty> 
     </select>
     
     <insert id="PrintReq#printInsert">
@@ -98,11 +147,15 @@
 			SELECT COALESCE(max(seq), 0)+1 FROM TB_PRINT_REQ
 		</selectKey>
 		INSERT INTO TB_PRINT_REQ (
-			seq,        req_size,     size_etc,     req_height,    height_etc,     content, 
-			reg_id,     reg_nm,       reg_ip,        reg_dt,       del_yn,         aprv_status
+			seq,           subject,      prt_req_dt,    want_req_dt,  req_type,       prt_cnt, 
+			prt_size,      prt_size1,    prt_size2,     content,      reg_id,         reg_nm,   
+			reg_dept_nm,   reg_tel,      reg_email,      reg_ip,      reg_dt,         del_yn,         
+			aprv_status
 		) VALUES (
-			#seq#,	     #req_size#,   #size_etc#,   #req_height#,  #height_etc#,   #content#, 
-			#reg_id#,    #reg_nm#,     #reg_ip#,     getDate(),    'N',            'R'
+			#seq#,	     #subject#,   #prt_req_dt#,   #want_req_dt#,  #req_type#,   #prt_cnt#, 
+			#prt_size#,	     #prt_size1#,   #prt_size2#,   #content#,  #reg_id#,    #reg_nm#,
+			#reg_dept_nm#,    #reg_tel#,     #reg_email#,  #reg_ip#,  getDate(),     'N', 
+			#aprv_status#
 		)
 	</insert>		
 	
