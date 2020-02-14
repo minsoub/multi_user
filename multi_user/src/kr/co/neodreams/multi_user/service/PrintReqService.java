@@ -2,6 +2,7 @@ package kr.co.neodreams.multi_user.service;
 
 import java.util.List;
 
+import kr.co.neodreams.multi_user.dto.BoardDto;
 import kr.co.neodreams.multi_user.dto.PhotoReqDto;
 import kr.co.neodreams.multi_user.dto.PrintReqDto;
 
@@ -70,6 +71,24 @@ public interface PrintReqService {
 	public int printUpdateSts(PrintReqDto dto) throws Exception;
 	
 	/**
+	 * 삭제할 첨부 파일 리스트를 조회한다.
+	 * 
+	 * @param boardDto
+	 * @return
+	 * @throws Exception
+	 */
+	public List<PrintReqDto> garbageAttatch (PrintReqDto boardDto) throws Exception;
+	
+	/**
+	 * 폴로터 출력  첨부 파일을  삭제한다.
+	 * 
+	 * @param boardDto
+	 * @return
+	 * @throws Exception
+	 */
+	public int printFileDelete(PrintReqDto boardDto) throws Exception;
+	
+	/**
 	 * 사진촬영 요청 리스트를 조회한다.
 	 * 
 	 * @param dto
@@ -116,7 +135,7 @@ public interface PrintReqService {
 	 * @return
 	 * @throws Exception
 	 */
-	public PrintReqDto getPhotoReqDetail(PhotoReqDto dto) throws Exception;
+	public PhotoReqDto getPhotoReqDetail(PhotoReqDto dto) throws Exception;
 	/**
 	 * 사진촬영 요청 상태 정보를 업데이트 한다.
 	 * 

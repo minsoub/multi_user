@@ -134,7 +134,7 @@ public class PrintReqDao extends BaseDao {
 	 * @param boardDto
 	 * @return
 	 */
-	public int boardFileDelete(PrintReqDto dto) {
+	public int printFileDelete(PrintReqDto dto) {
 		return delete("PrintReq#printFileDelete", dto);
 	}
 
@@ -212,9 +212,9 @@ public class PrintReqDao extends BaseDao {
 	 * @return
 	 * @throws Exception
 	 */
-	public PrintReqDto getPhotoReqDetail(PhotoReqDto dto) throws Exception
+	public PhotoReqDto getPhotoReqDetail(PhotoReqDto dto) throws Exception
 	{
-		return (PrintReqDto) select("PrintReq#getPhotoReqDetail", dto);
+		return (PhotoReqDto) select("PrintReq#getPhotoReqDetail", dto);
 	}
 	/**
 	 * 사진촬영 요청 상태 정보를 업데이트 한다.

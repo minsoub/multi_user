@@ -55,6 +55,11 @@
 				</div>
 				<div class="sub-nav-title">${title} 상세내역</div>
 
+			<div class="tabNav sub5">
+				<li><a href="javascript:goWrite();">촬영요청</a></li>
+				<li><a href="javascript:goList();" class="active">진행사항</a></li>
+			</div>	
+			
 				<div class="basic-list">
 					<div class="insrtfrom-framebox">
 						<div class="insert-step1-box">
@@ -65,62 +70,59 @@
 									<form id="frm" name="frm" method="post">
 									   <input type="hidden" id="bbsid" name="bbsid" value="${bbsid}" />
 										<input type="hidden" id="seq" name="seq" value="${boardInfo.seq }">
-										<input type="hidden" id="freq" name="freq" value="${boardInfo.freq }">
 										<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo }" />
 										
 											<dl class="insert_ready">
-												<dt class="must-option"><label>직원번호</label></dt>
-												<dd style="width: 200px;">${boardInfo.userid }</dd>
-											</dl>											
+												<dt class="must-option"><label>신청부서</label></dt>
+												<dd style="width: 150px;">${boardInfo.reg_dept_nm}</dd>
+												<dt class="must-option"><label>신청자</label></dt>
+												<dd style="width: 150px;">${boardInfo.reg_nm}</dd>
+											</dl>																					
 											<dl class="insert_ready">
-												<dt class="must-option"><label>성명</label></dt>
-												<dd style="width: 200px;">${boardInfo.writer }</dd>
+												<dt class="must-option"><label>전화번호</label></dt>
+												<dd style="width: 150px;">${boardInfo.reg_tel}</dd>
+
+												<dt class="must-option"><label>E-MAIL</label></dt>
+												<dd style="width: 150px;">${boardInfo.reg_email}</dd>
+											</dl>	
+											
+											<dl class="insert_ready">
+												<dt class="must-option"><label>출력요청일</label></dt>
+												<dd style="width:150px;">${boardInfo.prt_req_dt}</dd>
+												<dt class="must-option"><label>희망 요청완료일</label></dt>
+												<dd style="width:150px;">${boardInfo.want_req_dt}</dd>
+											</dl>	
+											
+																					
+											<dl class="insert_ready">
+												<dt class="must-option"><label>제목</label></dt>
+												<dd style="width: 300px;">${boardInfo.subject}</dd>
+											</dl>
+											<dl class="insert_ready">
+												<dt class="must-option"><label>사진종류</label></dt>
+												<dd style="width: 150px;">${boardInfo.req_type_nm}</dd>
 											</dl>	
 											<dl class="insert_ready">
-												<dt class="must-option"><label>연락처</label></dt>
-												<dd style="width: 200px;">${boardInfo.usertel }</dd>
-											</dl>
-																					
-										<dl class="insert_ready">
-											<dt class="must-option"><label>제목</label></dt>
-											<dd style="width: 200px;">${boardInfo.subject }</dd>
-										</dl>
-										<dl class="insert_ready">
-											<dt class="must-option"><label>내용</label></dt>
-											<dd>
-												<textarea class="textarea-style" rows="10" cols="88" id="content" name="content" style="width: 618px;" readonly="readonly"><c:out value="${boardInfo.content}" escapeXml="false" /></textarea>
-											</dd>
-										</dl>
+												<dt class="must-option"><label>추가사항</label></dt>
+												<dd style="width: 120px;">파일(JPG) 제공 (${boardInfo.add_type})</dd>											
+											</dl>																					
+																																
+											<dl class="insert_ready">
+												<dt class="must-option"><label>요청사항</label></dt>
+												<dd>${boardInfo.content}</dd>
+											</dl>										
 										
 											<dl class="insert_ready">
 												<dt class="must-option"><label>상태</label></dt>
-												<dd style="width: 300px;">
-													<c:if test="${boardInfo.sts eq '0'}">신청</c:if>
-													<c:if test="${boardInfo.sts eq '1'}">완료</c:if>
-													<c:if test="${boardInfo.sts eq '2'}">취소</c:if>
-												</dd>
+												<dd style="width: 300px;">${boardInfo.aprv_status_nm}</dd>
 											</dl>
 																					
 									</form>
-									<dl class="insert_ready" id="attatchArea">
-										<dt class="must-option"><label>첨부파일</label></dt>
-										<dd style="width:97%">
-											<div style="position: relative;">
-												<c:if test="${fn:length(boardInfo.attachList) > 0}">
-													<c:forEach var="item" items="${boardInfo.attachList }" varStatus="status">
-													<div>
-														<a href="javascript:void(0);return false;" onclick="goDown('${item.freq}')">${item.filename }</a>
-													</div>
-													</c:forEach>
-												</c:if>
-											</div>
-										</dd>
-									</dl>
 								</div>
 								<div class="btn-zone">
 									<ul>
 									<!-- 내가 쓴글 또는 관리자인 경우 -->
-									<c:if test="${isGetAdmin != null or SESS_EMPNO eq boardInfo.userid}">
+									<c:if test="${isGetAdmin != null or SESS_EMPNO eq boardInfo.reg_id}">
 										<li><input type="submit" class="search_btn" value="수정" onclick="goUpdate(); return false;"></li>									
 										<li><input type="submit" class="search_btn" value="삭제" onclick="goDelete(); return false;"></li>
 									</c:if>
@@ -149,21 +151,20 @@ $(document).ready(function() {
 	load_fnc('2', '0', '0'); //menu script
 });
 function goUpdate(){
-	$('#frm').attr('action', '/reqUpdate.do');
+	$('#frm').attr('action', '/photoUpdate.do');
 	$('#frm').submit();
 }
 
 function goDelete(){
 	var params = {
 			"seq" : $('#seq').val(),
-			"bbsid" : $('#bbsid').val(),
-			"freq" : 0
+			"bbsid" : $('#bbsid').val()
 	}
 	
 	if(confirm('삭제하시겠습니까?')){
 		$.ajax({
 			type : 'post',
-			url : '/deleteBoard.do',
+			url : '/deletePhoto.do',
 			dataType : 'json',
 			data : params,
 			success : function(result){
@@ -178,19 +179,14 @@ function goDelete(){
 	}
 }
 
-function goDown(val){
-	$('#freq').val(val);
-	$('#frm').attr('action', '<%=Constants.COMMON_DOWNLOAD_ASP_CALL %>');
+function goList(){
+	$('#frm').attr('action', '/photolist.do');
 	$('#frm').submit();
 }
 
-function goList(){
-	if ("${bbsid}" == "10028") {
-		$('#frm').attr('action', '/printlist.do');
-	}else {
-		$('#frm').attr('action', '/photolist.do');
-	}
-	$('#frm').submit();
+function goWrite(){
+	$('#frm').attr('action', '/photoWrite.do');
+	$('#frm').submit();	
 }
 
 

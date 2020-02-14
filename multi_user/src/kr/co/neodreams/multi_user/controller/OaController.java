@@ -1,5 +1,6 @@
 package kr.co.neodreams.multi_user.controller;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,6 +32,7 @@ import kr.co.neodreams.multi_user.common.CommonUtil;
 import kr.co.neodreams.multi_user.common.StringUtil;
 import kr.co.neodreams.multi_user.dto.BoardDto;
 import kr.co.neodreams.multi_user.dto.OaDto;
+import kr.co.neodreams.multi_user.dto.PhotoReqDto;
 import kr.co.neodreams.multi_user.dto.PrintReqDto;
 import kr.co.neodreams.multi_user.service.BoardService;
 import kr.co.neodreams.multi_user.service.OaService;
@@ -466,6 +468,199 @@ public class OaController extends BaseController{
 	}
 	
 	/**
+	 * 플로터 출력요청 상세 보기
+	 * 
+	 * @param req
+	 * @param res
+	 * @param dto
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/printDetail.do")
+	public ModelAndView printDetail(HttpServletRequest req, HttpServletResponse res, PrintReqDto dto) throws Exception{
+		ModelAndView mv = new ModelAndView();
+		String bbsid = dto.getBbsid();
+		int pageNo = dto.getPageNo(); 
+		
+		mv.addObject("bbsid", bbsid);
+		mv.addObject("menu_depth1", "2");
+		mv.addObject("menu_depth2", "4");
+		mv.addObject("title", "플로터출력");
+		
+		System.out.println("seq : " + dto.getSeq());
+
+		PrintReqDto detailDto = prtService.getPrintReqDetail(dto);
+		dto.setPageNo(pageNo);
+		mv.addObject("boardInfo", detailDto);
+		mv.addObject("paging", detailDto);
+		System.out.println("pageNo : " + pageNo);
+		mv.setViewName("/oa/printView");
+		
+		return mv;
+	}
+	
+	/**
+	 * 플로터 출력요청 수정 폼을 출력한다.
+	 * 
+	 * @param req
+	 * @param res
+	 * @param boardDto
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/printUpdate.do")
+	public ModelAndView printUpdate(HttpServletRequest req, HttpServletResponse res, PrintReqDto dto) throws Exception{
+		ModelAndView mv = new ModelAndView();
+		
+		String bbsid = dto.getBbsid();
+		int pageNo = dto.getPageNo(); 
+		
+		mv.addObject("bbsid", bbsid);
+		mv.addObject("menu_depth1", "2");
+		mv.addObject("menu_depth2", "4");
+		mv.addObject("title", "출력요청");
+
+		mv.setViewName("/oa/printModify");
+		PrintReqDto resultDetail = new PrintReqDto();
+		resultDetail = prtService.getPrintReqDetail(dto);
+		
+		resultDetail.setPageNo(pageNo);
+		mv.addObject("resultDetail", resultDetail);
+		mv.addObject("paging", dto);
+		return mv;
+	}	
+	
+	/**
+	 * 플로터 출력요청 수정하기 
+	 * 
+	 * @param req
+	 * @param res
+	 * @param noticeDto
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping("/printUpdateSave.do")
+	public void printUpdateSave(HttpServletRequest req, HttpServletResponse res, PrintReqDto dto) throws Exception{
+		String retVal = "0";
+		
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
+		
+		try{			
+			retVal = Integer.toString(prtService.printUpdate(dto));
+			dataSourceTransactionManager.commit(status);
+		}catch (Exception e) {
+			retVal = "-1";
+			dataSourceTransactionManager.rollback(status);
+		}finally {
+			res.getWriter().write(retVal);
+		}
+	}
+	
+	/**
+	 * 관리자 상태값 수정하기 
+	 * 
+	 * @param req
+	 * @param res
+	 * @param noticeDto
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping("/printStsUpdate.do")
+	public void printStsUpdate(HttpServletRequest req, HttpServletResponse res, PrintReqDto dto) throws Exception{
+		String retVal = "0";
+		
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
+		
+		try{
+			String ip = req.getRemoteAddr();
+			dto.setAprv_ip(ip);
+			dto.setAprv_id(SESS_EMPNO);
+			retVal = Integer.toString(prtService.printUpdateSts(dto));
+			dataSourceTransactionManager.commit(status);
+		}catch (Exception e) {
+			retVal = "-1";
+			dataSourceTransactionManager.rollback(status);
+		}finally {
+			res.getWriter().write(retVal);
+		}
+	}	
+	
+	/**
+	 * 플로터 출력요청 상세 보기에서 게시글을 삭제한다. 
+	 * 파일이 있으면 파일을 삭제해야 한다.
+	 * 
+	 * @param req
+	 * @param res
+	 * @param boardDto
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping("/deletePrint.do")
+	public void deletePrint(HttpServletRequest req, HttpServletResponse res, PrintReqDto boardDto) throws Exception{
+		String retVal = "0";
+		
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
+		
+		try{
+			int fileChk = fileDelete(boardDto);
+			
+			if(fileChk > 0) {
+				retVal = Integer.toString(prtService.printFileDelete(boardDto));
+				retVal = Integer.toString(prtService.printDelete(boardDto));
+			}else {
+				throw new Exception("-1"); 
+			}
+			
+			
+			dataSourceTransactionManager.commit(status);
+		}catch (Exception e) {
+			retVal = "-1";
+			dataSourceTransactionManager.rollback(status);
+		}finally {
+			res.getWriter().write(retVal);
+		}
+	}	
+	
+	/**
+	 * 물리적인 파일을 삭제한다.
+	 * 
+	 * @param dto
+	 * @return
+	 * @throws Exception
+	 */
+	public int fileDelete(PrintReqDto dto) throws Exception{
+		int retVal = 0;
+		
+		try {
+			List<PrintReqDto> boardList = new ArrayList<>();
+			boardList = prtService.garbageAttatch(dto);
+			
+			for(int i=0; i < boardList.size(); i++) {
+				PrintReqDto getFileDto = new PrintReqDto();
+				
+				getFileDto = boardList.get(i);
+				
+				if(!"".equals(getFileDto.getPhy_path())){
+					File file = new File(getFileDto.getPhy_path());
+					if(file.exists()) {
+						file.delete();
+					}
+				}
+			}	
+			retVal = 1;
+		}catch(Exception e) {
+			retVal = -1;
+		}	
+		return retVal;
+	}	
+	
+	/**
 	 * 사진촬영 리스트 조회
 	 * 
 	 * @param commonDto
@@ -488,7 +683,7 @@ public class OaController extends BaseController{
 			noticeList = boardService.getSelectBoardList(commonDto);
 			totalCnt = boardService.getSelectBoardListCnt(commonDto);
 			
-			mv.setViewName("/oa/reqList");
+			mv.setViewName("/oa/photoList");
 			mv.addObject("noticeList", noticeList);
 			
 			mv.addObject("bbsid", "10029");
@@ -507,79 +702,68 @@ public class OaController extends BaseController{
 	} 
 	
 	/**
-	 * 게시글 작성 폼을 보여준다. 
+	 * 사진촬영 작성 폼을 보여준다. 
 	 * 
 	 * @param bbsid
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/reqWrite.do")
-	public ModelAndView reqWrite(@RequestParam String bbsid, @RequestParam String categ, HttpServletRequest request)
+	@RequestMapping("/photoWrite.do")
+	public ModelAndView photoWrite(PhotoReqDto commonDto, HttpServletRequest request)
 	{
 		ModelAndView mv = new ModelAndView();
-		BoardDto commonDto = new BoardDto();
 		
-		mv.addObject("bbsid", bbsid);
-		mv.addObject("menu_depth1", "2");
-		if (bbsid.equals("10028"))		// 출력요청
-		{
-			mv.addObject("menu_depth2", "4");
-			mv.addObject("title", "출력요청");
-		}else if(bbsid.equals("10029"))	// 사진촬영
-		{
+		try{
+			commonDto.setBbsid("10029");		// 사진촬영
+
+			mv.setViewName("/oa/photoWrite");
+
+			mv.addObject("bbsid", "10029");
+			mv.addObject("menu_depth1", "2");
 			mv.addObject("menu_depth2", "5");
 			mv.addObject("title", "사진촬영");
-		}
-				
-		mv.addObject("commonDto", commonDto);
-		mv.addObject("paging", commonDto);
-		mv.setViewName("/oa/reqWrite");
-		
+			mv.addObject("paging", commonDto);
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			mv.setViewName("/error/error");
+		}	
 		return mv;
 	}	
-	
 	/**
-	 * 게시판 상세 보기
+	 * 촬영요청 상세 보기
 	 * 
 	 * @param req
 	 * @param res
-	 * @param boardDto
+	 * @param dto
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("/reqsDetail.do")
-	public ModelAndView reqsDetail(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
+	@RequestMapping("/photoDetail.do")
+	public ModelAndView photoDetail(HttpServletRequest req, HttpServletResponse res, PhotoReqDto dto) throws Exception{
 		ModelAndView mv = new ModelAndView();
-		String bbsid = boardDto.getBbsid();
-		int pageNo = boardDto.getPageNo(); 
+		String bbsid = dto.getBbsid();
+		int pageNo = dto.getPageNo(); 
 		
 		mv.addObject("bbsid", bbsid);
 		mv.addObject("menu_depth1", "2");
-		if (bbsid.equals("10028"))		// 출력요청
-		{
-			mv.addObject("menu_depth2", "4");
-			mv.addObject("title", "출력요청");
-		}else if(bbsid.equals("10029"))	// 사진촬영
-		{
-			mv.addObject("menu_depth2", "5");
-			mv.addObject("title", "사진촬영");
-		}
+		mv.addObject("menu_depth2", "5");
+		mv.addObject("title", "사진촬영");
 		
-		BoardDto dto = boardService.getSelectBoardDetail(boardDto);
+		System.out.println("seq : " + dto.getSeq());
+
+		PhotoReqDto detailDto = prtService.getPhotoReqDetail(dto);
 		dto.setPageNo(pageNo);
-		mv.addObject("boardInfo", dto);
-		mv.addObject("paging", dto);
-		
-		// 게시글 조회수증가 
-		int result = boardService.boardHitUpdate(boardDto);
-		
-		mv.setViewName("/oa/reqView");
+		mv.addObject("boardInfo", detailDto);
+		mv.addObject("paging", detailDto);
+		System.out.println("pageNo : " + pageNo);
+		mv.setViewName("/oa/photoView");
 		
 		return mv;
-	}	
+	}
 	
 	/**
-	 * 게시글 수정 폼을 출력한다.
+	 * 촬영요청 수정 폼을 출력한다.
 	 * 
 	 * @param req
 	 * @param res
@@ -587,33 +771,55 @@ public class OaController extends BaseController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("/reqUpdate.do")
-	public ModelAndView reqUpdate(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
+	@RequestMapping("/photoUpdate.do")
+	public ModelAndView photoUpdate(HttpServletRequest req, HttpServletResponse res, PhotoReqDto dto) throws Exception{
 		ModelAndView mv = new ModelAndView();
 		
-		String bbsid = boardDto.getBbsid();
-		int pageNo = boardDto.getPageNo(); 
+		String bbsid = dto.getBbsid();
+		int pageNo = dto.getPageNo(); 
 		
 		mv.addObject("bbsid", bbsid);
 		mv.addObject("menu_depth1", "2");
-		if (bbsid.equals("10028"))		// 출력요청
-		{
-			mv.addObject("menu_depth2", "4");
-			mv.addObject("title", "출력요청");
-		}else if(bbsid.equals("10029"))	// 사진촬영
-		{
-			mv.addObject("menu_depth2", "5");
-			mv.addObject("title", "사진촬영");
-		}
+		mv.addObject("menu_depth2", "5");
+		mv.addObject("title", "사진촬영");
+
+		mv.setViewName("/oa/photoModify");
+		PhotoReqDto resultDetail = new PhotoReqDto();
+		resultDetail = prtService.getPhotoReqDetail(dto);
 		
-		mv.setViewName("/oa/reqModify");
-		BoardDto resultDetail = new BoardDto();
-		resultDetail = boardService.getSelectBoardDetail(boardDto);
 		resultDetail.setPageNo(pageNo);
 		mv.addObject("resultDetail", resultDetail);
-		mv.addObject("paging", boardDto);
+		mv.addObject("paging", dto);
 		return mv;
 	}	
+	
+	/**
+	 * 촬영요청 수정하기 
+	 * 
+	 * @param req
+	 * @param res
+	 * @param noticeDto
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping("/photoUpdateSave.do")
+	public void photoUpdateSave(HttpServletRequest req, HttpServletResponse res, PhotoReqDto dto) throws Exception{
+		String retVal = "0";
+		
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
+		
+		try{			
+			retVal = Integer.toString(prtService.photoUpdate(dto));
+			dataSourceTransactionManager.commit(status);
+		}catch (Exception e) {
+			retVal = "-1";
+			dataSourceTransactionManager.rollback(status);
+		}finally {
+			res.getWriter().write(retVal);
+		}
+	}
 	
 	/**
 	 * 관리자 상태값 수정하기 
@@ -624,8 +830,8 @@ public class OaController extends BaseController{
 	 * @throws Exception
 	 */
 	@ResponseBody
-	@RequestMapping("/reqStsUpdate.do")
-	public void bbsUpdate(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
+	@RequestMapping("/photoStsUpdate.do")
+	public void photoStsUpdate(HttpServletRequest req, HttpServletResponse res, PhotoReqDto dto) throws Exception{
 		String retVal = "0";
 		
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -633,7 +839,10 @@ public class OaController extends BaseController{
 		TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
 		
 		try{
-			retVal = Integer.toString(boardService.boardStsUpdate(boardDto));
+			String ip = req.getRemoteAddr();
+			dto.setAprv_ip(ip);
+			dto.setAprv_id(SESS_EMPNO);
+			retVal = Integer.toString(prtService.photoUpdateSts(dto));
 			dataSourceTransactionManager.commit(status);
 		}catch (Exception e) {
 			retVal = "-1";
@@ -642,4 +851,33 @@ public class OaController extends BaseController{
 			res.getWriter().write(retVal);
 		}
 	}	
+	
+	/**
+	 * 촬영요청 상세 보기에서 게시글을 삭제한다. 
+	 * 
+	 * @param req
+	 * @param res
+	 * @param boardDto
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping("/deletePhoto.do")
+	public void deletePhoto(HttpServletRequest req, HttpServletResponse res, PhotoReqDto boardDto) throws Exception{
+		String retVal = "0";
+		
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
+		
+		try{
+			retVal = Integer.toString(prtService.photoDelete(boardDto));
+			dataSourceTransactionManager.commit(status);
+		}catch (Exception e) {
+			retVal = "-1";
+			dataSourceTransactionManager.rollback(status);
+		}finally {
+			res.getWriter().write(retVal);
+		}
+	}	
+	
 }

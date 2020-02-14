@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import kr.co.neodreams.multi_user.dao.PrintReqDao;
+import kr.co.neodreams.multi_user.dto.BoardDto;
 import kr.co.neodreams.multi_user.dto.PhotoReqDto;
 import kr.co.neodreams.multi_user.dto.PrintReqDto;
 
@@ -101,6 +102,31 @@ public class PrintReqServiceImpl implements PrintReqService {
 	}
 	
 	/**
+	 * 삭제할 첨부 파일 리스트를 조회한다.
+	 * 
+	 * @param dto
+	 * @return
+	 * @throws Exception
+	 */
+	public List<PrintReqDto> garbageAttatch (PrintReqDto dto) throws Exception
+	{
+		return printReqDao.garbageAttatch(dto);
+	}
+	
+	/**
+	 * 폴로터 출력  첨부 파일을  삭제한다.
+	 * 
+	 * @param dto
+	 * @return
+	 * @throws Exception
+	 */
+	public int printFileDelete(PrintReqDto dto) throws Exception	
+	{
+		return printReqDao.printFileDelete(dto);
+	}
+		
+	
+	/**
 	 * 사진촬영 요청 리스트를 조회한다.
 	 * 
 	 * @param dto
@@ -162,7 +188,7 @@ public class PrintReqServiceImpl implements PrintReqService {
 	 * @return
 	 * @throws Exception
 	 */
-	public PrintReqDto getPhotoReqDetail(PhotoReqDto dto) throws Exception
+	public PhotoReqDto getPhotoReqDetail(PhotoReqDto dto) throws Exception
 	{
 		return printReqDao.getPhotoReqDetail(dto);
 	}

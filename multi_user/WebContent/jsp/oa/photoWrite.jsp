@@ -49,11 +49,11 @@
 					</div>
 					<div class="nav-title">${title}</div>					
 				</div>
-				<div class="sub-nav-title">출력요청</div>
+				<div class="sub-nav-title">촬영요청</div>
 				
 
 			<div class="tabNav sub5">
-				<li><a href="#"  class="active">출력요청</a></li>
+				<li><a href="#"  class="active">촬영요청</a></li>
 				<li><a href="javascript:goList();">진행사항</a></li>
 			</div>	
 			
@@ -97,32 +97,20 @@
 												<dd style="width: 300px;"><input type="text" id="subject" name="subject" value="[출력요청]"></dd>
 											</dl>
 											<dl class="insert_ready">
-												<dt class="must-option"><label>출력종류</label></dt>
+												<dt class="must-option"><label>사진종류</label></dt>
 												<dd style="width: 150px;">
-													<input type="radio" id="req_type" name="req_type" value="1" checked>현수막
-													<input type="radio" id="req_type" name="req_type" value="2">A0
-													<input type="radio" id="req_type" name="req_type" value="3">A1
-													<input type="radio" id="req_type" name="req_type" value="4">A2
-													<input type="radio" id="req_type" name="req_type" value="5">기타
+													<input type="radio" id="req_type" name="req_type" value="1" checked>증명사진
+													<input type="radio" id="req_type" name="req_type" value="2">여권사진
+													<input type="radio" id="req_type" name="req_type" value="3">비자사진
+													<input type="radio" id="req_type" name="req_type" value="4">EP사진
+													<input type="radio" id="req_type" name="req_type" value="5">사원증사진
 												</dd>
-												<dt class="must-option"><label>출력부수</label></dt>
-												<dd style="width: 50px;"><input type="number" id="prt_cnt" name="prt_cnt" value=""></dd>
 											</dl>	
 											<dl class="insert_ready">
-												<dt class="must-option"><label>규격</label></dt>
+												<dt class="must-option"><label>추가사항</label></dt>
 												<dd style="width: 120px;">
-												   <select id="prt_size" name="prt_size" onChange="javascript:PrtSizeChange(this.value);">
-												   	 <option value="">규격선택</option>
-												   	 <option value="1">24 Inch</option>
-												   	 <option value="2">36 Inch</option>
-												   	 <option value="3">42 Inch</option>
-												   	 <option value="4">기타 </option>
-												   </select>
-												</dd>
-												<dt class="must-option"><label>가로</label></dt>
-												<dd style="width: 100px;"><input type="text" id="prt_size1" name="prt_size1" readonly maxlength="6" style="width:60px;">cm</dd>
-												<dt class="must-option"><label>세로</label></dt>
-												<dd style="width: 100px;"><input type="text" id="prt_size2" name="prt_size2" readonly maxlength="6" style="width:60px;">cm</dd>												
+												   파일(JPG)제공 <input type="checkbox" id="add_type" name="add_type" value="Y">
+												</dd>											
 											</dl>																					
 																																
 											<dl class="insert_ready">
@@ -130,7 +118,7 @@
 												<dd><textarea class="textarea-style" rows="6" cols="88" id="content" name="content" style="width: 618px;"></textarea></dd>
 											</dl>
 										</form>
-										<dl class="insert_ready" id="attatchArea">
+										<!-- dl class="insert_ready" id="attatchArea">
 											<dt class="must-option"><label>첨부파일</label></dt>
 											<dd style="width:97%" id="fileIdx_0">
 												<div style="position: relative;">
@@ -150,7 +138,7 @@
 													</form>
 												</div>
 											</dd>
-										</dl>
+										</dl  -->
 									</div>
 									<div class="btn-zone">
 										<ul>
@@ -191,131 +179,25 @@ $(document).ready(function(){
 		$('#prt_req_dt').datepicker('option', 'disabled', true);	// 관리자인 경우 수정이 가능해야 한다.
 	</c:if>
 		
-	$(document).on('change', 'input[name="uploadFile"]', function(event){
-		var ua = window.navigator.userAgent;
-		var rowIdx = $(this).closest('dd').index();
-		if(navigator.appName == 'Netscape' && ua.indexOf('Trident/7.0') != -1){
-			var file = $(this).prop("files")[0];
-		
-			if(file != null){
-				$('form[name="file_frm"]').eq((rowIdx-1)).ajaxForm({
-					url: "<%=Constants.COMMON_UPLOAD_ASP_CALL %>",
-					type: "POST",
-					crossdomain: true, 
-					enctype: "multipart/form-data",   
-					dataType: "json",  
-					contentType: "multipart/form-data",
-					timeout: 1000 * 60 * 10,
-					beforeSend: function() {
-						var percentVal = '0%';
-						$('span[id^=progressT_').eq(rowIdx-1).show();
-					},
-					uploadProgress: function(event, position, total, percentComplete) {
-						$('progress[id^=progressBar_]').eq(rowIdx-1).val(percentComplete);
-						$('font[id^=progressBarRate_]').eq(rowIdx-1).text(percentComplete);
-						
-						//$('#srchDescription').text('업로드 진행 중');
-					},
-					success: function(msg) {
-						$('input[id^=seqs_]').eq(rowIdx-1).val(msg);
-						
-				    }, 
-				    complete: function(xhr) {
-				    },
-				    error: function(e){
-				    	alert('업로드 중 오류가 발생했습니다\n새로고침 후 다시 진행 하시기 바랍니다' + e);
-				    	location.replace(location.href);
-				    }
-				})
-				$('form[name="file_frm"]').eq((rowIdx-1)).submit();
-			}
-		}else{
-			alert('IE 최신 브라우저에서 사용 가능합니다.');
-			$(this).val('');
-		}
-	});
 })
-
-function PrtSizeChange(data)
-{
-	if (data == "") {
-		$("#prt_size1").val("");
-		$("#prt_size2").val("");
-		$("#prt_size1").attr("readonly", true);
-		$("#prt_size2").attr("readonly", true);
-	}else if(data == "1") {
-		$("#prt_size1").val("");
-		$("#prt_size2").val("60.9");
-		$("#prt_size1").attr("readonly", true);
-		$("#prt_size2").attr("readonly", true);		
-	}else if(data == "2") {
-		$("#prt_size1").val("");
-		$("#prt_size2").val("91.4");
-		$("#prt_size1").attr("readonly", true);
-		$("#prt_size2").attr("readonly", true);	
-	}else if(data == "3") {
-		$("#prt_size1").val("");
-		$("#prt_size2").val("106.6");
-		$("#prt_size1").attr("readonly", true);
-		$("#prt_size2").attr("readonly", true);	
-	}else if(data == "4") {
-		$("#prt_size1").attr("readonly", false);
-		$("#prt_size2").attr("readonly", false);		
-	}
-}
 
 function goSubmit(){
 	var attatch_Ids = [];
 	var progressChk = true;
-	$('progress[id^=progressBar_]').each(function(){
-		if($(this).val() != 100 && $(this).val() != 0){
-			alert('첨부파일 업로드중입니다. 잠시만 기다려주십시오.');
-			progressChk = false;
-			return false;
-		}
-	})
-	
-	if(progressChk){
-		if ($("#prt_cnt").val() == "")
-		{
-			alert("출력 부수를 입력하세요!!!");
-			$("#prt_cnt").focus();
-			return false;
-		}
-		if ($("#prt_size").val() == "")
-		{
-			alert("규격은 필수입니다!!!");
-			$("#prt_size").focus();
-			return false;
-		}
-		if ($("#prt_size").val() == "4" && ($("prt_size1").val() == "" || $("prt_size2").val() == ""))
-		{
-			alert("규격이 기타일 경우 가로/세로를 입력하셔야 합니다!!!");
-			$("#prt_size").focus();
-			return false;
-		}
-		
+
+	if(progressChk){		
 		if($.trim($('#subject').val()) == ''){
 			alert('제목을 작성해주세요.');
 			$('#subject').focus();
 			return false;
 		}
-		
-		$('input[name=seqs]').each(function(){
-			if($.trim($(this).val()) != ''){
-				attatch_Ids.push($(this).val());
-			}
-		});
+
 		var params = {
-				"freqs" : attatch_Ids.join('|'),
 				"subject": $('#subject').val(),
 				"prt_req_dt": $('#prt_req_dt').val(),
 				"want_req_dt" : $('#want_req_dt').val(),
 				"req_type" : $('#req_type').val(),
-				"prt_cnt" : $('#prt_cnt').val(),
-				"prt_size" : $('#prt_size').val(),
-				"prt_size1" : $('#prt_size1').val(),
-				"prt_size2" : $('#prt_size2').val(),						
+				"add_type" : $('#add_type').val(),						
 				"content" : escapeHtml($('#content').text()),
 				"reg_id" : $('#reg_id').val(),
 				"reg_nm" : $('#reg_nm').val(),
@@ -328,14 +210,14 @@ function goSubmit(){
 		if(confirm('등록하시겠습니까?')){
 			$.ajax({
 				type : 'post',
-				url : '/registPrint.do',	
+				url : '/registPhoto.do',	
 				dataType : 'json',
 				data : params,
 				success : function(result){					
 					alert('등록되었습니다.' + result);
 		// 작업필요		
 					$('#frm').append('<input type="hidden" name="seq" value="'+result+'" />');
-					$('#frm').attr('action', '/printDetail.do');
+					$('#frm').attr('action', '/photoDetail.do');
 					$('#frm').submit();
 				},
 				error : function(e){
@@ -344,84 +226,6 @@ function goSubmit(){
 		}
 	}
 	
-}
-
-function fn_AttatchAdd(obj){
-	var cloneObj = $(obj).parents('dd').clone();
-	var rowsIdx = $('#attatchArea').children('dd').length;
-	$(cloneObj).find('input').each(function(){
-		if(typeof($(this).attr('id')) != 'undefined'){
-			var attrId = $(this).attr('id').split('_');
-			$(this).attr('id', attrId[0]+'_'+rowsIdx);
-			
-			if(attrId[0] != 'seqs'){
-				$(this).attr('name', attrId[0]+'_'+rowsIdx);
-			}
-			
-		}
-	});
-	$(cloneObj).find('progress').each(function(){
-		if(typeof($(this).attr('id')) != 'undefined'){
-			var attrId = $(this).attr('id').split('_');
-			$(this).val(0);
-			$(this).attr('id', attrId[0]+'_'+rowsIdx);
-		}
-	});
-	$(cloneObj).find('span').each(function(){
-		if(typeof($(this).attr('id')) != 'undefined'){
-			var attrId = $(this).attr('id').split('_');
-			$(this).attr('id', attrId[0]+'_'+rowsIdx);
-			$(this).hide();
-		}
-	});
-
-	$(cloneObj).find('font').each(function(){
-		if(typeof($(this).attr('id')) != 'undefined'){
-			var attrId = $(this).attr('id').split('_');
-			$(this).attr('id', attrId[0]+'_'+rowsIdx);
-			$(this).html(0);
-		}
-	});
-	$('#attatchArea').append(cloneObj);
-}
-
-function fn_AttatchDel(obj){
-	if($('#attatchArea dd').length == 1){
-		alert('삭제하실 수 없습니다.');
-		return false;
-	}else{
-		var rowIdx = $(this).closest('dd').index();
-		var params = {
-			"seq" : 0,
-			"freq" : $('input[name=seqs]').eq(rowIdx-1).val()
-		}
-		
-		if(
-			typeof($('input[name=seqs]').eq(rowIdx-1)) == 'undefined' ||
-			$('input[name=seqs]').eq(rowIdx-1).val() == '' ||
-			$('input[name=seqs]').eq(rowIdx-1).val() == undefined		
-		){
-			$(obj).parents('dd').remove();
-			return false;
-		}
-		
-		if(confirm('파일을 삭제하시겠습니까?')){
-			$.ajax({
-				type : 'post',
-				url : '/admin/removeAttatch.do',
-				dataType : 'json',
-				data : params,
-				success : function(result){
-					if(result >= 0){
-						alert('삭제되었습니다.');
-						$(obj).parents('dd').remove();
-					}
-				},
-				error : function(e){
-				}
-			})
-		}
-	}
 }
 
 var entityMap = { 
@@ -444,7 +248,7 @@ function escapeHtml (string) {
 } 
 
 function goList(){
-	$('#frm').attr('action', '/printlist.do');
+	$('#frm').attr('action', '/photolist.do');
 	$('#frm').submit();
 }
 

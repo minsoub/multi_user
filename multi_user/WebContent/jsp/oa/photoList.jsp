@@ -33,7 +33,7 @@
 			<div class="sub-nav-title">진행사항</div>
 			
 			<div class="tabNav sub5">
-				<li><a href="javascript:ReqWrite();">출력요청</a></li>
+				<li><a href="javascript:ReqWrite();">촬영요청</a></li>
 				<li><a href="javascript:ReqList();" class="active">진행사항</a></li>
 			</div>				
 			
@@ -57,12 +57,12 @@
 							<div>
                                 <p class="inputDesign">
     							<select id="req_type">
-    								<option value="">출력종류</option>
-    								<option value="1">현수막</option>
-    								<option value="2">A2</option>
-    								<option value="3">A1</option>
-    								<option value="4">A0</option>
-    								<option value="5">기타</option>
+    								<option value="">사진종류</option>
+    								<option value="1">증명사진</option>
+    								<option value="2">여권사진</option>
+    								<option value="3">비자사진</option>
+    								<option value="4">EP사진</option>
+    								<option value="5">사원증사진</option>
     							</select>    							    							
                             
                             	<input type="text" name="searchFromDt" id="searchFromDt" readonly="readonly"/> ~
@@ -92,7 +92,7 @@
 								<tr>
 									<th scope="col" class="no-td">번호</th>
 									<th scope="col" ><span class="sort" sortid="2">제목</span></th>
-									<th scope="col">출력종류</th>
+									<th scope="col">사진종류</th>
 									<th scope="col">신청자</th>
 									<th scope="col">요청일</th>
 									<th scope="col">완료일</th>
@@ -172,7 +172,7 @@ function ReqWrite()
 	var f = document.frm;
 	f.target = "_self";
 	//f.pageNo.value = "1";
-	f.action = '/printWrite.do';	
+	f.action = '/photoWrite.do';	
 	f.submit();			
 }
 
@@ -182,7 +182,7 @@ function ViewDetail(seq, reg_id)
 	var f = document.frm;
 	f.target = "_self";
 	//f.pageNo.value = "1";
-	f.action = '/printDetail.do';	
+	f.action = '/photoDetail.do';	
 	f.submit();
 }
 
@@ -191,7 +191,7 @@ function ReqList()
 	var f = document.frm;
 	f.target = "_self";
 	//f.pageNo.value = "1";
-	f.action = '/printlist.do';	
+	f.action = '/photolist.do';	
 	f.submit();	
 }
 </script>

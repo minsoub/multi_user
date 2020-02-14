@@ -66,17 +66,20 @@
 		<result property="reg_dept_nm" 	column="reg_dept_nm"/>
 		<result property="reg_tel" 		column="reg_tel"/>
 		<result property="reg_email" 	column="reg_email"/>
-		<result property="reg_ip" 		column="freq"/>
-		<result property="reg_dt" 		column="usertel"/>
-		<result property="del_yn" 		column="sts"/>
+		<result property="reg_ip" 		column="reg_ip"/>
+		<result property="reg_dt" 		column="reg_dt"/>
+		<result property="del_yn" 		column="del_yn"/>
 		<result property="aprv_id" 		column="aprv_id"/>
 		<result property="aprv_status" 	column="aprv_status"/>
 		<result property="aprv_dt" 		column="aprv_dt"/>
 		<result property="memo" 		column="memo"/>
+		<result property="req_type_nm"	column="req_type_nm"/>		
+		<result property="aprv_status_nm"		column="aprv_status_nm"/>
+		<result property="freq" 		column="freq" />
 		<result property="attachList" 	column="{seq=seq, freq=freq}" select="PrintReq#getAttatchList" />
 	</resultMap>
 	
-	<resultMap class="kr.co.neodreams.multi_user.dto.PrintReqDto" id="attatchResult" >
+	<resultMap class="kr.co.neodreams.multi_user.dto.PrintReqDto" id="attatchResult" > 
 		<result property="seq" 			column="seq"/>
 		<result property="freq" 		column="freq"/>
 		<result property="bbsid" 		column="bbsid"/>
@@ -87,10 +90,22 @@
   
     <select id="PrintReq#getPrintReqDetail" resultMap="printResult">
             SELECT 
-                   SEQ, REQ_SIZE, SIZE_ETC, REQ_HEIGHT, HEIGHT_ETC, CONTENT,  
-                   REG_ID,   REG_NM,   REG_IP, convert(nchar(10) , REG_DT ,120 ) as REG_DT, 
-                   DEL_YN, APRV_ID, APRV_IP, APRV_STATUS, convert(nchar(10) , APRV_DT ,120 ) as APRV_DT, 
-                   MEMO
+                   SEQ,  SUBJECT,  PRT_REQ_DT,   WANT_REQ_DT,  REQ_TYPE,  PRT_CNT, 
+                   PRT_SIZE,  PRT_SIZE1,  PRT_SIZE2,  CONTENT,  REG_ID,   REG_NM,
+                   REG_DEPT_NM,  REG_TEL,  REG_EMAIL,  REG_IP,  convert(nchar(10) , REG_DT ,120 ) as REG_DT, 
+                   DEL_YN,   APRV_ID,   APRV_STATUS,   convert(nchar(10) , APRV_DT ,120 ) as APRV_DT, 
+                   MEMO, '0' as FREQ, 
+                   CASE REQ_TYPE WHEN '1' THEN '현수막'
+                                 WHEN '2' THEN 'A2'
+                                 WHEN '3' THEN 'A1'
+                                 WHEN '4' THEN 'A0'
+                                 WHEN '5' THEN '기타'
+                   END REQ_TYPE_NM,
+                   CASE APRV_STATUS WHEN 'R' THEN '신청'
+                                    WHEN 'Y' THEN '진행'
+                                    WHEN 'A' THEN '완료'
+                                    WHEN 'C' THEN '취소'
+                   END APRV_STATUS_NM 
               FROM [TB_PRINT_REQ]
              WHERE SEQ = #seq# 	
     </select>
@@ -174,11 +189,14 @@
 		UPDATE 
 			TB_PRINT_REQ 
 		SET
-			REQ_SIZE = #req_size#,
-			SIZE_ETC = #size_etc#,
-			REQ_HEIGHT = #req_height#,
-			HEIGHT_ETC = #height_etc#,			
-			CONTENT = #content#
+			SUBJECT = #subject#,
+			WANT_REQ_DT = #want_req_dt#,
+			REQ_TYPE = #req_type#,
+			PRT_CNT = #prt_cnt#,
+			PRT_SIZE = #prt_size#,
+			PRT_SIZE1 = #prt_size1#,
+			PRT_SIZE2 = #prt_size2#,		
+			CONTENT = #content#			
 		WHERE
 			  seq = #seq#
 	</update>	
@@ -189,7 +207,7 @@
 		SET
 			aprv_id  = #aprv_id#,
 			aprv_ip  = #aprv_ip#,
-			aprv_sts = #aprv_sts#,
+			aprv_status = #aprv_status#,
 			aprv_dt  = getDate(),
 			memo     = #memo#
 		WHERE
@@ -259,16 +277,42 @@
     <select id="PrintReq#getPhotoList" parameterClass="PhotoReqDto" resultClass="PhotoReqDto">
         <![CDATA[
             SELECT 
-                   SEQ, REQ_TYPE, REQ_CONTENT,  
-                   REG_ID,   REG_NM,   REG_IP, convert(nchar(10) , REG_DT ,120 ) as REG_DT, 
-                   DEL_YN, APRV_ID, APRV_IP, APRV_STATUS, convert(nchar(10) , APRV_DT ,120 ) as APRV_DT, 
-                   MEMO
+                   SEQ,  SUBJECT,  PRT_REQ_DT,  WANT_REQ_DT,  REQ_TYPE, 
+                   REG_NM, REG_ID, APRV_STATUS, 
+                   CASE REQ_TYPE WHEN '1' THEN '증명사진'
+                                 WHEN '2' THEN '여권사진'
+                                 WHEN '3' THEN '비자사진'
+                                 WHEN '4' THEN 'EP사진'
+                                 WHEN '5' THEN '사원증사진'
+                   END REQ_TYPE_NM,
+                   CASE APRV_STATUS WHEN 'R' THEN '신청'
+                                    WHEN 'Y' THEN '진행'
+                                    WHEN 'A' THEN '완료'
+                                    WHEN 'C' THEN '취소'
+                   END APRV_STATUS_NM                 
             FROM [TB_PHOTO_REQ]
             WHERE 1=1
-        ]]>
-
+        ]]>  
+        <isNotEmpty prepend="and" property="stsList">                   
+					<iterate  prepend=" APRV_STATUS in  " property="stsList" open="(" close=")" conjunction="," >
+       					$stsList[]$
+       				</iterate>   
+  		</isNotEmpty>
+        
+        <isNotEmpty prepend="and" property="req_type">
+                REQ_TYPE = #req_type#
+        </isNotEmpty>  
+       
+       	<isNotEmpty property="searchFromDt">
+       	   <isNotEmpty prepend="AND" property="searchToDt">
+                    <![CDATA[
+                       CONVERT(date, PRT_REQ_DT)) BETWEEN  CONVERT(date, #searchFromDt#) AND CONVERT(date, #searchToDt#)
+                    ]]>                         
+           </isNotEmpty> 
+       	</isNotEmpty>
+            
         <isNotEmpty prepend="and" property="searchString">
-                (REQ_CONTENT LIKE '%$searchString$%')
+                (Content LIKE '%$searchString$%' or SUBJECT LIKE '%$searchString$%')
         </isNotEmpty>                 
                
         order by REG_DT desc
@@ -278,12 +322,24 @@
     
     <select id="PrintReq#getPhotoReqDetail" resultClass="PhotoReqDto">
             SELECT 
-                   SEQ, REQ_TYPE, REQ_CONTENT,  
-                   REG_ID,   REG_NM,   REG_IP, convert(nchar(10) , REG_DT ,120 ) as REG_DT, 
-                   DEL_YN, APRV_ID, APRV_IP, APRV_STATUS, convert(nchar(10) , APRV_DT ,120 ) as APRV_DT, 
-                   MEMO
+                   SEQ,  SUBJECT,  PRT_REQ_DT,   WANT_REQ_DT,  REQ_TYPE,  ADD_TYPE, 
+                   CONTENT,  REG_ID,   REG_NM,
+                   REG_DEPT_NM,  REG_TEL,  REG_EMAIL,  REG_IP,  convert(nchar(10) , REG_DT ,120 ) as REG_DT, 
+                   DEL_YN,   APRV_ID,   APRV_STATUS,   convert(nchar(10) , APRV_DT ,120 ) as APRV_DT, 
+                   MEMO, '0' as FREQ, 
+                   CASE REQ_TYPE WHEN '1' THEN '증명사진'
+                                 WHEN '2' THEN '여권사진'
+                                 WHEN '3' THEN '비자사진'
+                                 WHEN '4' THEN 'EP사진'
+                                 WHEN '5' THEN '사원증사진'
+                   END REQ_TYPE_NM,
+                   CASE APRV_STATUS WHEN 'R' THEN '신청'
+                                    WHEN 'Y' THEN '진행'
+                                    WHEN 'A' THEN '완료'
+                                    WHEN 'C' THEN '취소'
+                   END APRV_STATUS_NM 
               FROM [TB_PHOTO_REQ]
-             WHERE SEQ = #seq# 	
+             WHERE SEQ = #seq#  	
     </select>   
     
         
@@ -294,8 +350,26 @@
             WHERE
                   1=1
         ]]>
+        <isNotEmpty prepend="and" property="stsList">                   
+					<iterate  prepend=" APRV_STATUS in  " property="stsList" open="(" close=")" conjunction="," >
+       					$stsList[]$
+       				</iterate>   
+  		</isNotEmpty>
+        
+        <isNotEmpty prepend="and" property="req_type">
+                REQ_TYPE = #req_type#
+        </isNotEmpty>  
+       
+       	<isNotEmpty property="searchFromDt">
+       	   <isNotEmpty prepend="AND" property="searchToDt">
+                    <![CDATA[
+                       CONVERT(date, PRT_REQ_DT)) BETWEEN  CONVERT(date, #searchFromDt#) AND CONVERT(date, #searchToDt#)
+                    ]]>                         
+           </isNotEmpty> 
+       	</isNotEmpty>
+            
         <isNotEmpty prepend="and" property="searchString">
-                Content LIKE '%$searchString$%')
+                (Content LIKE '%$searchString$%' or SUBJECT LIKE '%$searchString$%')
         </isNotEmpty>
     </select>
     
@@ -304,11 +378,15 @@
 			SELECT COALESCE(max(seq), 0)+1 FROM TB_PHOTO_REQ
 		</selectKey>
 		INSERT INTO TB_PHOTO_REQ (
-			seq,        req_type,     req_content, 
-			reg_id,     reg_nm,       reg_ip,        reg_dt,       del_yn,         aprv_status
+			seq,           subject,      prt_req_dt,    want_req_dt,  req_type,       add_type, 
+			content,      reg_id,         reg_nm,   
+			reg_dept_nm,   reg_tel,      reg_email,      reg_ip,      reg_dt,         del_yn,         
+			aprv_status
 		) VALUES (
-			#seq#,	     #req_type#,   #req_content#,  
-			#reg_id#,    #reg_nm#,     #reg_ip#,     getDate(),    'N',            'R'
+			#seq#,	     #subject#,   #prt_req_dt#,   #want_req_dt#,  #req_type#,   #add_type#, 
+			#content#,  #reg_id#,    #reg_nm#,
+			#reg_dept_nm#,    #reg_tel#,     #reg_email#,  #reg_ip#,  getDate(),     'N', 
+			#aprv_status#
 		)
 	</insert>	
 	
@@ -316,8 +394,11 @@
 		UPDATE 
 			TB_PHOTO_REQ 
 		SET
-			REQ_TYPE    = #req_type#,
-			REQ_CONTENT = #req_content#
+			SUBJECT = #subject#,
+			WANT_REQ_DT = #want_req_dt#,
+			REQ_TYPE = #req_type#,
+			ADD_TYPE = #ADD_TYPE#,		
+			CONTENT = #content#	
 		WHERE
 			  seq = #seq#
 	</update>	
@@ -328,7 +409,7 @@
 		SET
 			aprv_id  = #aprv_id#,
 			aprv_ip  = #aprv_ip#,
-			aprv_sts = #aprv_sts#,
+			aprv_status = #aprv_status#,
 			aprv_dt  = getDate(),
 			memo     = #memo#
 		WHERE
