@@ -24,7 +24,7 @@
 	<div class="topMenu-bg-img-sub"></div>
 	<c:import url="/resource/common/include/topMenu.jsp" />
 	<c:set value="2" var="left_depth_1"/>
-
+<c:set var="isGetAdmin" value="${sessionScope.SESS_USER_INFO['rentAdmin']}"></c:set>
 	<c:set var="empno" value="${sessionScope.SESS_EMPNO }"/>
 	<c:set var="userNm" value="${sessionScope.SESS_USER_NAME }"/>
 	
@@ -49,17 +49,19 @@
 				<div class="nav-box">
 					<div class="nav-img"><img src="/resource/images/sub/sub2_tit_img.png"></div>
 					<div class="nav-list">
-						<img src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;서비스요청&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">${title}</b>
+						<img src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;서비스요청&nbsp;&nbsp;>&nbsp;&nbsp;${title}&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">진행사항</b>
 					</div>
-					<div class="nav-title">${title}</div>
+					<div class="nav-title">${title} <small class="sub2">상세내역</small></div>
 				</div>
-				<div class="sub-nav-title">${title} 상세내역</div>
 
-			<div class="tabNav sub5">
-				<li><a href="javascript:goWrite();">출력요청</a></li>
-				<li><a href="javascript:goList();" class="active">진행사항</a></li>
-			</div>	
-			
+				<ul class="tabNav sub2">
+					<li><a href="javascript:goWrite();">출력요청</a></li>
+					<li><a href="javascript:goList();" class="active">진행사항</a></li>
+				</ul>	
+	
+				<div class="sub-nav-title">출력요청 상세보기</div>
+				<div class="red-f">* 출력물은 종이만 가능합니다.</div>
+					
 				<div class="basic-list">
 					<div class="insrtfrom-framebox">
 						<div class="insert-step1-box">
@@ -72,7 +74,23 @@
 										<input type="hidden" id="seq" name="seq" value="${boardInfo.seq }">
 										<input type="hidden" id="freq" name="freq" value="${boardInfo.freq }">
 										<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo }" />
+										<input type="hidden" id="sts1" name="sts1" value="${paging.sts1 }" />
+										<input type="hidden" id="sts2" name="sts2" value="${paging.sts2 }" />
+										<input type="hidden" id="sts3" name="sts3" value="${paging.sts3 }" />
+										<input type="hidden" id="sts4" name="sts4" value="${paging.sts4 }" />
+										<input type="hidden" id="sts5" name="sts5" value="${paging.sts5 }" />
+										<input type="hidden" id="searchString" name="searchString" value="${paging.searchString }" />
+										<input type="hidden" id="searchFromDt" name="searchFromDt" value="${paging.searchFromDt }" />
+										<input type="hidden" id="searchToDt"   name="searchToDt"   value="${paging.searchToDt }" />
+										<input type="hidden" id="req_type"   name="req_type"   value="${paging.req_type }" />
 										
+										<dl class="insert_ready">
+											<dt class="must-option"><label>신청번호</label></dt>
+											<dd style="width: 203px;">${boardInfo.seq}</dd>
+											<dt class="must-option"><label>완료일</label></dt>
+											<dd style="width: 250px;">${boardInfo.aprv_dt}</dd>
+										</dl>
+																				
 											<dl class="insert_ready">
 												<dt class="must-option"><label>신청부서</label></dt>
 												<dd style="width: 150px;">${boardInfo.reg_dept_nm}</dd>
@@ -103,20 +121,23 @@
 												<dt class="must-option"><label>출력종류</label></dt>
 												<dd style="width: 150px;">${boardInfo.req_type_nm}</dd>
 												<dt class="must-option"><label>출력부수</label></dt>
-												<dd style="width: 50px;">${boardInfo.prt_cnt}</dd>
+												<dd style="width: 150px;">${boardInfo.prt_cnt}</dd>
 											</dl>	
 											<dl class="insert_ready">
 												<dt class="must-option"><label>규격</label></dt>
-												<dd style="width: 120px;">${boardInfo.prt_size}</dd>
-												<dt class="must-option"><label>가로</label></dt>
-												<dd style="width: 100px;">${boardInfo.prt_size1}cm</dd>
-												<dt class="must-option"><label>세로</label></dt>
-												<dd style="width: 100px;">${boardInfo.prt_size2}cm</dd>												
+												<dd style="width: 420px;">${boardInfo.prt_size_nm}  
+												   가로 ${boardInfo.prt_size1} cm 
+												   세로 ${boardInfo.prt_size2} cm
+												</dd>												
 											</dl>																					
 																																
 											<dl class="insert_ready">
 												<dt class="must-option"><label>요청사항</label></dt>
-												<dd>${boardInfo.content}</dd>
+												<dd>
+													<c:if test="${isGetAdmin != null or SESS_EMPNO eq boardInfo.reg_id}">
+														<pre style="white-space: pre-line;word-wrap: break-word;">${boardInfo.content}</pre>
+													</c:if>
+												</dd>
 											</dl>										
 										
 											<dl class="insert_ready">
@@ -129,6 +150,7 @@
 										<dt class="must-option"><label>첨부파일</label></dt>
 										<dd style="width:97%">
 											<div style="position: relative;">
+											<c:if test="${isGetAdmin != null or SESS_EMPNO eq boardInfo.reg_id}">
 												<c:if test="${fn:length(boardInfo.attachList) > 0}">
 													<c:forEach var="item" items="${boardInfo.attachList }" varStatus="status">
 													<div>
@@ -136,6 +158,7 @@
 													</div>
 													</c:forEach>
 												</c:if>
+											</c:if>	
 											</div>
 										</dd>
 									</dl>
@@ -145,7 +168,11 @@
 									<!-- 내가 쓴글 또는 관리자인 경우 -->
 									<c:if test="${isGetAdmin != null or SESS_EMPNO eq boardInfo.reg_id}">
 										<li><input type="submit" class="search_btn" value="수정" onclick="goUpdate(); return false;"></li>									
-										<li><input type="submit" class="search_btn" value="삭제" onclick="goDelete(); return false;"></li>
+										<li><input type="submit" class="search_btn" value="신청취소" onclick="goDelete(); return false;"></li>
+									</c:if>
+									<c:if test="${isGetAdmin != null}">
+										<li><input type="submit" class="search_btn" value="접수완료" onclick="goApply('Y'); return false;"></li>									
+										<li><input type="submit" class="search_btn" value="완료저장" onclick="goApply('A'); return false;"></li>									
 									</c:if>
 										<li><input type="button" onclick="goList();" class="search_btn" value="목록"></li>
 									</ul>
@@ -180,10 +207,10 @@ function goDelete(){
 	var params = {
 			"seq" : $('#seq').val(),
 			"bbsid" : $('#bbsid').val(),
+			"aprv_status" : "C",
 			"freq" : 0
-	}
-	
-	if(confirm('삭제하시겠습니까?')){
+	}	
+	if(confirm('신청취소 하시겠습니까?')){
 		$.ajax({
 			type : 'post',
 			url : '/deletePrint.do',
@@ -191,7 +218,7 @@ function goDelete(){
 			data : params,
 			success : function(result){
 				if(result >= 0){
-					alert('삭제되었습니다.');
+					alert('신청취소 되었습니다.');
 					goList();
 				}
 			},
@@ -199,6 +226,34 @@ function goDelete(){
 			}
 		})
 	}
+}
+function goApply(aprv_status) {	
+	var params = {
+			"seq" : $('#seq').val(),
+			"bbsid" : $('#bbsid').val(),
+			"aprv_status" : aprv_status,
+			"freq" : 0
+	}	
+	var title = "";
+	if (aprv_status == "Y") title = "접수완료 하시겠습니까?";
+	if (aprv_status == "A") title = "완료저장 하시겠습니까?";
+	
+	if(confirm(title)){
+		$.ajax({
+			type : 'post',
+			url : '/printStsUpdate.do',
+			dataType : 'json',
+			data : params,
+			success : function(result){
+				if(result >= 0){
+					alert('상태 저장 완료되었습니다.');
+					goList();
+				}
+			},
+			error : function(e){
+			}
+		})
+	}	
 }
 
 function goDown(val){

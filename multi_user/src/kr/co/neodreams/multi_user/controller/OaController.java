@@ -133,7 +133,14 @@ public class OaController extends BaseController{
         String nDate = calendar.get(Calendar.YEAR) + String.format("%02d", calendar.get(Calendar.MONTH) + 1) + String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH));
 
     	Date today = new Date();
+    	
     	String reserveInterval = dateFormat.format(today); // 당일까지만 예약가능.
+    	
+    	Calendar cal = Calendar.getInstance();
+    	cal.setTime(today);
+    	cal.add(Calendar.DATE, 14);
+    	
+    	String nextInterval = dateFormat.format(new Date(cal.getTimeInMillis()));
     	
         // 이번 주 예약 추출
         Map<String, String> rsrvMap = new HashMap<String, String>();
@@ -160,6 +167,7 @@ public class OaController extends BaseController{
         mv.addObject("nDate", 	 nDate);
         mv.addObject("dateList", dateList);
         mv.addObject("reserveInterval", reserveInterval);
+        mv.addObject("nextInterval", nextInterval);
         mv.addObject("rsrvMap",  rsrvMap);		// 예약현황
         mv.addObject("idMap",    idMap);		// 예약번호
         
@@ -366,19 +374,30 @@ public class OaController extends BaseController{
 			int totalCnt = 0;
 			commonDto.setBbsid("10028");		// 플로터출력
 			
+			System.out.println("sts1 : " + commonDto.getSts1());
+			System.out.println("sts2 : " + commonDto.getSts2());
+			System.out.println("sts3 : " + commonDto.getSts3());
+			System.out.println("sts4 : " + commonDto.getSts4());
+			System.out.println("sts5 : " + commonDto.getSts5());
+			
 			// 검색 조건에서 출력 타입
-			if (commonDto.getSts2() != null || commonDto.getSts3() != null || commonDto.getSts4() != null || commonDto.getSts5() != null)
+			if (!CommonUtil.isNull(commonDto.getSts2()).equals("") || !CommonUtil.isNull(commonDto.getSts3()).equals("") || 
+					!CommonUtil.isNull(commonDto.getSts4()).equals("") || !CommonUtil.isNull(commonDto.getSts5()).equals(""))
 			{
 				List<String> arrList = new ArrayList<String>();
-				if (commonDto.getSts2() != null)
+				if (!CommonUtil.isNull(commonDto.getSts2()).equals(""))
 					arrList.add("'"+commonDto.getSts2()+"'");
-				if (commonDto.getSts3() != null)
+				if (!CommonUtil.isNull(commonDto.getSts3()).equals(""))
 					arrList.add("'"+commonDto.getSts3()+"'");
-				if (commonDto.getSts4() != null)
+				if (!CommonUtil.isNull(commonDto.getSts4()).equals(""))
 					arrList.add("'"+commonDto.getSts4()+"'");
-				if (commonDto.getSts5() != null)
+				if (!CommonUtil.isNull(commonDto.getSts5()).equals(""))
 					arrList.add("'"+commonDto.getSts5()+"'");
 
+				commonDto.setStsList(arrList);
+			}else {
+				commonDto.setSts1("ALL");   // default 검색 조건
+				List<String> arrList = new ArrayList<String>();
 				commonDto.setStsList(arrList);
 			}
 
@@ -492,7 +511,7 @@ public class OaController extends BaseController{
 		PrintReqDto detailDto = prtService.getPrintReqDetail(dto);
 		dto.setPageNo(pageNo);
 		mv.addObject("boardInfo", detailDto);
-		mv.addObject("paging", detailDto);
+		mv.addObject("paging", dto);
 		System.out.println("pageNo : " + pageNo);
 		mv.setViewName("/oa/printView");
 		
@@ -590,8 +609,7 @@ public class OaController extends BaseController{
 	}	
 	
 	/**
-	 * 플로터 출력요청 상세 보기에서 게시글을 삭제한다. 
-	 * 파일이 있으면 파일을 삭제해야 한다.
+	 * 플로터 출력요청 상세 보기에서 게시글을 삭제한다. (신청취소상태로 전환)
 	 * 
 	 * @param req
 	 * @param res
@@ -611,7 +629,7 @@ public class OaController extends BaseController{
 			int fileChk = fileDelete(boardDto);
 			
 			if(fileChk > 0) {
-				retVal = Integer.toString(prtService.printFileDelete(boardDto));
+				//retVal = Integer.toString(prtService.printFileDelete(boardDto));
 				retVal = Integer.toString(prtService.printDelete(boardDto));
 			}else {
 				throw new Exception("-1"); 
@@ -669,19 +687,40 @@ public class OaController extends BaseController{
 	 * @throws Exception
 	 */
 	@RequestMapping("/photolist.do")
-	public ModelAndView photolist(BoardDto commonDto, HttpServletRequest request) throws Exception{
+	public ModelAndView photolist(PhotoReqDto commonDto, HttpServletRequest request) throws Exception{
 	
 		ModelAndView mv = new ModelAndView();
 		
 		try{
 			
-			List<BoardDto> noticeList = null;
+			List<PhotoReqDto> noticeList = null;
 			
 			int totalCnt = 0;
 			commonDto.setBbsid("10029");		// 사진촬영
 
-			noticeList = boardService.getSelectBoardList(commonDto);
-			totalCnt = boardService.getSelectBoardListCnt(commonDto);
+			// 검색 조건에서 출력 타입
+			if (!CommonUtil.isNull(commonDto.getSts2()).equals("") || !CommonUtil.isNull(commonDto.getSts3()).equals("") || 
+					!CommonUtil.isNull(commonDto.getSts4()).equals("") || !CommonUtil.isNull(commonDto.getSts5()).equals(""))
+			{
+				List<String> arrList = new ArrayList<String>();
+				if (!CommonUtil.isNull(commonDto.getSts2()).equals(""))
+					arrList.add("'"+commonDto.getSts2()+"'");
+				if (!CommonUtil.isNull(commonDto.getSts3()).equals(""))
+					arrList.add("'"+commonDto.getSts3()+"'");
+				if (!CommonUtil.isNull(commonDto.getSts4()).equals(""))
+					arrList.add("'"+commonDto.getSts4()+"'");
+				if (!CommonUtil.isNull(commonDto.getSts5()).equals(""))
+					arrList.add("'"+commonDto.getSts5()+"'");
+
+				commonDto.setStsList(arrList);
+			}else {
+				commonDto.setSts1("ALL");   // default 검색 조건
+				List<String> arrList = new ArrayList<String>();
+				commonDto.setStsList(arrList);
+			}
+			
+			noticeList = prtService.getPhotoList(commonDto);
+			totalCnt = prtService.getPhotoListCnt(commonDto);
 			
 			mv.setViewName("/oa/photoList");
 			mv.addObject("noticeList", noticeList);
@@ -730,6 +769,40 @@ public class OaController extends BaseController{
 		}	
 		return mv;
 	}	
+	
+	
+	/**
+	 * 사진촬영 출력요청을 저장한다.
+	 * 
+	 * @param req
+	 * @param res
+	 * @param boardDto
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping("/registPhoto.do")
+	public void registPhoto(HttpServletRequest req, HttpServletResponse res, PhotoReqDto dto) throws Exception{
+		String retVal = "0";
+		
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
+		
+		try{
+			// IP
+			String ip = req.getRemoteAddr();
+			dto.setReg_ip(ip);
+			retVal = Integer.toString(prtService.photoInsert(dto));
+			System.out.println("retVal : " + retVal);
+			dataSourceTransactionManager.commit(status);
+		}catch (Exception e) {
+			retVal = "-1";
+			dataSourceTransactionManager.rollback(status);
+		}finally {
+			res.getWriter().write(retVal);
+		}
+	}
+		
 	/**
 	 * 촬영요청 상세 보기
 	 * 
@@ -844,7 +917,10 @@ public class OaController extends BaseController{
 			dto.setAprv_id(SESS_EMPNO);
 			retVal = Integer.toString(prtService.photoUpdateSts(dto));
 			dataSourceTransactionManager.commit(status);
+			
+			System.out.println("result sts : " + retVal);
 		}catch (Exception e) {
+			System.out.println(e.toString());
 			retVal = "-1";
 			dataSourceTransactionManager.rollback(status);
 		}finally {
@@ -879,5 +955,35 @@ public class OaController extends BaseController{
 			res.getWriter().write(retVal);
 		}
 	}	
+	
+	/**
+	 * 사용자 찾기 팝업
+	 * 
+	 * @param commonDto
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("rawtypes")
+	@RequestMapping("/commonUserSearch.do")
+	public ModelAndView commonUserSearch(PrintReqDto commonDto, HttpServletRequest request) throws Exception{
+	
+		ModelAndView mv = new ModelAndView();
+		
+		try{
+			System.out.println("popup start...");			
+			List<HashMap> userList = prtService.getUserSearch(commonDto);
+			
+			mv.setViewName("/oa/userSearch");
+			mv.addObject("noticeList", userList);
+			System.out.println("popup end...");
+					
+		}catch(Exception e){
+			e.printStackTrace();
+			mv.setViewName("/error/error");
+		}	
+		return mv;
+	} 
+		
 	
 }

@@ -69,11 +69,7 @@ textarea {
     overflow: hidden;
 }
 #left {
-    /* position: fixed; */
-    /* Div 겹치는 현상 수정 20191224 */
-    position : relative;
-    float : left;
-    /* Div 겹치는 현상 수정 End */
+    position: fixed;
     top: 55px;
     left: 0px;
     bottom: 0px;

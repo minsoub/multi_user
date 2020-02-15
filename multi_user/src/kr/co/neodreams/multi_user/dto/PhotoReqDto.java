@@ -16,6 +16,7 @@ public class PhotoReqDto extends ItBaseDto {
 	private String		prt_req_dt;		// 출력 요청일
 	private String		want_req_dt;	// 희망 요청 완료일
 	private String		req_type;		// 사진 종류
+	private String		prt_cnt;		// 출력 개수
 	private String		add_type;		// 추가 사항
 	private String		content;		// 기타 사항
 	private String		req_type_nm;	// 출력 종류명
@@ -33,6 +34,16 @@ public class PhotoReqDto extends ItBaseDto {
 	private String sts5;			// 사용자취소
 	
 	private List<String> stsList;
+
+	
+	
+	public String getPrt_cnt() {
+		return prt_cnt;
+	}
+
+	public void setPrt_cnt(String prt_cnt) {
+		this.prt_cnt = prt_cnt;
+	}
 
 	public int getSeq() {
 		return seq;

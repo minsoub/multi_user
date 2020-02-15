@@ -24,7 +24,7 @@
 	<div class="topMenu-bg-img-sub"></div>
 	<c:import url="/resource/common/include/topMenu.jsp" />
 	<c:set value="2" var="left_depth_1"/>
-
+<c:set var="isGetAdmin" value="${sessionScope.SESS_USER_INFO['rentAdmin']}"></c:set>
 	<c:set var="empno" value="${sessionScope.SESS_EMPNO }"/>
 	<c:set var="userNm" value="${sessionScope.SESS_USER_NAME }"/>
 	
@@ -49,17 +49,38 @@
 				<div class="nav-box">
 					<div class="nav-img"><img src="/resource/images/sub/sub2_tit_img.png"></div>
 					<div class="nav-list">
-						<img src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;서비스요청&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">${title}</b>
+						<img src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;서비스요청&nbsp;&nbsp;>&nbsp;&nbsp;${title}&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">진행사항</b>
 					</div>
-					<div class="nav-title">${title}</div>
+					<div class="nav-title">${title} <small class="sub2">상세내역</small></div>
 				</div>
-				<div class="sub-nav-title">${title} 상세내역</div>
 
-			<div class="tabNav sub5">
-				<li><a href="javascript:goWrite();">촬영요청</a></li>
-				<li><a href="javascript:goList();" class="active">진행사항</a></li>
-			</div>	
+				<ul class="tabNav sub5">
+					<li><a href="javascript:goWrite();">촬영요청</a></li>
+					<li><a href="javascript:goList();" class="active">진행사항</a></li>
+				</ul>	
+				
+				<div class="red-f">
+					* 촬영요청은 익일부터 가능합니다.<br>
+					* 사진은 1인당 5매 이내로 출력 가능합니다.<br>
+					* 비자사진의 경우 요청사항에 특이사항 꼭 기입바랍니다.
+				</div>				
 			
+			
+				<form id="frm" name="frm" method="post">
+					<input type="hidden" id="bbsid" name="bbsid" value="${bbsid}" />
+					<input type="hidden" id="seq" name="seq" value="${boardInfo.seq }">
+					<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo }" />
+					<input type="hidden" id="sts1" name="sts1" value="${paging.sts1 }" />
+					<input type="hidden" id="sts2" name="sts2" value="${paging.sts2 }" />
+					<input type="hidden" id="sts3" name="sts3" value="${paging.sts3 }" />
+					<input type="hidden" id="sts4" name="sts4" value="${paging.sts4 }" />
+					<input type="hidden" id="sts5" name="sts5" value="${paging.sts5 }" />
+					<input type="hidden" id="searchString" name="searchString" value="${paging.searchString }" />
+					<input type="hidden" id="searchFromDt" name="searchFromDt" value="${paging.searchFromDt }" />
+					<input type="hidden" id="searchToDt"   name="searchToDt"   value="${paging.searchToDt }" />
+					<input type="hidden" id="req_type"   name="req_type"   value="${paging.req_type }" />
+				</form>						
+													
 				<div class="basic-list">
 					<div class="insrtfrom-framebox">
 						<div class="insert-step1-box">
@@ -67,64 +88,71 @@
 							<fieldset>
 								<legend>${title}</legend>
 								<div class="row-group">
-									<form id="frm" name="frm" method="post">
-									   <input type="hidden" id="bbsid" name="bbsid" value="${bbsid}" />
-										<input type="hidden" id="seq" name="seq" value="${boardInfo.seq }">
-										<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo }" />
-										
-											<dl class="insert_ready">
-												<dt class="must-option"><label>신청부서</label></dt>
-												<dd style="width: 150px;">${boardInfo.reg_dept_nm}</dd>
-												<dt class="must-option"><label>신청자</label></dt>
-												<dd style="width: 150px;">${boardInfo.reg_nm}</dd>
-											</dl>																					
-											<dl class="insert_ready">
-												<dt class="must-option"><label>전화번호</label></dt>
-												<dd style="width: 150px;">${boardInfo.reg_tel}</dd>
-
-												<dt class="must-option"><label>E-MAIL</label></dt>
-												<dd style="width: 150px;">${boardInfo.reg_email}</dd>
-											</dl>	
-											
-											<dl class="insert_ready">
-												<dt class="must-option"><label>출력요청일</label></dt>
-												<dd style="width:150px;">${boardInfo.prt_req_dt}</dd>
-												<dt class="must-option"><label>희망 요청완료일</label></dt>
-												<dd style="width:150px;">${boardInfo.want_req_dt}</dd>
-											</dl>	
-											
-																					
-											<dl class="insert_ready">
-												<dt class="must-option"><label>제목</label></dt>
-												<dd style="width: 300px;">${boardInfo.subject}</dd>
-											</dl>
-											<dl class="insert_ready">
-												<dt class="must-option"><label>사진종류</label></dt>
-												<dd style="width: 150px;">${boardInfo.req_type_nm}</dd>
-											</dl>	
-											<dl class="insert_ready">
-												<dt class="must-option"><label>추가사항</label></dt>
-												<dd style="width: 120px;">파일(JPG) 제공 (${boardInfo.add_type})</dd>											
-											</dl>																					
+									
+								<dl class="insert_ready">
+									<dt class="must-option"><label>신청번호</label></dt>
+									<dd style="width: 203px;">${boardInfo.seq}</dd>
+									<dt class="must-option"><label>완료일</label></dt>
+									<dd style="width: 203px;">${boardInfo.aprv_dt}</dd>
+								</dl>
+																														
+								<dl class="insert_ready">
+									<dt class="must-option"><label>신청부서</label></dt>
+									<dd style="width: 150px;">${boardInfo.reg_dept_nm}</dd>
+									<dt class="must-option"><label>신청자</label></dt>
+									<dd style="width: 150px;">${boardInfo.reg_nm}</dd>
+								</dl>																					
+								<dl class="insert_ready">
+									<dt class="must-option"><label>전화번호</label></dt>
+									<dd style="width: 150px;">${boardInfo.reg_tel}</dd>
+									<dt class="must-option"><label>E-MAIL</label></dt>
+									<dd style="width: 150px;">${boardInfo.reg_email}</dd>
+								</dl>										
+								<dl class="insert_ready">
+									<dt class="must-option"><label>촬영 요청일</label></dt>
+									<dd style="width:150px;">${boardInfo.prt_req_dt}</dd>
+									<dt class="must-option"><label>촬영 희망일</label></dt>
+									<dd style="width:150px;">${boardInfo.want_req_dt}</dd>
+								</dl>											
+								<dl class="insert_ready">
+									<dt class="must-option"><label>제목</label></dt>
+									<dd style="width: 300px;">${boardInfo.subject}</dd>
+								</dl>
+								<dl class="insert_ready">
+									<dt class="must-option"><label>사진종류</label></dt>
+									<dd style="width: 150px;">${boardInfo.req_type_nm}</dd>
+								</dl>	
+								<dl class="insert_ready">
+									<dt class="must-option"><label>추가사항</label></dt>
+									<dd style="width: 250px;">
+										<c:if test="${boardInfo.add_type eq 'Y'}">파일(JPG) 제공 <input type="checkbox" checked readonly></c:if>&nbsp;
+										<c:if test="${boardInfo.prt_cnt eq 'Y'}">사진출력 <input type="checkbox" checked readonly></c:if></dd>											
+								</dl>																					
 																																
-											<dl class="insert_ready">
-												<dt class="must-option"><label>요청사항</label></dt>
-												<dd>${boardInfo.content}</dd>
-											</dl>										
+								<dl class="insert_ready">
+									<dt class="must-option"><label>요청사항</label></dt>
+									<dd>
+										<c:if test="${isGetAdmin != null or SESS_EMPNO eq boardInfo.reg_id}">
+											<pre style="white-space: pre-line;word-wrap: break-word;">${boardInfo.content}</pre>
+										</c:if>
+									</dd>
+								</dl>										
 										
-											<dl class="insert_ready">
-												<dt class="must-option"><label>상태</label></dt>
-												<dd style="width: 300px;">${boardInfo.aprv_status_nm}</dd>
-											</dl>
-																					
-									</form>
-								</div>
+								<!-- >dl class="insert_ready">
+									<dt class="must-option"><label>상태</label></dt>
+									<dd style="width: 300px;">${boardInfo.aprv_status_nm}</dd>
+								</dl  -->																														
+							</div>
 								<div class="btn-zone">
 									<ul>
 									<!-- 내가 쓴글 또는 관리자인 경우 -->
 									<c:if test="${isGetAdmin != null or SESS_EMPNO eq boardInfo.reg_id}">
 										<li><input type="submit" class="search_btn" value="수정" onclick="goUpdate(); return false;"></li>									
-										<li><input type="submit" class="search_btn" value="삭제" onclick="goDelete(); return false;"></li>
+										<li><input type="submit" class="search_btn" value="신청취소" onclick="goDelete(); return false;"></li>
+									</c:if>
+									<c:if test="${isGetAdmin != null}">
+										<li><input type="submit" class="search_btn" value="접수완료" onclick="goApply('Y'); return false;"></li>									
+										<li><input type="submit" class="search_btn" value="완료저장" onclick="goApply('A'); return false;"></li>									
 									</c:if>
 										<li><input type="button" onclick="goList();" class="search_btn" value="목록"></li>
 									</ul>
@@ -138,7 +166,7 @@
 			<!--content end-->
 		</div>
 	</div>
-</body>
+
 <script type="text/javascript" src="/resource/common/js/jquery-1.12.0.min.js"></script>
 <script type="text/javascript" src="/resource/common/js/jquery.number.min.js"></script>
 <script type="text/javascript" src="/resource/common/js/jquery-1.12.1-ui.js"></script>
@@ -158,10 +186,11 @@ function goUpdate(){
 function goDelete(){
 	var params = {
 			"seq" : $('#seq').val(),
-			"bbsid" : $('#bbsid').val()
+			"bbsid" : $('#bbsid').val(),
+			"aprv_status" : "C"
 	}
 	
-	if(confirm('삭제하시겠습니까?')){
+	if(confirm('신청취소 하시겠습니까?')){
 		$.ajax({
 			type : 'post',
 			url : '/deletePhoto.do',
@@ -169,7 +198,7 @@ function goDelete(){
 			data : params,
 			success : function(result){
 				if(result >= 0){
-					alert('삭제되었습니다.');
+					alert('신청취소 되었습니다.');
 					goList();
 				}
 			},
@@ -177,6 +206,35 @@ function goDelete(){
 			}
 		})
 	}
+}
+function goApply(aprv_status) {	
+	var params = {
+			"seq" : $('#seq').val(),
+			"bbsid" : $('#bbsid').val(),
+			"aprv_status" : aprv_status
+	}	
+	var title = "";
+	if (aprv_status == "Y") title = "접수완료 하시겠습니까?";
+	if (aprv_status == "A") title = "완료저장 하시겠습니까?";
+	
+	if(confirm(title)){
+		$.ajax({
+			type : 'post',
+			url : '/photoStsUpdate.do',
+			dataType : 'json',
+			data : params,
+			success : function(result){
+				if(result!= "-1"){
+					alert('상태 저장 완료되었습니다.');
+					goList();
+				}else {
+					alert("상태저장시 에러가 발생하였습니다!!!");
+				}
+			},
+			error : function(e){
+			}
+		})
+	}	
 }
 
 function goList(){

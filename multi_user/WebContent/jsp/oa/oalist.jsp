@@ -89,10 +89,15 @@
 									</c:if>									
 								</c:if>		
 								<c:if test="${reserveInterval >  _date}">
-									<c:set var="btnText" value="기간초과" />
+									<c:set var="btnText" value="기간지남" />
 									<c:set var="btnClass" value="btnLight" />
 									<c:set var="btnClick" value="javascript:alert('신청하실 수 없는 일자 입니다.');" />											
 								</c:if>
+								<c:if test="${nextInterval <  _date}">
+									<c:set var="btnText" value="기간초과" />
+									<c:set var="btnClass" value="btnLight" />
+									<c:set var="btnClick" value="javascript:alert('신청하실 수 없는 일자 입니다.');" />											
+								</c:if>								
 							<td><p class="btnWrap"><a href="${btnClick}" class="${btnClass}">${btnText}</a></p></td>
 							</c:forEach>
 						</tr>

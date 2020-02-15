@@ -45,81 +45,97 @@
 				<div class="nav-box">
 					<div class="nav-img"><img src="/resource/images/sub/sub2_tit_img.png"></div>
 					<div class="nav-list">
-						<img src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;서비스요청&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">${title}</b>
+						<img src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;서비스요청&nbsp;&nbsp;>&nbsp;&nbsp;${title}&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">진행사항</b>
 					</div>
-					<div class="nav-title">${title}</div>
+					<div class="nav-title">${title} <small class="sub2">진행사항</small></div>
 				</div>
-				<div class="sub-nav-title">${title} 수정</div>
 
-			<div class="tabNav sub5">
-				<li><a href="javascript:goWrite();">촬영요청</a></li>
-				<li><a href="javascript:goList();" class="active">진행사항</a></li>
-			</div>	
+				<ul class="tabNav sub5">
+					<li><a href="javascript:goWrite();">촬영요청</a></li>
+					<li><a href="javascript:goList();" class="active">진행사항</a></li>
+				</ul>	
 			
-				<div class="basic-list">
-					
-						<div class="insrtfrom-framebox">
-							<div class="insert-step1-box">
-								<div class="form-step1">
+				<div class="sub-nav-title">사진촬영 수정하기</div>
+				<div class="red-f">
+					* 촬영요청은 익일부터 가능합니다.<br>
+					* 사진은 1인당 5매 이내로 출력 가능합니다.<br>
+					* 비자사진의 경우 요청사항에 특이사항 꼭 기입바랍니다.
+				</div>
+																
+				<div class="insrtfrom-framebox">
+					<div class="basic-list">
+						<div class="insert-step1-box">
+							<div class="form-step1">
 								<fieldset>
 									<legend>${title}</legend>
 									<div class="row-group">
 										<form id="frm" name="frm" method="post">
-											<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo}" />
-											<input type="hidden" id="bbsid" name="bbsid" value="${bbsid}" />
-											<input type="hidden" id="seq" name="seq" value="${resultDetail.seq }" />
-											<input type="hidden" id="aprv_status"   name="aprv_status" value="${resultDetail.aprv_status}"/>
-											<input type="hidden" id="reg_id" name="reg_id" value="${resultDetail.reg_id}" />
+										<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo}" />
+										<input type="hidden" id="bbsid" name="bbsid" value="${bbsid}" />
+										<input type="hidden" id="seq" name="seq" value="${resultDetail.seq }" />
+										<input type="hidden" id="aprv_status"   name="aprv_status" value="${resultDetail.aprv_status}"/>
+										<input type="hidden" id="reg_id" name="reg_id" value="${resultDetail.reg_id}" />
 
 											
+										<dl class="insert_ready">
+											<dt class="must-option"><label>신청번호</label></dt>
+											<dd style="width: 203px;">${resultDetail.seq}</dd>
+											<dt class="must-option"><label>완료일</label></dt>
+											<dd style="width: 250px;">${resultDetail.aprv_dt}</dd>
+										</dl>
+																					
 											<dl class="insert_ready">
 												<dt class="must-option"><label>신청부서</label></dt>
-												<dd style="width: 150px;"><input type="text" id="reg_dept_nm" name="reg_dept_nm" value="${resultDetail.reg_dept_nm }" readonly></dd>
+												<dd ><input type="text" id="reg_dept_nm" name="reg_dept_nm" value="${resultDetail.reg_dept_nm }" readonly></dd>
 												<dt class="must-option"><label>신청자</label></dt>
-												<dd style="width: 150px;"><input type="text" id="reg_nm" name="reg_nm" value="${resultDetail.reg_nm}" readonly></dd>
+												<dd class="btn-zone" style="width: 250px;">
+													<input type="text" id="reg_nm" name="reg_nm" value="${resultDetail.reg_nm}" readonly class="schword" style="width: 40%">
+													<c:if test="${isGetAdmin != null}">
+													<input type="button" style="cursor: pointer; height:27px;"  onclick="javascript:popupUserSearch();" class="search_btn schbtn" value="검색"><span class="help" style="color:#666; ">*이름/사번</span>
+													</c:if>
+												</dd>
 											</dl>																					
 											<dl class="insert_ready">
 												<dt class="must-option"><label>전화번호</label></dt>
-												<dd style="width: 150px;"><input type="text" id="reg_tel" name="reg_tel" value="${resultDetail.reg_tel}" readonly></dd>
-
+												<dd><input type="text" id="reg_tel" name="reg_tel" value="${resultDetail.reg_tel}" readonly></dd>
 												<dt class="must-option"><label>E-MAIL</label></dt>
-												<dd style="width: 150px;"><input type="text" id="reg_email" name="reg_email" value="${resultDetail.reg_email}" readonly></dd>
+												<dd style="width: 250px;"><input type="text" id="reg_email" name="reg_email" value="${resultDetail.reg_email}" readonly></dd>
 											</dl>	
 											
 											<dl class="insert_ready">
 												<dt class="must-option"><label>출력요청일</label></dt>
-												<dd style="width:150px;"><input type="text" name="prt_req_dt" id="prt_req_dt" value="${resultDetail.prt_req_dt}" readonly="readonly"/></dd>
+												<dd><input type="text" name="prt_req_dt" id="prt_req_dt" value="${resultDetail.prt_req_dt}" readonly="readonly"/></dd>
 												<dt class="must-option"><label>희망 요청완료일</label></dt>
-												<dd style="width:150px;"><input type="text" name="want_req_dt" id="want_req_dt" value="${resultDetail.want_req_dt}" readonly="readonly"/></dd>
+												<dd style="width:250px;"><input type="text" name="want_req_dt" id="want_req_dt" value="${resultDetail.want_req_dt}" readonly="readonly"/></dd>
 											</dl>	
-											
-																					
+																															
 											<dl class="insert_ready">
 												<dt class="must-option"><label>제목</label></dt>
-												<dd style="width: 300px;"><input type="text" id="subject" name="subject" value="${resultDetail.subject}"></dd>
+												<dd><input type="text" id="subject" name="subject" value="${resultDetail.subject}" style="width:580px;"></dd>
 											</dl>
 											<dl class="insert_ready">
 												<dt class="must-option"><label>사진종류</label></dt>
-												<dd style="width: 150px;">
-													<input type="radio" id="req_type" name="req_type" value="1" <c:if test="${resultData.req_type eq '1'}">checked</c:if>>증명사진
-													<input type="radio" id="req_type" name="req_type" value="2" <c:if test="${resultData.req_type eq '2'}">checked</c:if>>여권사진
-													<input type="radio" id="req_type" name="req_type" value="3" <c:if test="${resultData.req_type eq '3'}">checked</c:if>>비자사진
-													<input type="radio" id="req_type" name="req_type" value="4" <c:if test="${resultData.req_type eq '4'}">checked</c:if>>EP사진
-													<input type="radio" id="req_type" name="req_type" value="5" <c:if test="${resultData.req_type eq '5'}">checked</c:if>>사원증사진
+												<dd style="width: 250px;">
+													<input type="radio" id="req_type" name="req_type" value="1" <c:if test="${resultDetail.req_type eq '1'}">checked</c:if>>증명사진
+													<input type="radio" id="req_type" name="req_type" value="2" <c:if test="${resultDetail.req_type eq '2'}">checked</c:if>>여권사진
+													<input type="radio" id="req_type" name="req_type" value="3" <c:if test="${resultDetail.req_type eq '3'}">checked</c:if>>비자사진
+													<input type="radio" id="req_type" name="req_type" value="4" <c:if test="${resultDetail.req_type eq '4'}">checked</c:if>>EP사진
+													<input type="radio" id="req_type" name="req_type" value="5" <c:if test="${resultDetail.req_type eq '5'}">checked</c:if>>사원증사진
 												</dd>
 											</dl>	
 											<dl class="insert_ready">
 												<dt class="must-option"><label>추가사항</label></dt>
 												<dd style="width: 120px;">
-												   파일(JPG) 제공 <input type="checkbox" id="add_type" name="add_type" value="Y" <c:if test="${resultData.add_type eq 'Y'}">checked</c:if>>
+												     파일(JPG) 제공 <input type="checkbox" id="add_type" name="add_type" value="Y" <c:if test="${resultDetail.add_type eq 'Y'}">checked</c:if>>&nbsp;
+												     사진출력 <input type="checkbox" id="prt_cnt" name="prt_cnt" value="Y" <c:if test="${resultDetail.prt_cnt eq 'Y'}">checked</c:if>>&nbsp;												   
 												</dd>
 											</dl>																					
 																																
 											<dl class="insert_ready">
 												<dt class="must-option"><label>요청사항</label></dt>
-												<dd><textarea class="textarea-style" rows="6" cols="88" id="content" name="content" style="width: 618px;">${resultDetail.content}</textarea></dd>
+												<dd><textarea class="textarea-style" rows="6" cols="88" id="content" name="content">${resultDetail.content}</textarea></dd>
 											</dl>
-																																
+								<!-- 																					
 											<c:if test="${isGetAdmin != null}">
 											<dl class="insert_ready">
 												<dt class="must-option"><label>관리자메모</label></dt>
@@ -148,14 +164,15 @@
 													<c:if test="${resultDetail.aprv_status eq 'C'}">취소</c:if>
 												</dd>
 											</dl>						
-											</c:if>															
+											</c:if>	
+								 -->														
 										</form>						
 									</div>
 									<div class="btn-zone">
 										<ul>
 											<li><input type="submit" class="search_btn" value="수정" onclick="goSubmit(); return false;"></li>
 											<c:if test="${isGetAdmin != null}">
-											<li><input type="submit" class="search_btn" value="상태처리" onclick="goProcessSubmit(); return false;"></li>
+											<!-- li><input type="submit" class="search_btn" value="상태처리" onclick="goProcessSubmit(); return false;"></li  -->
 											</c:if>
 											<li><input type="button" onclick="goList();" class="search_btn" value="목록"></li>
 										</ul>
@@ -170,7 +187,7 @@
 			<!--content end-->
 		</div>
 	</div>
-</body>
+
 <script type="text/javascript" src="/resource/common/js/jquery-1.12.0.min.js"></script>
 <script type="text/javascript" src="/resource/common/js/jquery.number.min.js"></script>
 <script type="text/javascript" src="/resource/common/js/jquery-1.12.1-ui.js"></script>
@@ -202,6 +219,11 @@ function goSubmit(){
 			$('#subject').focus();
 			return false;
 		}
+		if ($("#want_req_dt").val() == "")
+		{
+			alert("희망 요청완료일을 입력하지 않았습니다!!!");
+			return;
+		}		
 
 		var params = {
 				"seq" : $('#seq').val(),

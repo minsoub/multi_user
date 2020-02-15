@@ -187,16 +187,16 @@
                 </li>
                 
                 <!-- 업무자료실 -->
-                <li>
+                <!-- li>
                     <a href="/admin/noticeList.do">
                     <c:choose>
                     	<c:when test="${param.left_depth_2 eq 3 }"><img alt="업무 자료실" src="/resource/images/sub/sub2_leftmenu_06b.png"></c:when>
                     	<c:otherwise><img alt="업무 자료실" src="/resource/images/sub/sub2_leftmenu_06.png"></c:otherwise>
                 	</c:choose>
                 	</a>
-                </li>
+                </li  -->
                 
-                <!-- 출력요청 (IT플라자)  -->
+                <!-- 플로터출력 (IT플라자)  -->
                 <li>
                     <a href="/printlist.do">
                     <c:choose>
@@ -471,14 +471,14 @@
                     </c:choose>
                     </a>
                 </li> 
-                <li>
+                <!-- li>
                     <a href="/multisw.do">
                     <c:choose>
                         <c:when test="${param.left_depth_2 eq 5 }"><img alt="" src="/resource/images/sub/sub6_leftmenu_05b.png"></c:when>
                         <c:otherwise><img alt="" src="/resource/images/sub/sub6_leftmenu_05.png"></c:otherwise>
                     </c:choose>
                     </a>
-                </li>
+                </li  -->
                 <li>
                     <a href="/winsw.do">
                     <c:choose>

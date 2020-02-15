@@ -1270,3 +1270,4 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ddeef4', end
 .search-box .form-group .label{float:left;height:27px;margin-right:15px;font-family:'돋움', dotum, sans-serif;font-size:12px;font-weight:bold;color:#777;line-height:27px;}
 .search-box .form-group .rows + .rows{margin-top:8px;}
 .txtTbl{text-align:right;font-size:12px}
+.imgSty{float:right;width:14%;}

@@ -1,5 +1,6 @@
 package kr.co.neodreams.multi_user.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import kr.co.neodreams.multi_user.dto.BoardDto;
@@ -144,4 +145,13 @@ public interface PrintReqService {
 	 * @throws Exception
 	 */
 	public int photoUpdateSts(PhotoReqDto dto) throws Exception;
+	
+	/**
+	 * 사용자 검색 
+	 * @param dto
+	 * @return
+	 * @throws Exception
+	 */	
+	@SuppressWarnings("rawtypes")
+	public List<HashMap> getUserSearch(PrintReqDto dto) throws Exception;
 }

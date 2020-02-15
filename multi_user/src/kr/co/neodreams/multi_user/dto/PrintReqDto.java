@@ -18,6 +18,7 @@ public class PrintReqDto extends ItBaseDto {
 	private String		req_type;		// 출력 종류
 	private String		prt_cnt;		// 출력 부수
 	private String		prt_size;		// 규격
+	private String		prt_size_nm;	// 규격명
 	private String		prt_size1;		// 가로 규격
 	private String		prt_size2;		// 세로 규격
 	private String		content;		// 기타 사항
@@ -47,6 +48,14 @@ public class PrintReqDto extends ItBaseDto {
 	private List<PrintReqDto> attachList;
 
 	
+
+	public String getPrt_size_nm() {
+		return prt_size_nm;
+	}
+
+	public void setPrt_size_nm(String prt_size_nm) {
+		this.prt_size_nm = prt_size_nm;
+	}
 
 	public List<String> getStsList() {
 		return stsList;

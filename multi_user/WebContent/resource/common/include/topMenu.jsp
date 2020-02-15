@@ -45,7 +45,7 @@
                     	<ul>
                     		<li class="menu-on"><a href="/contentsInfo.do">컨텐츠제작</a></li>
                     		<li><a href="/displayBoardInfo.do">전광판게시</a></li>
-                    		<li><a href="/admin/noticeList.do">업무자료실</a></li>
+                    		<!-- li><a href="/admin/noticeList.do">업무자료실</a></li  -->
                     		<li><a href="/printlist.do">플로터출력</a></li>
                     		<li><a href="/photolist.do">사진촬영</a></li>
                     		<li><a href="/oalist.do">OA교육장</a></li>
@@ -78,7 +78,7 @@
 							<li><a href="/jobsw.do">업무소프트웨어</a></li>
 							<li><a href="/driversw.do">드라이버</a></li>
 							<li><a href="/patchsw.do">패치/업데이트</a></li>
-							<li><a href="/multisw.do">멀티미디어</a></li>
+							<!-- li><a href="/multisw.do">멀티미디어</a></li  -->
 							<li><a href="/winsw.do">윈도우10</a></li>
 						</ul>
 					</li>    

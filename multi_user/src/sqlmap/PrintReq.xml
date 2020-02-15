@@ -15,7 +15,7 @@
                                  WHEN '5' THEN '기타'
                    END REQ_TYPE_NM,
                    CASE APRV_STATUS WHEN 'R' THEN '신청'
-                                    WHEN 'Y' THEN '진행'
+                                    WHEN 'Y' THEN '진행중'
                                     WHEN 'A' THEN '완료'
                                     WHEN 'C' THEN '취소'
                    END APRV_STATUS_NM                 
@@ -33,9 +33,9 @@
         </isNotEmpty>  
        
        	<isNotEmpty property="searchFromDt">
-       	   <isNotEmpty prepend="AND" property="searchToDt">
+       	   <isNotEmpty  property="searchToDt">
                     <![CDATA[
-                       CONVERT(date, PRT_REQ_DT)) BETWEEN  CONVERT(date, #searchFromDt#) AND CONVERT(date, #searchToDt#)
+                      AND ( CONVERT(date, PRT_REQ_DT) BETWEEN  CONVERT(date, #searchFromDt#) AND CONVERT(date, #searchToDt#) )
                     ]]>                         
            </isNotEmpty> 
        	</isNotEmpty>
@@ -50,6 +50,36 @@
     </select>
     
   
+    <select id="PrintReq#getPrintListCnt" parameterClass="PrintReqDto" resultClass="int">
+        <![CDATA[
+            SELECT count(*) as totalCnt
+            FROM [TB_PRINT_REQ]
+            WHERE
+                  1=1
+        ]]>
+        <isNotEmpty prepend="and" property="stsList">                   
+					<iterate  prepend=" APRV_STATUS in  " property="stsList" open="(" close=")" conjunction="," >
+       					$stsList[]$
+       				</iterate>   
+  		</isNotEmpty>
+        
+        <isNotEmpty prepend="and" property="req_type">
+                REQ_TYPE = #req_type#
+        </isNotEmpty>  
+       
+       	<isNotEmpty property="searchFromDt">
+       	   <isNotEmpty  property="searchToDt">
+                    <![CDATA[
+                       AND ( CONVERT(date, PRT_REQ_DT)  BETWEEN  CONVERT(date, #searchFromDt#) AND CONVERT(date, #searchToDt#) )
+                    ]]>                         
+           </isNotEmpty> 
+       	</isNotEmpty>
+            
+        <isNotEmpty prepend="and" property="searchString">
+                (Content LIKE '%$searchString$%' or SUBJECT LIKE '%$searchString$%')
+        </isNotEmpty> 
+    </select>
+    
 	<resultMap class="kr.co.neodreams.multi_user.dto.PrintReqDto" id="printResult">
 		<result property="seq" 			column="seq"/>
 		<result property="subject" 		column="subject"/>
@@ -58,6 +88,7 @@
 		<result property="req_type"		column="req_type"/>
 		<result property="prt_cnt"		column="prt_cnt"/>
 		<result property="prt_size"		column="prt_size"/>
+		<result property="prt_size_nm"	column="prt_size_nm"/>
 		<result property="prt_size1"	column="prt_size1"/>
 		<result property="prt_size2"	column="prt_size2"/>
 		<result property="content" 		column="content"/>
@@ -102,10 +133,15 @@
                                  WHEN '5' THEN '기타'
                    END REQ_TYPE_NM,
                    CASE APRV_STATUS WHEN 'R' THEN '신청'
-                                    WHEN 'Y' THEN '진행'
+                                    WHEN 'Y' THEN '진행중'
                                     WHEN 'A' THEN '완료'
                                     WHEN 'C' THEN '취소'
-                   END APRV_STATUS_NM 
+                   END APRV_STATUS_NM,
+                   CASE PRT_SIZE WHEN '1' THEN '24 Inch'
+                                 WHEN '2' THEN '36 Inch'
+                                 WHEN '3' THEN '42 Inch'
+                                 WHEN '4' THEN '기타'
+                   END PRT_SIZE_NM 
               FROM [TB_PRINT_REQ]
              WHERE SEQ = #seq# 	
     </select>
@@ -129,33 +165,6 @@
 		</isNotNull>
 	</select>    
 
-    <select id="PrintReq#getPrintListCnt" parameterClass="PrintReqDto" resultClass="int">
-        <![CDATA[
-            SELECT count(*) as totalCnt
-            FROM [TB_PRINT_REQ]
-            WHERE
-                  1=1
-        ]]>
-        <isNotEmpty prepend="and" property="aprv_status">
-                APRV_STATUS in ( #aprv_status# ) 
-        </isNotEmpty> 
-        
-        <isNotEmpty prepend="and" property="req_type">
-                REQ_TYPE = #req_type#
-        </isNotEmpty>  
-       
-       	<isNotEmpty property="searchFromDt">
-       	   <isNotEmpty prepend="AND" property="searchToDt">
-                    <![CDATA[
-                       CONVERT(date, PRT_REQ_DT)) BETWEEN  CONVERT(date, #searchFromDt#) AND CONVERT(date, #searchToDt#)
-                    ]]>                         
-           </isNotEmpty> 
-       	</isNotEmpty>
-            
-        <isNotEmpty prepend="and" property="searchString">
-                (Content LIKE '%$searchString$%' or SUBJECT LIKE '%$searchString$%')
-        </isNotEmpty> 
-    </select>
     
     <insert id="PrintReq#printInsert">
 		<selectKey keyProperty="seq" resultClass="int">
@@ -208,7 +217,9 @@
 			aprv_id  = #aprv_id#,
 			aprv_ip  = #aprv_ip#,
 			aprv_status = #aprv_status#,
+			<isEqual property="aprv_status" compareValue="A">
 			aprv_dt  = getDate(),
+			</isEqual>			
 			memo     = #memo#
 		WHERE
 			  seq = #seq#
@@ -240,9 +251,11 @@
 			</isEqual>
 	</select>	
 	
-	<delete id="PrintReq#printDelete">
-		DELETE FROM TB_PRINT_REQ WHERE seq = #seq#
-	</delete>
+	<update id="PrintReq#printDelete">
+		UPDATE TB_PRINT_REQ
+		   SET APRV_STATUS = 'C'		        
+		 WHERE seq = #seq#
+	</update>
 	
 	<delete id="PrintReq#attatchDelete">
 		DELETE FROM SPLAZA_Attatch WHERE seq = #seq# and bbsid=#bbsid#
@@ -289,7 +302,8 @@
                                     WHEN 'Y' THEN '진행'
                                     WHEN 'A' THEN '완료'
                                     WHEN 'C' THEN '취소'
-                   END APRV_STATUS_NM                 
+                   END APRV_STATUS_NM,
+                   convert(nchar(10) , APRV_DT ,120 ) as APRV_DT                
             FROM [TB_PHOTO_REQ]
             WHERE 1=1
         ]]>  
@@ -306,7 +320,7 @@
        	<isNotEmpty property="searchFromDt">
        	   <isNotEmpty prepend="AND" property="searchToDt">
                     <![CDATA[
-                       CONVERT(date, PRT_REQ_DT)) BETWEEN  CONVERT(date, #searchFromDt#) AND CONVERT(date, #searchToDt#)
+                       CONVERT(date, PRT_REQ_DT) BETWEEN  CONVERT(date, #searchFromDt#) AND CONVERT(date, #searchToDt#)
                     ]]>                         
            </isNotEmpty> 
        	</isNotEmpty>
@@ -320,29 +334,6 @@
          FETCH NEXT #perPageCnt# ROWS ONLY
     </select> 
     
-    <select id="PrintReq#getPhotoReqDetail" resultClass="PhotoReqDto">
-            SELECT 
-                   SEQ,  SUBJECT,  PRT_REQ_DT,   WANT_REQ_DT,  REQ_TYPE,  ADD_TYPE, 
-                   CONTENT,  REG_ID,   REG_NM,
-                   REG_DEPT_NM,  REG_TEL,  REG_EMAIL,  REG_IP,  convert(nchar(10) , REG_DT ,120 ) as REG_DT, 
-                   DEL_YN,   APRV_ID,   APRV_STATUS,   convert(nchar(10) , APRV_DT ,120 ) as APRV_DT, 
-                   MEMO, '0' as FREQ, 
-                   CASE REQ_TYPE WHEN '1' THEN '증명사진'
-                                 WHEN '2' THEN '여권사진'
-                                 WHEN '3' THEN '비자사진'
-                                 WHEN '4' THEN 'EP사진'
-                                 WHEN '5' THEN '사원증사진'
-                   END REQ_TYPE_NM,
-                   CASE APRV_STATUS WHEN 'R' THEN '신청'
-                                    WHEN 'Y' THEN '진행'
-                                    WHEN 'A' THEN '완료'
-                                    WHEN 'C' THEN '취소'
-                   END APRV_STATUS_NM 
-              FROM [TB_PHOTO_REQ]
-             WHERE SEQ = #seq#  	
-    </select>   
-    
-        
     <select id="PrintReq#getPhotoListCnt" parameterClass="PhotoReqDto" resultClass="int">
         <![CDATA[
             SELECT count(*) as totalCnt
@@ -363,7 +354,7 @@
        	<isNotEmpty property="searchFromDt">
        	   <isNotEmpty prepend="AND" property="searchToDt">
                     <![CDATA[
-                       CONVERT(date, PRT_REQ_DT)) BETWEEN  CONVERT(date, #searchFromDt#) AND CONVERT(date, #searchToDt#)
+                       CONVERT(date, PRT_REQ_DT) BETWEEN  CONVERT(date, #searchFromDt#) AND CONVERT(date, #searchToDt#)
                     ]]>                         
            </isNotEmpty> 
        	</isNotEmpty>
@@ -371,7 +362,32 @@
         <isNotEmpty prepend="and" property="searchString">
                 (Content LIKE '%$searchString$%' or SUBJECT LIKE '%$searchString$%')
         </isNotEmpty>
-    </select>
+    </select>    
+    
+    <select id="PrintReq#getPhotoReqDetail" resultClass="PhotoReqDto">
+            SELECT 
+                   SEQ,  SUBJECT,  PRT_REQ_DT,   WANT_REQ_DT,  REQ_TYPE,  PRT_CNT, ADD_TYPE, 
+                   CONTENT,  REG_ID,   REG_NM,
+                   REG_DEPT_NM,  REG_TEL,  REG_EMAIL,  REG_IP,  convert(nchar(10) , REG_DT ,120 ) as REG_DT, 
+                   DEL_YN,   APRV_ID,   APRV_STATUS,   convert(nchar(10) , APRV_DT ,120 ) as APRV_DT, 
+                   MEMO, '0' as FREQ, 
+                   CASE REQ_TYPE WHEN '1' THEN '증명사진'
+                                 WHEN '2' THEN '여권사진'
+                                 WHEN '3' THEN '비자사진'
+                                 WHEN '4' THEN 'EP사진'
+                                 WHEN '5' THEN '사원증사진'
+                   END REQ_TYPE_NM,
+                   CASE APRV_STATUS WHEN 'R' THEN '신청'
+                                    WHEN 'Y' THEN '진행'
+                                    WHEN 'A' THEN '완료'
+                                    WHEN 'C' THEN '취소'
+                   END APRV_STATUS_NM 
+              FROM [TB_PHOTO_REQ]
+             WHERE SEQ = #seq#  	
+    </select>   
+    
+        
+
     
     <insert id="PrintReq#photoInsert">
 		<selectKey keyProperty="seq" resultClass="int">
@@ -379,12 +395,12 @@
 		</selectKey>
 		INSERT INTO TB_PHOTO_REQ (
 			seq,           subject,      prt_req_dt,    want_req_dt,  req_type,       add_type, 
-			content,      reg_id,         reg_nm,   
+			content,      reg_id,         reg_nm,       prt_cnt,  
 			reg_dept_nm,   reg_tel,      reg_email,      reg_ip,      reg_dt,         del_yn,         
 			aprv_status
 		) VALUES (
 			#seq#,	     #subject#,   #prt_req_dt#,   #want_req_dt#,  #req_type#,   #add_type#, 
-			#content#,  #reg_id#,    #reg_nm#,
+			#content#,  #reg_id#,    #reg_nm#,        #prt_cnt#, 
 			#reg_dept_nm#,    #reg_tel#,     #reg_email#,  #reg_ip#,  getDate(),     'N', 
 			#aprv_status#
 		)
@@ -397,7 +413,8 @@
 			SUBJECT = #subject#,
 			WANT_REQ_DT = #want_req_dt#,
 			REQ_TYPE = #req_type#,
-			ADD_TYPE = #ADD_TYPE#,		
+			PRT_CNT  = #prt_cnt#,
+			ADD_TYPE = #add_type#,		
 			CONTENT = #content#	
 		WHERE
 			  seq = #seq#
@@ -409,15 +426,28 @@
 		SET
 			aprv_id  = #aprv_id#,
 			aprv_ip  = #aprv_ip#,
-			aprv_status = #aprv_status#,
-			aprv_dt  = getDate(),
-			memo     = #memo#
+			aprv_status = #aprv_status#
+			<isEqual property="aprv_status" compareValue="A">
+			,aprv_dt  = getDate()
+			</isEqual>
 		WHERE
 			  seq = #seq#
 	</update>
 	
-	<delete id="PrintReq#photoDelete">
-		DELETE FROM TB_PHOTO_REQ WHERE seq = #seq#
-	</delete>			            
-    
+	<update id="PrintReq#photoDelete">
+		UPDATE TB_PHOTO_REQ
+		   SET APRV_STATUS = 'C'		        
+		 WHERE seq = #seq#
+	</update>
+	    
+	    
+    <select id="PrintReq#getUserSearch" resultClass="hashmap">
+            SELECT 
+                   empno, name, mailno, dept_name, telno
+              FROM [tbSVC_TDMSEMP]
+             WHERE 1=1
+             <isNotEmpty prepend="and" property="searchString">
+                (name LIKE '%$searchString$%' or empno LIKE '%$searchString$%')
+        	</isNotEmpty>
+    </select>  	    
 </sqlMap>

@@ -1,5 +1,6 @@
 package kr.co.neodreams.multi_user.dao;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -72,7 +73,7 @@ public class PrintReqDao extends BaseDao {
 	 */
 	public int printDelete(PrintReqDto dto) throws Exception
 	{
-		return delete("PrintReq#printDelete", dto);
+		return update("PrintReq#printDelete", dto);
 	}
 	/**
 	 * 플로터 출력 요청 상세 정보를 조회한다.
@@ -103,7 +104,7 @@ public class PrintReqDao extends BaseDao {
 	 * @param listBoardDto
 	 * @return
 	 */
-	public Object boardAttatchInsert(List<PrintReqDto> dto) {
+	public Object printAttatchInsert(List<PrintReqDto> dto) {
 		return insert("PrintReq#printAttatchInsert", dto);
 	}
 		
@@ -195,7 +196,7 @@ public class PrintReqDao extends BaseDao {
 		return update("PrintReq#photoUpdate", dto);
 	}
 	/**
-	 * 사진촬영 요청을 삭제한다.
+	 * 사진촬영 요청을 삭제한다. (상태값만 변경한다)
 	 * 
 	 * @param dto
 	 * @return
@@ -203,7 +204,7 @@ public class PrintReqDao extends BaseDao {
 	 */
 	public int photoDelete(PhotoReqDto dto) throws Exception
 	{
-		return delete("PrintReq#photoDelete", dto);
+		return update("PrintReq#photoDelete", dto);
 	}
 	/**
 	 * 사진촬영 요청 상세 정보를 조회한다.
@@ -226,5 +227,17 @@ public class PrintReqDao extends BaseDao {
 	public int photoUpdateSts(PhotoReqDto dto) throws Exception
 	{
 		return update("PrintReq#photoUpdateSts", dto);
+	}	
+	/**
+	 * 사용자 정보 검색 
+	 * 
+	 * @param dto
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public List<HashMap> getUserSearch(PrintReqDto dto) throws Exception
+	{
+		return (List<HashMap>) list("PrintReq#getUserSearch", dto);
 	}	
 }
