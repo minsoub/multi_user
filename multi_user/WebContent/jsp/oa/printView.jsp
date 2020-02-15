@@ -21,6 +21,18 @@
 }
 </style>
 <body>
+<c:choose>
+	<c:when test="${paging.mode eq 'mypage' }">
+	<c:set var="modeNum" value="4"/>
+	<c:set var="modeNum2" value="3"/>
+	</c:when>
+	<c:when test="${paging.mode ne 'mypage' }">
+	<c:set var="modeNum" value="2"/>
+	<c:set var="modeNum2" value="4"/>
+	</c:when>
+</c:choose>
+
+
 	<div class="topMenu-bg-img-sub"></div>
 	<c:import url="/resource/common/include/topMenu.jsp" />
 	<c:set value="2" var="left_depth_1"/>
@@ -37,8 +49,8 @@
 			<div class="contents-header-framebox">
 				<div class="learn-tit-framebox">
 					<c:import url="/resource/common/include/leftMenu_01.jsp">
-						<c:param name="left_depth_1" value="${menu_depth1}"></c:param>
-						<c:param name="left_depth_2" value="${menu_depth2}"></c:param>
+						<c:param name="left_depth_1" value="${modeNum}"></c:param>
+						<c:param name="left_depth_2" value="${modeNum2}"></c:param>
 					</c:import>
 				</div>
 			</div>
@@ -83,10 +95,10 @@
 										<input type="hidden" id="searchFromDt" name="searchFromDt" value="${paging.searchFromDt }" />
 										<input type="hidden" id="searchToDt"   name="searchToDt"   value="${paging.searchToDt }" />
 										<input type="hidden" id="req_type"   name="req_type"   value="${paging.req_type }" />
-										
+										<input type="hidden" id="mode" name="mode" value="${paging.mode }" />
 										<dl class="insert_ready">
 											<dt class="must-option"><label>신청번호</label></dt>
-											<dd style="width: 203px;">${boardInfo.seq}</dd>
+											<dd style="width: 250px;">${boardInfo.seq}</dd>
 											<dt class="must-option"><label>완료일</label></dt>
 											<dd style="width: 250px;">${boardInfo.aprv_dt}</dd>
 										</dl>
@@ -245,7 +257,7 @@ function goApply(aprv_status) {
 			dataType : 'json',
 			data : params,
 			success : function(result){
-				if(result >= 0){
+				if(result != "-1"){
 					alert('상태 저장 완료되었습니다.');
 					goList();
 				}

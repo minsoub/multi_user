@@ -113,10 +113,10 @@ public class OaController extends BaseController{
         else if (todayWeek == Calendar.SATURDAY) temp -= 5;
         else if (todayWeek == Calendar.SUNDAY) temp -= 6;
 
-        calendar.add(Calendar.DAY_OF_MONTH, temp);
+        calendar.add(Calendar.DAY_OF_MONTH, temp);	// 시작월요일
 
         String monDate = calendar.get(Calendar.YEAR) + String.format("%02d", (calendar.get(Calendar.MONTH) + 1)) + String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH));
-
+                
         // 주말을 제외한 주간일자를 구한다.
         for (int i = 0; i < 7; i++) {
         	if (i != 0) calendar.add(Calendar.DAY_OF_MONTH, 1);
@@ -148,7 +148,10 @@ public class OaController extends BaseController{
         
         // 예약 추출을 yyyyMMddHH24 형식의 key로 저장하면 containKey로 찾을 수 있음.
         OaDto dto = new OaDto();
-        dto.setDate(date);
+        dto.setDate(monDate);   // 시작월요일부터
+        System.out.println("monDate : " + monDate);
+        System.out.println("date : " + date);
+        //dto.setDate(date);
         
         List<OaDto> lst = oaService.getSelectOAList(dto);
         System.out.println("lst size : " + lst.size());
@@ -373,7 +376,7 @@ public class OaController extends BaseController{
 			
 			int totalCnt = 0;
 			commonDto.setBbsid("10028");		// 플로터출력
-			
+			commonDto.setReg_id("");            // mypage에서 활용함(검색조건으로)
 			System.out.println("sts1 : " + commonDto.getSts1());
 			System.out.println("sts2 : " + commonDto.getSts2());
 			System.out.println("sts3 : " + commonDto.getSts3());
@@ -601,6 +604,7 @@ public class OaController extends BaseController{
 			retVal = Integer.toString(prtService.printUpdateSts(dto));
 			dataSourceTransactionManager.commit(status);
 		}catch (Exception e) {
+			System.out.println(e.toString());
 			retVal = "-1";
 			dataSourceTransactionManager.rollback(status);
 		}finally {
@@ -828,7 +832,7 @@ public class OaController extends BaseController{
 		PhotoReqDto detailDto = prtService.getPhotoReqDetail(dto);
 		dto.setPageNo(pageNo);
 		mv.addObject("boardInfo", detailDto);
-		mv.addObject("paging", detailDto);
+		mv.addObject("paging", dto);
 		System.out.println("pageNo : " + pageNo);
 		mv.setViewName("/oa/photoView");
 		

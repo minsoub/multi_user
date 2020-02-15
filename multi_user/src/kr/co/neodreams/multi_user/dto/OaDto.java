@@ -1,12 +1,14 @@
 package kr.co.neodreams.multi_user.dto;
 
+import kr.co.neodreams.multi_user.base.dto.BasePagingDto;
+
 /**
  * OA 교육장 DTO Class
  * 
  * @author hist
  *
  */
-public class OaDto {
+public class OaDto   extends BasePagingDto{
 	private int		rsrv_id;				// 예약번호(순차번호)
 	private String	sabun;					// 사번(사용자아이디)
 	private String	place_id;				// 교육장아이디
@@ -17,6 +19,7 @@ public class OaDto {
 	private String	admin_id;				// 승인자 아이디
 	private String	aprv_ip;				// 승인자 아이피 주소
 	private String	aprv_status;			// 승인상태 (N:신청, Y:승인, C:취소)
+	private String  aprv_status_nm;
 	private String	aprv_dttm;				// 승인일자(datetime)
 	private String	del_flag;				// 삭제여부(Y:삭제, N)
 	private String	memo;					// 취소 처리 메모
@@ -26,8 +29,30 @@ public class OaDto {
 	private String  user_name;
 	private String  user_tel;
 
+	// 검색 조건
+	private String searchFromDt;
+	private String searchToDt;
 	
 	
+	
+	public String getAprv_status_nm() {
+		return aprv_status_nm;
+	}
+	public void setAprv_status_nm(String aprv_status_nm) {
+		this.aprv_status_nm = aprv_status_nm;
+	}
+	public String getSearchFromDt() {
+		return searchFromDt;
+	}
+	public void setSearchFromDt(String searchFromDt) {
+		this.searchFromDt = searchFromDt;
+	}
+	public String getSearchToDt() {
+		return searchToDt;
+	}
+	public void setSearchToDt(String searchToDt) {
+		this.searchToDt = searchToDt;
+	}
 	public String getUser_name() {
 		return user_name;
 	}

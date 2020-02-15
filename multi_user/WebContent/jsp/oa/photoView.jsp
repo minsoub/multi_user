@@ -21,6 +21,17 @@
 }
 </style>
 <body>
+<c:choose>
+	<c:when test="${paging.mode eq 'mypage' }">
+	<c:set var="modeNum" value="4"/>
+	<c:set var="modeNum2" value="4"/>
+	</c:when>
+	<c:when test="${paging.mode ne 'mypage' }">
+	<c:set var="modeNum" value="2"/>
+	<c:set var="modeNum2" value="5"/>
+	</c:when>
+</c:choose>
+
 	<div class="topMenu-bg-img-sub"></div>
 	<c:import url="/resource/common/include/topMenu.jsp" />
 	<c:set value="2" var="left_depth_1"/>
@@ -37,8 +48,8 @@
 			<div class="contents-header-framebox">
 				<div class="learn-tit-framebox">
 					<c:import url="/resource/common/include/leftMenu_01.jsp">
-						<c:param name="left_depth_1" value="${menu_depth1}"></c:param>
-						<c:param name="left_depth_2" value="${menu_depth2}"></c:param>
+						<c:param name="left_depth_1" value="${modeNum}"></c:param>
+						<c:param name="left_depth_2" value="${modeNum2}"></c:param>
 					</c:import>
 				</div>
 			</div>
@@ -69,6 +80,7 @@
 				<form id="frm" name="frm" method="post">
 					<input type="hidden" id="bbsid" name="bbsid" value="${bbsid}" />
 					<input type="hidden" id="seq" name="seq" value="${boardInfo.seq }">
+					<input type="hidden" id="mode" name="mode" value="${paging.mode }">
 					<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo }" />
 					<input type="hidden" id="sts1" name="sts1" value="${paging.sts1 }" />
 					<input type="hidden" id="sts2" name="sts2" value="${paging.sts2 }" />
@@ -238,7 +250,12 @@ function goApply(aprv_status) {
 }
 
 function goList(){
-	$('#frm').attr('action', '/photolist.do');
+	if (frm.mode.value == "")
+	{
+		$('#frm').attr('action', '/photolist.do');
+	}else {
+		$('#frm').attr('action', '/mypagePhotoList.do');
+	}
 	$('#frm').submit();
 }
 

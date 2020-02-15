@@ -7,9 +7,14 @@ import java.util.Map;
 import kr.co.neodreams.multi_user.base.controller.BaseController;
 import kr.co.neodreams.multi_user.dto.ContentsDto;
 import kr.co.neodreams.multi_user.dto.DisplayBoardDto;
+import kr.co.neodreams.multi_user.dto.OaDto;
+import kr.co.neodreams.multi_user.dto.PhotoReqDto;
+import kr.co.neodreams.multi_user.dto.PrintReqDto;
 import kr.co.neodreams.multi_user.dto.StatisticsDto;
 import kr.co.neodreams.multi_user.service.ContentsService;
 import kr.co.neodreams.multi_user.service.DisplayBoardService;
+import kr.co.neodreams.multi_user.service.OaService;
+import kr.co.neodreams.multi_user.service.PrintReqService;
 import kr.co.neodreams.multi_user.service.StatisticsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +30,12 @@ public class MypageController extends BaseController{
 
     @Autowired
     DisplayBoardService displayBoardService;
+    
+    @Autowired
+    OaService oaService;
+    
+    @Autowired
+    PrintReqService prtService;
 
     @Autowired
     StatisticsService statisticsService;
@@ -170,4 +181,113 @@ public class MypageController extends BaseController{
         mv.setViewName("mypage/mypageRentalList");
         return mv;
     }
+    
+    /**
+     * 출력요청 신청내역 조회한다. (내 데이터)
+     * @param dto
+     * @return
+     */
+    @RequestMapping("/mypagePrintList.do")
+    public ModelAndView mypagePrintList(PrintReqDto dto){
+        ModelAndView mv = new ModelAndView();
+        String reg_id = SESS_EMPNO;
+        dto.setReg_id(reg_id);
+
+		List<PrintReqDto> resultList = null;
+		
+		int totalCnt = 0;
+
+        try {
+        	resultList = prtService.getPrintList(dto);
+			totalCnt = prtService.getPrintListCnt(dto);
+
+            /*화면에 가져갈 리스트 담기*/
+            mv.addObject("resultList", resultList);
+            /*화면에 가져갈 리스트 카운트 담기*/
+            mv.addObject("totalCnt", totalCnt);
+            mv.setViewName("mypage/mypagePrintList");
+        } catch (Exception e) {
+            // TODO TRY/CATCH
+            e.printStackTrace();
+            /*에러 화면 이동*/
+            mv.setViewName("/error/error");
+        }
+
+        /*페이징 처리를 위한 값 담기*/
+        mv.addObject("paging", dto);
+        return mv;
+    }    
+    
+    /**
+     * 촬영요청 신청내역 조회한다. (내 데이터)
+     * @param dto
+     * @return
+     */
+    @RequestMapping("/mypagePhotoList.do")
+    public ModelAndView mypagePhotoList(PhotoReqDto dto){
+        ModelAndView mv = new ModelAndView();
+
+        String reg_id = SESS_EMPNO;
+        dto.setReg_id(reg_id);
+
+		List<PhotoReqDto> resultList = null;
+		
+		int totalCnt = 0;
+
+        try {
+        	resultList = prtService.getPhotoList(dto);
+			totalCnt = prtService.getPhotoListCnt(dto);
+
+            /*화면에 가져갈 리스트 담기*/
+            mv.addObject("resultList", resultList);
+            /*화면에 가져갈 리스트 카운트 담기*/
+            mv.addObject("totalCnt", totalCnt);
+            mv.setViewName("mypage/mypagePhotoList");
+        } catch (Exception e) {
+            // TODO TRY/CATCH
+            e.printStackTrace();
+            /*에러 화면 이동*/
+            mv.setViewName("/error/error");
+        }
+
+        /*페이징 처리를 위한 값 담기*/
+        mv.addObject("paging", dto);
+        return mv;
+    }      
+    
+    /**
+     * OA교육장 이용신청 내역 조회한다. (내 데이터)
+     * @param dto
+     * @return
+     */
+    @RequestMapping("/mypageOaList.do")
+    public ModelAndView mypageOaList(OaDto dto){
+        ModelAndView mv = new ModelAndView();
+        String reg_id = SESS_EMPNO;
+        dto.setSabun(reg_id);
+
+		List<OaDto> resultList = null;
+		
+		int totalCnt = 0;
+
+        try {
+        	resultList = oaService.getSelectOAMyList(dto);
+			totalCnt = oaService.getSelectOAMyListCnt(dto);
+
+            /*화면에 가져갈 리스트 담기*/
+            mv.addObject("resultList", resultList);
+            /*화면에 가져갈 리스트 카운트 담기*/
+            mv.addObject("totalCnt", totalCnt);
+            mv.setViewName("mypage/mypageOaList");
+        } catch (Exception e) {
+            // TODO TRY/CATCH
+            e.printStackTrace();
+            /*에러 화면 이동*/
+            mv.setViewName("/error/error");
+        }
+
+        /*페이징 처리를 위한 값 담기*/
+        mv.addObject("paging", dto);
+        return mv;
+    }       
 }

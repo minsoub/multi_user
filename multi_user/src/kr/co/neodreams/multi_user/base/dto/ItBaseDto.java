@@ -26,6 +26,7 @@ public class ItBaseDto {
 	private String aprv_status;		// 처리 상태
 	private String aprv_dt;			// 승인일자
 	private String memo;			// 승인 메모
+	private String mode;
 	
 	public ItBaseDto()
 	{
@@ -34,6 +35,18 @@ public class ItBaseDto {
 		this.pageRange = 10;
 		this.sort = "";
 	}
+	
+	
+	public String getMode() {
+		return mode;
+	}
+
+
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
+
+
 	public String getBbsid() {
 		return bbsid;
 	}

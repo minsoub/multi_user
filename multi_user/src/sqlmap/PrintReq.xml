@@ -18,7 +18,8 @@
                                     WHEN 'Y' THEN '진행중'
                                     WHEN 'A' THEN '완료'
                                     WHEN 'C' THEN '취소'
-                   END APRV_STATUS_NM                 
+                   END APRV_STATUS_NM, 
+                   convert(nchar(10) , APRV_DT ,120 ) as APRV_DT                
             FROM [TB_PRINT_REQ]
             WHERE 1=1
         ]]>  
@@ -28,6 +29,10 @@
        				</iterate>   
   		</isNotEmpty>
         
+        <isNotEmpty prepend="and" property="reg_id">
+                reg_id = #reg_id#
+        </isNotEmpty>  
+                
         <isNotEmpty prepend="and" property="req_type">
                 REQ_TYPE = #req_type#
         </isNotEmpty>  
@@ -67,6 +72,10 @@
                 REQ_TYPE = #req_type#
         </isNotEmpty>  
        
+        <isNotEmpty prepend="and" property="reg_id">
+                reg_id = #reg_id#
+        </isNotEmpty>  
+               
        	<isNotEmpty property="searchFromDt">
        	   <isNotEmpty  property="searchToDt">
                     <![CDATA[
@@ -216,11 +225,10 @@
 		SET
 			aprv_id  = #aprv_id#,
 			aprv_ip  = #aprv_ip#,
-			aprv_status = #aprv_status#,
+			aprv_status = #aprv_status#
 			<isEqual property="aprv_status" compareValue="A">
-			aprv_dt  = getDate(),
+			,aprv_dt  = getDate()
 			</isEqual>			
-			memo     = #memo#
 		WHERE
 			  seq = #seq#
 	</update>	
@@ -317,6 +325,10 @@
                 REQ_TYPE = #req_type#
         </isNotEmpty>  
        
+        <isNotEmpty prepend="and" property="reg_id">
+                reg_id = #reg_id#
+        </isNotEmpty>  
+               
        	<isNotEmpty property="searchFromDt">
        	   <isNotEmpty prepend="AND" property="searchToDt">
                     <![CDATA[
@@ -351,6 +363,10 @@
                 REQ_TYPE = #req_type#
         </isNotEmpty>  
        
+        <isNotEmpty prepend="and" property="reg_id">
+                reg_id = #reg_id#
+        </isNotEmpty>  
+               
        	<isNotEmpty property="searchFromDt">
        	   <isNotEmpty prepend="AND" property="searchToDt">
                     <![CDATA[

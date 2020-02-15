@@ -96,9 +96,9 @@
                             <li class="menu-on"><a href="/mypageContentsList.do">컨텐츠제작 신청내역</a></li>
                             <li><a href="/mypageDisplayBoardList.do">전광판게시 신청내역</a></li>
                             <!-- <li><a href="/mypageRentalList.do">장비대여 신청내역</a></li> -->
-                            <li><a href="#">출력요청 신청내역</a></li>
-                            <li><a href="#">사진촬영 신청내역</a></li>
-                            <li><a href="#">QA교육장 신청내역</a></li>
+                            <li><a href="/mypagePrintList.do">출력요청 신청내역</a></li>
+                            <li><a href="/mypagePhotoList.do">사진촬영 신청내역</a></li>
+                            <li><a href="/mypageOaList.do">QA교육장 신청내역</a></li>
                             <li><a href="/mypageStatistics.do">이용현황통계</a></li>
                         </ul>
                     </li>					       

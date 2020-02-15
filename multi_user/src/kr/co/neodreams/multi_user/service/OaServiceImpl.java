@@ -21,6 +21,28 @@ public class OaServiceImpl implements OaService {
 	OaDao oaDao;
 	
 	/**
+	 * OA 교육장 신청 현황을 조회한다 - Mypage
+	 * @param dto
+	 * @return
+	 * @throws Exception
+	 */
+	public List<OaDto> getSelectOAMyList(OaDto dto) throws Exception
+	{
+		return oaDao.getSelectOAMyList(dto);
+	}
+
+	/**
+	 * OA 교육장 신청 현황(총개수)을 조회한다 - Mypage
+	 * @param dto
+	 * @return
+	 * @throws Exception
+	 */
+	public int getSelectOAMyListCnt(OaDto dto) throws Exception
+	{
+		return oaDao.getSelectOAMyListCnt(dto);
+	}
+	
+	/**
 	 * OA 교육장 신청 현황을 가져온다.
 	 * 
 	 * @param dto

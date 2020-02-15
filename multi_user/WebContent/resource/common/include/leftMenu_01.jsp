@@ -665,7 +665,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="/mypagePrintList.do">
                     <c:choose>
                         <c:when test="${param.left_depth_2 eq 3 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_03b.png"></c:when>
                         <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_03.png"></c:otherwise>
@@ -673,7 +673,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="/mypagePhotoList.do">
                     <c:choose>
                         <c:when test="${param.left_depth_2 eq 4 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_04b.png"></c:when>
                         <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_04.png"></c:otherwise>
@@ -681,7 +681,7 @@
                     </a>
                 </li> 
                 <li>
-                    <a href="#">
+                    <a href="/mypageOaList.do">
                     <c:choose>
                         <c:when test="${param.left_depth_2 eq 5 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_05b.png"></c:when>
                         <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_05.png"></c:otherwise>

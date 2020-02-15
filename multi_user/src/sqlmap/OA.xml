@@ -55,5 +55,39 @@
         		   a.RSRV_ID =#rsrv_id#
         	   AND a.DEL_FLAG = 'N'
         	   AND a.SABUN = b.empno
-	</select>    
+	</select> 
+	
+	<select id="OA#getSelectOAMyList" resultClass="OaDto">
+        <![CDATA[
+            SELECT 
+            	   a.RSRV_ID, a.SABUN, 
+            	   SUBSTRING(RSRV_DT,1,4)+'년 '+SUBSTRING(RSRV_DT,5,2)+'월 '+SUBSTRING(RSRV_DT,7,2)+'일 '+SUBSTRING(RSRV_DT,9,2)+'시' AS RSRV_DT,
+            	   a.SUBJECT, a.PEOPLE_CNT, a.APRV_STATUS, 
+            	   b.name as user_name, b.telno as user_tel, 
+                   CASE a.APRV_STATUS WHEN 'R' THEN '신청'
+                                    WHEN 'Y' THEN '진행중'
+                                    WHEN 'A' THEN '완료'
+                                    WHEN 'C' THEN '취소'
+                   END APRV_STATUS_NM            	   
+              FROM TB_OA_RSRV a, tbSVC_TDMSEMP b
+             WHERE                   
+        ]]>	
+        		   a.SABUN =#sabun#
+        	   AND a.SABUN = b.empno
+        order by a.RSRV_DT desc
+        OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+                 	   
+	</select>  	
+	
+	<select id="OA#getSelectOAMyListCnt" resultClass="int">
+        <![CDATA[
+            SELECT 
+            	   count(*) as totalCnt
+              FROM TB_OA_RSRV  
+             WHERE                   
+        ]]>	
+        		   SABUN =#sabun#
+                 	   
+	</select> 	   
 </sqlMap>   

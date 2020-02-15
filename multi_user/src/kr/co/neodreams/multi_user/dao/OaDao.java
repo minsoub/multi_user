@@ -67,5 +67,26 @@ public class OaDao extends BaseDao {
 	public OaDto getSelectOADetail(OaDto dto) {
 		return (OaDto) select("OA#getSelectOADetail", dto);
 	}
+	/**
+	 * OA 교육장 신청 데이터를 조회한다.
+	 * 
+	 * @param dto
+	 * @return
+	 * @throws Exception
+	 */
+    @SuppressWarnings("unchecked")
+	public List<OaDto> getSelectOAMyList (OaDto dto)  throws Exception{
+        return (List<OaDto>) list("OA#getSelectOAMyList", dto);
+    }
 
+    /**
+     * OA 교육장 신청 페이징을 위한 리스트 개수를 구한다.
+     * 
+     * @param dto
+     * @return
+     * @throws Exception
+     */
+    public int getSelectOAMyListCnt (OaDto dto) throws Exception{
+        return getCount("OA#getSelectOAMyListCnt", dto);
+    }
 }
