@@ -25,6 +25,7 @@ public class OaDto   extends BasePagingDto{
 	private String	memo;					// 취소 처리 메모
 	private String  date;					// 검색일자
 	private String  hour;					// 예약시간+
+	private String 	mode;					// mypage, oa 구분
 	
 	private String  user_name;
 	private String  user_tel;
@@ -35,6 +36,12 @@ public class OaDto   extends BasePagingDto{
 	
 	
 	
+	public String getMode() {
+		return mode;
+	}
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
 	public String getAprv_status_nm() {
 		return aprv_status_nm;
 	}

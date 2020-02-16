@@ -56,6 +56,14 @@ public interface OaService {
 	public int oaCancel(OaDto dto) throws Exception;
 	
 	/**
+	 * OA 교육장 신청내역을 승인완료 시킨다.
+	 * 
+	 * @param dto
+	 * @return
+	 * @throws Exception
+	 */
+	public int oaApply(OaDto dto) throws Exception;	
+	/**
 	 * OA 교육장 예약 여부 체크
 	 * 
 	 * @param rsrv_dt

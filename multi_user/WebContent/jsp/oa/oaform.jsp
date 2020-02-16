@@ -92,7 +92,7 @@
 											</dl>
 											<dl class="insert_ready">
 												<dt class="must-option"><label>인원</label></dt>
-												<dd style="width: 200px;"><input type="text" id="people_cnt" name="people_cnt" value="" maxlength=4></dd>
+												<dd style="width: 400px;"><input type="text" id="people_cnt" name="people_cnt" value="" maxlength=4 style="ime-mode: disabled;" onkeydown="filterNumber(event);"> 명</dd>
 											</dl>											
 										</form>
 									</div>

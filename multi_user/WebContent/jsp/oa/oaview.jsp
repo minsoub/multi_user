@@ -24,12 +24,23 @@
 	<div class="topMenu-bg-img-sub"></div>
 	<c:import url="/resource/common/include/topMenu.jsp" />
 	<c:set value="2" var="left_depth_1"/>
-
+<c:set var="isGetAdmin" value="${sessionScope.SESS_USER_INFO['rentAdmin']}"></c:set>
 	<c:set var="empno" value="${sessionScope.SESS_EMPNO }"/>
 	<c:set var="userNm" value="${sessionScope.SESS_USER_NAME }"/>
 	
 	<c:set var="telno" value="${sessionScope.SESS_USER_INFO['telno'] }"/>
 	<c:set var="mailno" value="${sessionScope.SESS_USER_INFO['mailno'] }"/>
+
+<c:choose>
+	<c:when test="${paging.mode eq 'mypage' }">
+	<c:set var="modeNum" value="4"/>
+	<c:set var="modeNum2" value="5"/>
+	</c:when>
+	<c:when test="${paging.mode ne 'mypage' }">
+	<c:set var="modeNum" value="2"/>
+	<c:set var="modeNum2" value="6"/>
+	</c:when>
+</c:choose>
 
 	<div id="contents" class="learn-frame-area">
 		<div class="contents-framebox" id="contents_id">
@@ -37,8 +48,8 @@
 			<div class="contents-header-framebox">
 				<div class="learn-tit-framebox">
 					<c:import url="/resource/common/include/leftMenu_01.jsp">
-						<c:param name="left_depth_1" value="2"></c:param>
-						<c:param name="left_depth_2" value="6"></c:param>
+						<c:param name="left_depth_1" value="${modeNum}"></c:param>
+						<c:param name="left_depth_2" value="${modeNum2}"></c:param>
 					</c:import>
 				</div>
 			</div>
@@ -63,6 +74,7 @@
 								<legend>OA교육장 이용신청 내역</legend>
 								<div class="row-group">
 										<form id="frm" name="frm" method="post">
+											<input type="hidden" id="mode" name="mode" value="${paging.mode}" />
 											<input type="hidden" id="date" name="date" value="${date}" />
 											<dl class="insert_ready">
 												<dt class="must-option"><label>직원번호</label></dt>
@@ -102,8 +114,11 @@
 								</div>
 								<div class="btn-zone">
 									<ul>
-										<c:if test="${oaDto.sabun eq empno}">
+										<c:if test="${oaDto.sabun eq SESS_EMPNO or isGetAdmin != null }">
 											<li><input type="submit" class="search_btn" value="예약취소" onclick="goDelete(); return false;"></li>
+										</c:if>
+										<c:if test="${isGetAdmin != null }">
+											<li><input type="submit" class="search_btn" value="승인완료" onclick="goApply(); return false;"></li>
 										</c:if>
 										<li><input type="button" onclick="goList();" class="search_btn" value="목록"></li>
 									</ul>
@@ -156,8 +171,39 @@ function goDelete(){
 	}
 }
 
+function goApply(){
+	var params = {
+		"rsrv_id" : "${oaDto.rsrv_id}",
+		"aprv_status" : "A"
+	}
+	
+	if(confirm('승인처리 하시겠습니까?')){
+		$.ajax({
+			type : 'post',
+			url : '/applyOA.do',
+			dataType : 'json',
+			data : params,
+			success : function(result){
+				if(result != "-1") {
+					alert('승인완료 되었습니다.');
+					goList();
+				}else {
+					alert("승인처리하는데 에러가 발생하였습니다!!!");
+				}
+			},
+			error : function(e){
+			}
+		})
+	}
+}
+
 function goList(){
-	$('#frm').attr('action', '/oalist.do');
+	if ($("#mode").val() == "mypage")
+	{
+		$('#frm').attr('action', '/mypageOaList.do');
+	}else {
+		$('#frm').attr('action', '/oalist.do');
+	}
 	$('#frm').submit();
 }
 

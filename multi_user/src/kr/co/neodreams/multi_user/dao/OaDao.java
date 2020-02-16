@@ -49,6 +49,16 @@ public class OaDao extends BaseDao {
 	}
 	
 	/**
+	 * OA 교육장 신청내역을 승인완료시킨다.
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	public Object oaApply(OaDto dto) {
+		return update("OA#oaApply", dto);
+	}	
+	
+	/**
 	 * OA 교육장 신청 예약 여부를 체크한다.
 	 * 
 	 * @param rsrv_dt

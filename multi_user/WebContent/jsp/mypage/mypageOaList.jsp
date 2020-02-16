@@ -48,7 +48,7 @@
                     </ul>
                 </div>
 
-                <form id="frm" name="frm" method="post" action="/mypagePrintList.do">
+                <form id="frm" name="frm" method="post" action="/mypageOaList.do">
                     <input type="hidden" name="pageNo" id="pageNo" value="${paging.pageNo }" />
                     <input type="hidden" id="rsrv_id"  name="rsrv_id" value="0">
                     <input type="hidden" id="mode" name="mode">
@@ -185,20 +185,18 @@
             
        		 if(conf){
        			var params = {
-       					"seq" : id,
-       					"bbsid" : '10028',
-       					"aprv_status" : "C",
-       					"freq" : 0
+       					"rsrv_id" : id,
+       					"aprv_status" : "C"
        			}	
 
        			$.ajax({
        					type : 'post',
-       					url : '/deletePrint.do',
+       					url : '/deleteOA.do',
        					dataType : 'json',
        					data : params,
        					success : function(result){
        						if(result >= 0){
-       							alert('신청취소 되었습니다.');
+       							alert('OA교육장 신청취소 되었습니다.');
        							goList();
        						}
        					},
@@ -211,14 +209,14 @@
         }
         function goList()
         {
-        	frm.action = "/mypagePrintList.do";
+        	frm.action = "/mypageOaList.do";
         	frm.submit();
         }
         
         function doDetail(id){
-        	$("#seq").val(id);
+        	$("#rsrv_id").val(id);
         	$("#mode").val("mypage");
-        	frm.action = "/printDetail.do";
+        	frm.action = "/oaView.do";
         	$("#frm").submit();
         }
     </script>

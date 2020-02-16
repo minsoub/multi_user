@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.mail.Address;
+import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -30,6 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 import kr.co.neodreams.multi_user.base.controller.BaseController;
 import kr.co.neodreams.multi_user.common.CommonUtil;
 import kr.co.neodreams.multi_user.common.StringUtil;
+import kr.co.neodreams.multi_user.common.mail.MailUtil;
 import kr.co.neodreams.multi_user.dto.BoardDto;
 import kr.co.neodreams.multi_user.dto.OaDto;
 import kr.co.neodreams.multi_user.dto.PhotoReqDto;
@@ -281,7 +284,15 @@ public class OaController extends BaseController{
 					// itplazza@kepco.co.kr, "IT플라자"
 					// title : OA교육장 이용신청
 					// content : year + "년 " + month + "월 " + day + "일 " + time + "시 ~ "+(time + j)+"시<br><br>" + subject.replaceAll("\n", "<br>");
+					Address[] toAddrs = new Address[1];
+					InternetAddress address = new InternetAddress("minsoub@gmail.com");		// 받는 사람 (관리자)
+					toAddrs[0] = address;
+					String mailSubject = "OA교육장 이용신청";
+					String mailContent = year + "년 " + month + "월 " + day + "일 " + time + "시 ~ "+(time + j)+"시<br><br>" + oaDto.getSubject().replaceAll("\n", "<br>");
 					
+					String mailFrom = SESS_EMPNO + "@kepco.co.kr";		// 보내는 사람
+					
+					MailUtil.sendMail(toAddrs, mailFrom, mailSubject, mailContent);					
 				}
 			}
 		}catch (Exception e) {
@@ -322,6 +333,7 @@ public class OaController extends BaseController{
         mv.addObject("year", year);
         
         mv.addObject("oaDto", dto);
+        mv.addObject("paging", oaDto);
         
         mv.setViewName("/oa/oaview");               
         
@@ -356,6 +368,68 @@ public class OaController extends BaseController{
 			res.getWriter().write(retVal);
 		}
 	}     
+	
+	/**
+	 * OA교육장 신청을 승인처리한다
+	 * 
+	 * @param req
+	 * @param res
+	 * @param boardDto
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping("/applyOA.do")
+	public void applyOA(HttpServletRequest req, HttpServletResponse res, OaDto oaDto) throws Exception{
+		String retVal = "0";
+		
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
+		
+		try{
+
+			oaDto.setAdmin_id(SESS_EMPNO);		// 승인자
+			oaDto.setMemo("");
+			retVal = Integer.toString(oaService.oaApply(oaDto));
+			dataSourceTransactionManager.commit(status);
+			
+			// 세부정보 조회
+	        OaDto dto = oaService.getSelectOADetail(oaDto);
+
+	        String date = dto.getRsrv_dt();		// 예약일시
+	        System.out.println("oaView.do called.."+date);
+	        String year = date.substring(0, 4);
+	        String month = String.valueOf(Integer.parseInt(date.substring(4, 6)));
+	        String day = String.valueOf(Integer.parseInt(date.substring(6, 8)));
+	        String time = String.valueOf(Integer.parseInt(date.substring(8, 10)));
+	        int j = Integer.parseInt(oaDto.getHour());
+	        
+	        SimpleDateFormat format1 = new SimpleDateFormat ( "yyyy-MM-dd HH:mm:ss");
+	        Date dt = new Date();
+	        String time1 = format1.format(dt);
+			// 승인완료 메일을 보내야 한다.
+			// 신청이 완료되면 메일을 보내야 한다.
+			// itplazza@kepco.co.kr, "IT플라자"
+			// title : OA교육장 이용신청
+			// content : year + "년 " + month + "월 " + day + "일 " + time + "시 ~ "+(time + j)+"시<br><br>" + subject.replaceAll("\n", "<br>");
+			Address[] toAddrs = new Address[1];
+			InternetAddress address = new InternetAddress("minsoub@gmail.com");		// 받는 사람 (작성자) 
+			toAddrs[0] = address;
+			String mailSubject = "OA교육장 이용신청[승인완료]";
+			String mailContent = year + "년 " + month + "월 " + day + "일 " + time + "시 ~ "+(time + j)+"시<br><br>" + oaDto.getSubject().replaceAll("\n", "<br>");
+				   mailContent += "승인일자 : " + time1;
+			
+			String mailFrom = SESS_EMPNO + "@kepco.co.kr";		// 보내는 사람 ( 관리자)
+			
+			MailUtil.sendMail(toAddrs, mailFrom, mailSubject, mailContent);		
+			
+		}catch (Exception e) {
+			retVal = "-1";
+			dataSourceTransactionManager.rollback(status);
+		}finally {
+			res.getWriter().write(retVal);
+		}
+	}     	
 	
 	/**
 	 * 출력 요청 리스트 조회

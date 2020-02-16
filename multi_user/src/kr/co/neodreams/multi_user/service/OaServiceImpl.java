@@ -77,6 +77,18 @@ public class OaServiceImpl implements OaService {
 	{
 		return (int) oaDao.oaCancel(dto);
 	}
+	
+	/**
+	 * OA 교육장 신청내역을 승인완료 시킨다.
+	 * 
+	 * @param dto
+	 * @return
+	 * @throws Exception
+	 */
+	public int oaApply(OaDto dto) throws Exception
+	{
+		return (int) oaDao.oaApply(dto);
+	}	
 	/**
 	 * OA 교육장 예약 여부 체크
 	 * 
