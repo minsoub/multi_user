@@ -50,7 +50,7 @@
 					<div class="nav-title">${title} <small class="sub2">촬영요청</small></div>					
 				</div>
 				
-				<ul class="tabNav sub5">
+				<ul class="tabNav sub2">
 					<li><a href="#"  class="active">촬영요청</a></li>
 					<li><a href="javascript:goList();">진행사항</a></li>
 				</ul>	

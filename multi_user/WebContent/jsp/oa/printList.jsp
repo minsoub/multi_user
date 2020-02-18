@@ -78,7 +78,7 @@
 			</div>
 				
 		
-			<div class="basic-list">
+			<div class="basic-list mtSm">
 				<table id="listTable" summary="">
 					<caption>게시판 테이블</caption>
 					<colgroup>
@@ -143,7 +143,7 @@
 			</div>	
 			<c:if test="${isGetAdmin != null}">
 			<div class="filebox">
-				<label class="imgSty">
+				<label class="imgSty fl">
 					<img alt="" src="/resource/images/icon_exel.png" style="width: 20%"> 처리내용 다운로드
 				</label>
 			</div>			

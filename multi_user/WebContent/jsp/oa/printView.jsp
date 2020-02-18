@@ -74,7 +74,7 @@
 				<div class="sub-nav-title">출력요청 상세보기</div>
 				<div class="red-f">* 출력물은 종이만 가능합니다.</div>
 					
-				<div class="basic-list">
+				<div class="basic-list mtSm">
 					<div class="insrtfrom-framebox">
 						<div class="insert-step1-box">
 							<div class="form-step1">
@@ -180,11 +180,11 @@
 									<!-- 내가 쓴글 또는 관리자인 경우 -->
 									<c:if test="${isGetAdmin != null or SESS_EMPNO eq boardInfo.reg_id}">
 										<li><input type="submit" class="search_btn" value="수정" onclick="goUpdate(); return false;"></li>									
-										<li><input type="submit" class="search_btn" value="신청취소" onclick="goDelete(); return false;"></li>
+										<li><input type="submit" class="search_btn" value="신청취소" onclick="goDelete(); return false;" style="width:66px;"></li>
 									</c:if>
 									<c:if test="${isGetAdmin != null}">
-										<li><input type="submit" class="search_btn" value="접수완료" onclick="goApply('Y'); return false;"></li>									
-										<li><input type="submit" class="search_btn" value="완료저장" onclick="goApply('A'); return false;"></li>									
+										<li><input type="submit" class="search_btn" value="접수완료" onclick="goApply('Y'); return false;" style="width:66px;"></li>									
+										<li><input type="submit" class="search_btn" value="완료저장" onclick="goApply('A'); return false;" style="width:66px;"></li>									
 									</c:if>
 										<li><input type="button" onclick="goList();" class="search_btn" value="목록"></li>
 									</ul>

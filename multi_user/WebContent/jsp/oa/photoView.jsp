@@ -65,7 +65,7 @@
 					<div class="nav-title">${title} <small class="sub2">상세내역</small></div>
 				</div>
 
-				<ul class="tabNav sub5">
+				<ul class="tabNav sub2">
 					<li><a href="javascript:goWrite();">촬영요청</a></li>
 					<li><a href="javascript:goList();" class="active">진행사항</a></li>
 				</ul>	
@@ -93,7 +93,7 @@
 					<input type="hidden" id="req_type"   name="req_type"   value="${paging.req_type }" />
 				</form>						
 													
-				<div class="basic-list">
+				<div class="basic-list mtSm">
 					<div class="insrtfrom-framebox">
 						<div class="insert-step1-box">
 							<div class="form-step1">
@@ -160,11 +160,11 @@
 									<!-- 내가 쓴글 또는 관리자인 경우 -->
 									<c:if test="${isGetAdmin != null or SESS_EMPNO eq boardInfo.reg_id}">
 										<li><input type="submit" class="search_btn" value="수정" onclick="goUpdate(); return false;"></li>									
-										<li><input type="submit" class="search_btn" value="신청취소" onclick="goDelete(); return false;"></li>
+										<li><input type="submit" class="search_btn" value="신청취소" onclick="goDelete(); return false;" style="width:66px;"></li>
 									</c:if>
 									<c:if test="${isGetAdmin != null}">
-										<li><input type="submit" class="search_btn" value="접수완료" onclick="goApply('Y'); return false;"></li>									
-										<li><input type="submit" class="search_btn" value="완료저장" onclick="goApply('A'); return false;"></li>									
+										<li><input type="submit" class="search_btn" value="접수완료" onclick="goApply('Y'); return false;" style="width:66px;"></li>									
+										<li><input type="submit" class="search_btn" value="완료저장" onclick="goApply('A'); return false;" style="width:66px;"></li>									
 									</c:if>
 										<li><input type="button" onclick="goList();" class="search_btn" value="목록"></li>
 									</ul>

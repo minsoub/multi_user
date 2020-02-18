@@ -51,7 +51,7 @@
 					<div class="nav-title">${title} <small class="sub2">출력요청</small></div>					
 				</div>			
 
-				<ul class="tabNav sub5">
+				<ul class="tabNav sub2">
 					<li><a href="#"  class="active">출력요청</a></li>
 					<li><a href="javascript:goList();">진행사항</a></li>
 				</ul>	
