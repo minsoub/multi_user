@@ -53,7 +53,11 @@
 					</div>
 					<div class="nav-title">${title}</div>
 				</div>
-				<div class="sub-nav-title">${title}</div>
+				<div class="sub-nav-title">
+					<c:if test="${categ eq '1'}">SW자료</c:if>
+					<c:if test="${categ eq '2'}">드라이버 공유</c:if>
+					<c:if test="${categ eq '3'}">교육자료</c:if>
+				</div>
 
 				<div class="basic-list">
 					<div class="insrtfrom-framebox">
@@ -74,7 +78,9 @@
 										<dl class="insert_ready">
 											<dt class="must-option"><label>내용</label></dt>
 											<dd>
-												<textarea class="textarea-style" rows="10" cols="88" id="content" name="content" style="width: 618px;" readonly="readonly"><c:out value="${boardInfo.content}" escapeXml="false" /></textarea>
+												<div style="with:800pt; heigth:600px; table-layout:fixed; word-break:break-all;">
+												<pre style="white-space: pre-line;word-wrap: break-word;">${boardInfo.content}</pre>
+												</div>												
 											</dd>
 										</dl>
 									</form>
@@ -122,7 +128,7 @@ $(document).ready(function() {
 	load_fnc('2', '0', '0'); //menu script
 });
 function goUpdate(){
-	$('#frm').attr('action', '/bbsUpdate.do');
+	$('#frm').attr('action', '/bbsModify.do');
 	$('#frm').submit();
 }
 

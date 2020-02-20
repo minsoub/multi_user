@@ -32,9 +32,9 @@
 			</div>
 			<c:if test="${bbsid eq '10027'}">
 			<div class="tabNav sub5">
-				<li><a href="javascript:BoardList('1');" class="active">SW자료</a></li>
-				<li><a href="javascript:BoardList('2');">드라이버 공유</a></li>
-				<li><a href="javascript:BoardList('3');">교육자료</a></li>
+				<li><a href="javascript:BoardList('1');" <c:if test="${categ eq '1'}">class="active"</c:if>>SW자료</a></li>
+				<li><a href="javascript:BoardList('2');" <c:if test="${categ eq '2'}">class="active"</c:if>>드라이버 공유</a></li>
+				<li><a href="javascript:BoardList('3');" <c:if test="${categ eq '3'}">class="active"</c:if>>교육자료</a></li>
 			</div>			
 			</c:if>
 			

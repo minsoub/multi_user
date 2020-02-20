@@ -21,7 +21,7 @@
         </isNotEmpty>        
         
         	AND BBSID = #bbsid#                
-        order by WTIME desc
+        order by seq desc
         OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
          FETCH NEXT #perPageCnt# ROWS ONLY
     </select>

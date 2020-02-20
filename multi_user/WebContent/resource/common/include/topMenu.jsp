@@ -65,14 +65,14 @@
 						</ul>
 					</li>   
 					
-					<li id="topmenu4"><a href="/swlicense.do">S/W라이센스</a>
+					<!-- li id="topmenu4"><a href="/swlicense.do">S/W라이센스</a>
 						<ul>
 							<li class="menu-on"><a href="/swlicense.do">라이센스등록</a></li>
 							<li><a href="/swmng.do">소프트웨어관리</a></li>
 						</ul>
-					</li>    
+					</li  -->    
 					
-					<li id="topmenu5"><a href="/publicsw.do">다운로드</a>
+					<li id="topmenu4"><a href="/publicsw.do">다운로드</a>
 						<ul>
 							<li class="menu-on"><a href="/publicsw.do">공개소프트웨어</a></li>
 							<li><a href="/jobsw.do">업무소프트웨어</a></li>
@@ -83,7 +83,7 @@
 						</ul>
 					</li>    
 					
-					<li id="topmenu6"><a href="/notice.do">게시판</a>
+					<li id="topmenu5"><a href="/notice.do">게시판</a>
 						<ul>
 							<li class="menu-on"><a href="/notice.do">공지사항</a></li>
 							<li><a href="/freeboard.do">자유게시판</a></li>
@@ -91,7 +91,7 @@
 						</ul>
 					</li>  
 					
-                    <li id="topmenu7"><a href="/mypageContentsList.do">마이페이지</a>
+                    <li id="topmenu6"><a href="/mypageContentsList.do">마이페이지</a>
                         <ul id="topmenu_sub6" style="left:-340px;">
                             <li class="menu-on"><a href="/mypageContentsList.do">컨텐츠제작 신청내역</a></li>
                             <li><a href="/mypageDisplayBoardList.do">전광판게시 신청내역</a></li>

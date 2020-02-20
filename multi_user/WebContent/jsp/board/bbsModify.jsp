@@ -49,7 +49,12 @@
 					</div>
 					<div class="nav-title">${title}</div>
 				</div>
-				<div class="sub-nav-title">${title}</div>
+				<div class="sub-nav-title">
+					<c:if test="${categ eq '1'}">SW자료</c:if>
+					<c:if test="${categ eq '2'}">드라이버 공유</c:if>
+					<c:if test="${categ eq '3'}">교육자료</c:if>
+				</div>
+
 
 				<div class="basic-list">
 					
@@ -64,7 +69,6 @@
 											<input type="hidden" id="bbsid" name="bbsid" value="${bbsid}" />
 											<input type="hidden" id="categ" name="categ" value="${categ}" />
 											<input type="hidden" name="seq" id="seq" value="${resultDetail.seq }" />
-											<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo }" />
 
 											<dl class="insert_ready">
 												<dt class="must-option"><label>제목</label></dt>
@@ -79,7 +83,7 @@
 										</form>
 										<dl class="insert_ready" id="attatchArea">
 											<dt class="must-option"><label>첨부파일</label></dt>
-											<c:forEach var="item" items="${resultDetail.attatchList }" varStatus="status">
+											<c:forEach var="item" items="${resultDetail.attachList }" varStatus="status">
 												<dd style="width:97%" class="fileSet">
 													<div style="position: relative;">
 														<div>
@@ -111,7 +115,7 @@
 									</div>
 									<div class="btn-zone">
 										<ul>
-											<li><input type="submit" class="search_btn" value="등록" onclick="goSubmit(); return false;"></li>
+											<li><input type="submit" class="search_btn" value="수정" onclick="goSubmit(); return false;"></li>
 											<li><input type="button" onclick="goList();" class="search_btn" value="목록"></li>
 										</ul>
 									</div>

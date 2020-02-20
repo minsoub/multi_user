@@ -558,8 +558,8 @@ public class BoardController extends BaseController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("/bbsUpdate.do")
-	public ModelAndView noticeUpdate(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
+	@RequestMapping("/bbsModify.do")
+	public ModelAndView bbsUpdateForm(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
 		ModelAndView mv = new ModelAndView();
 		
 		String bbsid = boardDto.getBbsid();
@@ -698,7 +698,7 @@ public class BoardController extends BaseController{
 	 */
 	@ResponseBody
 	@RequestMapping("/deleteBoard.do")
-	public void removeNotice(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
+	public void deleteBoard(HttpServletRequest req, HttpServletResponse res, BoardDto boardDto) throws Exception{
 		String retVal = "0";
 		
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();

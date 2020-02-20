@@ -48,7 +48,11 @@
 					</div>
 					<div class="nav-title">${title}</div>
 				</div>
-				<div class="sub-nav-title">${title}</div>
+				<div class="sub-nav-title">
+					<c:if test="${categ eq '1'}">SW자료</c:if>
+					<c:if test="${categ eq '2'}">드라이버 공유</c:if>
+					<c:if test="${categ eq '3'}">교육자료</c:if>
+				</div>
 
 				<div class="basic-list">
 					
@@ -218,11 +222,11 @@ function goSubmit(){
 				dataType : 'json',
 				data : params,
 				success : function(result){					
-					alert('등록되었습니다.' + result);
+					alert('등록되었습니다.');
 		// 작업필요		
-		//			$('#frm').append('<input type="hidden" name="seq" value="'+result+'" />');
-		//			$('#frm').attr('action', '/boardDetail.do');
-		//			$('#frm').submit();
+					$('#frm').append('<input type="hidden" name="seq" value="'+result+'" />');
+					$('#frm').attr('action', '/bbsDetail.do');
+					$('#frm').submit();
 				},
 				error : function(e){
 				}
@@ -294,7 +298,7 @@ function fn_AttatchDel(obj){
 		if(confirm('파일을 삭제하시겠습니까?')){
 			$.ajax({
 				type : 'post',
-				url : '/admin/removeAttatch.do',
+				url : '/deleteBoardAttatch.do',
 				dataType : 'json',
 				data : params,
 				success : function(result){
