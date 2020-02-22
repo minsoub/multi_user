@@ -37,12 +37,6 @@ public interface CommonService {
 
     public void insertMedia_02_write_ok(CommonDto commonDto) throws Exception;
 
-    public List<CommonDto> getNoticeList (CommonDto commonDto) throws Exception;
-
-    public int getNoticeListCnt (CommonDto commonDto) throws Exception;
-
-    public CommonDto getNoticeDetail (String num) throws Exception;
-
     public void insertPageLog(HashMap<String, String> page_log) throws Exception;
 
     public void deleteDeptTMP() throws Exception;

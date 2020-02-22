@@ -12,8 +12,10 @@ import org.springframework.web.servlet.ModelAndView;
 import kr.co.neodreams.multi_user.base.controller.BaseController;
 import kr.co.neodreams.multi_user.dto.CommonDto;
 import kr.co.neodreams.multi_user.dto.HomeDto;
+import kr.co.neodreams.multi_user.dto.MemoDto;
 import kr.co.neodreams.multi_user.service.CommonService;
 import kr.co.neodreams.multi_user.service.HomeService;
+import kr.co.neodreams.multi_user.service.MemoService;
 import kr.co.neodreams.multi_user.service.RentalSendSMS;
 
 @Controller
@@ -22,6 +24,8 @@ public class HomeController extends BaseController{
 	@Autowired HomeService homeService;
 	
 	@Autowired CommonService commonService;
+	
+	@Autowired MemoService memoService;
 	
 	@Autowired RentalSendSMS sms;
 
@@ -32,10 +36,10 @@ public class HomeController extends BaseController{
 	}
 	
 	@RequestMapping({"/main.do","/"})
-	public ModelAndView home(CommonDto commonDto) {
+	public ModelAndView home(MemoDto commonDto) {
 		
 		List<HomeDto> today_updateList = null;
-		List<CommonDto> noticeList = null;
+		List<MemoDto> noticeList = null;
 		
 		ModelAndView mv = new ModelAndView();
 		try{
@@ -43,7 +47,7 @@ public class HomeController extends BaseController{
 			today_updateList = homeService.getTodayUpdate("Today_update_main");
 			
 			commonDto.setPerPageCnt(5);
-			noticeList = commonService.getNoticeList(commonDto);
+			noticeList = memoService.getNoticeList(commonDto);
 			
 			mv.setViewName("/main");
 			mv.addObject("today_updateList", today_updateList);

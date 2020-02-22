@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import kr.co.neodreams.multi_user.base.service.BaseService;
 import kr.co.neodreams.multi_user.dao.CommonDao;
 import kr.co.neodreams.multi_user.dto.CommonDto;
+import kr.co.neodreams.multi_user.dto.MemoDto;
 import kr.co.neodreams.multi_user.dto.RentDto;
 
 @Service
@@ -86,23 +87,6 @@ public class CommonServiceImpl extends BaseService implements CommonService{
     @Override
     public void insertMedia_02_write_ok(CommonDto commonDto) throws Exception {
         commonDao.insertMedia_02_write_ok(commonDto);
-    }
-
-    @Override
-    public List<CommonDto> getNoticeList (CommonDto commonDto) throws Exception {
-        // TODO Auto-generated method stub
-        return commonDao.getNoticeList(commonDto);
-    }
-
-    @Override
-    public int getNoticeListCnt(CommonDto commonDto) throws Exception {
-        // TODO Auto-generated method stub
-        return commonDao.getNoticeListCnt(commonDto);
-    }
-
-    @Override
-    public CommonDto getNoticeDetail (String num) throws Exception {
-        return commonDao.getNoticeDetail(num);
     }
 
     @Override

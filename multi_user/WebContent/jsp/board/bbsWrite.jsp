@@ -138,7 +138,7 @@
 <script type="text/javascript">
 
 $(document).ready(function(){
-	load_fnc('5', '0', '0'); //menu script
+	load_fnc('4', '0', '0'); //menu script
 	$(document).on('change', 'input[name="uploadFile"]', function(event){
 		var ua = window.navigator.userAgent;
 		var rowIdx = $(this).closest('dd').index();

@@ -72,19 +72,6 @@ public class CommonDao extends BaseDao {
         insert("Common#insertMedia_02_write_ok", commonDto);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<CommonDto> getNoticeList (CommonDto commonDto)  throws Exception{
-        return (List<CommonDto>) list("Common#getNoticeList", commonDto);
-    }
-
-    public int getNoticeListCnt (CommonDto commonDto) throws Exception{
-        return getCount("Common#getNoticeListCnt", commonDto);
-    }
-
-    public CommonDto getNoticeDetail (String num) throws Exception{
-        return (CommonDto) select("Common#getNoticeDetail", num);
-    }
-
     public void insertPageLog(HashMap<String, String> page_log) throws Exception{
         insert("Common#insertPageLog", page_log);
     }

@@ -48,7 +48,7 @@
 					</div>
 					<div class="nav-title">${title}</div>
 				</div>
-				<div class="sub-nav-title">${title}</div>
+				<div class="sub-nav-title">${title} 글쓰기</div>
 
 				<div class="basic-list">
 					

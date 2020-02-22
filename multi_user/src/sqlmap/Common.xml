@@ -70,45 +70,6 @@
         VALUES (#Rs_num#, #k_id#, #icon#, #k_date#, #k_title#)
     </insert>
 
-    <select id="Common#getNoticeList" parameterClass="CommonDto" resultClass="CommonDto">
-        <![CDATA[
-            SELECT num,subject,convert(nchar(10) , Reg_Date ,120 ) as Reg_Date ,pdsFile,Visited
-            FROM [notice]
-            WHERE
-        ]]>
-        <![CDATA[
-                YEAR ( Reg_Date) > 2014
-        ]]>
-        <isNotEmpty prepend="and" property="searchString">
-                (Subject LIKE '%$searchString$%'
-                or Content LIKE '%$searchString$%')
-        </isNotEmpty>
-        order by reg_date desc
-        OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
-         FETCH NEXT #perPageCnt# ROWS ONLY
-    </select>
-
-    <select id="Common#getNoticeListCnt" parameterClass="CommonDto" resultClass="int">
-        <![CDATA[
-            SELECT count(*) as totalCnt
-            FROM [notice]
-            WHERE
-        ]]>
-        <![CDATA[
-                YEAR ( Reg_Date) > 2014
-        ]]>
-        <isNotEmpty prepend="and" property="searchString">
-                (Subject LIKE '%$searchString$%'
-                or Content LIKE '%$searchString$%')
-        </isNotEmpty>
-    </select>
-
-    <select id="Common#getNoticeDetail" parameterClass="java.lang.String" resultClass="CommonDto">
-        SELECT Subject, Writer, Reg_Date, Content, pdsFile
-        FROM Notice
-        where num = #num#
-    </select>
-
     <insert id="Common#insertPageLog" parameterClass="java.util.HashMap">
         INSERT INTO page_log (depth_1,depth_2,depth_3,logical_url,ip_addr, empno)
         values ((SELECT depth_1 FROM PAGE_INFO WHERE logical_url like '%$logical_url$%')

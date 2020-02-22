@@ -5,6 +5,12 @@ import java.util.List;
 
 import kr.co.neodreams.multi_user.base.dto.BasePagingDto;
 
+/**
+ * 업무게시판 DTO Class
+ * 
+ * @author minso
+ *
+ */
 public class NoticeDto extends BasePagingDto{
 
 	private	int		notice_Seq;				//번호

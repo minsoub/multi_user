@@ -1,18 +1,28 @@
 package kr.co.neodreams.multi_user.dto;
 
 
+import java.util.List;
+
 import kr.co.neodreams.multi_user.base.dto.BasePagingDto;
 
 public class CommonDto extends BasePagingDto{
 	
 	private String static_idx;
-	private String pdsFile;
 	private String Re_Step;
-	private String content;
+	
 	private String caption_desc;
 	private String Re_level;
-	private String num;
-	private String subject;
+	
+	private String num;				// 게시글 번호
+	private String subject;			// 제목
+	private String Writer;			// 작성자
+
+	private String pdsFile;			// 업로드파일명
+
+	private String Reg_Date;		// 작성일자
+	private String content;			// 내용
+	private String Visited; 		// 조회수
+	
 	private String j_pdsFile;
 	private String j_mp3;
 	private String name;
@@ -28,10 +38,10 @@ public class CommonDto extends BasePagingDto{
 	private String co_id;
 	private String co_icon;
 	private String co_content;
-	private String Reg_Date;
-	private String Visited; 
+
+	
 	private String searchString;
-	private String Writer;
+	
 	
 	private String empno;
 	private String mailno;
@@ -40,6 +50,8 @@ public class CommonDto extends BasePagingDto{
 	private String telno;
 	private String dept_name_1depth;
 	private String dept_name_2depth;
+	
+
 	
 	public String getStatic_idx() {
 		return static_idx;

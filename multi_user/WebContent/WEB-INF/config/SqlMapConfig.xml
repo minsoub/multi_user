@@ -5,6 +5,7 @@
     "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
 
 <sqlMapConfig>
+	<sqlMap resource="/sqlmap/Memo.xml"/>
     <sqlMap resource="/sqlmap/Common.xml"/>
     <sqlMap resource="/sqlmap/Board.xml"/>
     <sqlMap resource="/sqlmap/OA.xml"/>

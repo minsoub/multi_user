@@ -113,7 +113,7 @@
 </div>
 <script type="text/javascript">
 $(document).ready(function() {
-	load_fnc('5', '0', '0'); //menu script
+	load_fnc('4', '0', '0'); //menu script
 });
 
 function ViewDetail(seq)

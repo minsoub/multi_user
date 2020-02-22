@@ -53,7 +53,7 @@
 					</div>
 					<div class="nav-title">${title}</div>
 				</div>
-				<div class="sub-nav-title">${title}</div>
+				<div class="sub-nav-title">${title} 상세내역</div>
 
 				<div class="basic-list">
 					<div class="insrtfrom-framebox">
@@ -79,7 +79,11 @@
 										</dl>										
 										<dl class="insert_ready3">
 											<dt class="must-option"><label for="content" id="content_label">내용</label></dt>
-											<dd class="must-option2-dd"><pre style="white-space: pre-line;word-wrap: break-word;">${boardInfo.content}</pre></dd>
+											<dd class="must-option2-dd">
+												<div style="with:800pt; heigth:600px; table-layout:fixed; word-break:break-all;">
+													<pre style="white-space: pre-line;word-wrap: break-word;">${boardInfo.content}</pre>
+												</div>	
+											</dd>
 										</dl>
 									</form>
 									<dl class="insert_ready" id="attatchArea">
@@ -123,10 +127,10 @@
 <script type="text/javascript" src="/resource/common/js/jquery.tag-editor.min.js"></script>   
 <script type="text/javascript">
 $(document).ready(function() {
-	load_fnc('6', '0', '0'); //menu script
+	load_fnc('5', '0', '0'); //menu script
 });
 function goUpdate(){
-	$('#frm').attr('action', '/boardUpdate.do');
+	$('#frm').attr('action', '/boardModify.do');
 	$('#frm').submit();
 }
 
@@ -144,7 +148,7 @@ function goDelete(){
 			dataType : 'json',
 			data : params,
 			success : function(result){
-				if(result >= 0){
+				if(result != '-1'){
 					alert('삭제되었습니다.');
 					goList();
 				}

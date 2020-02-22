@@ -125,7 +125,7 @@
 <script type="text/javascript" src="/resource/common/js/jquery.tag-editor.min.js"></script>   
 <script type="text/javascript">
 $(document).ready(function() {
-	load_fnc('2', '0', '0'); //menu script
+	load_fnc('4', '0', '0'); //menu script
 });
 function goUpdate(){
 	$('#frm').attr('action', '/bbsModify.do');

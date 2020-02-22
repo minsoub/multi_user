@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="MemoDto">
+    <typeAlias alias="MemoDto" type="kr.co.neodreams.multi_user.dto.MemoDto"/>
+    
+    <select id="Memo#getNoticeList" parameterClass="MemoDto" resultClass="MemoDto">
+        <![CDATA[
+            SELECT num,subject,convert(nchar(10) , reg_date ,120 ) as reg_date ,pdsfile,visited
+            FROM [notice]
+            WHERE
+        ]]>
+        <![CDATA[
+                YEAR ( reg_date) > 2014
+        ]]>
+        <isNotEmpty prepend="and" property="searchString">
+                (Subject LIKE '%$searchString$%'
+                or Content LIKE '%$searchString$%')
+        </isNotEmpty>
+        order by num desc
+        OFFSET (#pageNo# - 1) * #perPageCnt# ROWS
+         FETCH NEXT #perPageCnt# ROWS ONLY
+    </select>
+
+    <select id="Memo#getNoticeListCnt" parameterClass="MemoDto" resultClass="int">
+        <![CDATA[
+            SELECT count(*) as totalCnt
+            FROM [notice]
+            WHERE
+        ]]>
+        <![CDATA[
+                YEAR ( reg_date) > 2014
+        ]]>
+        <isNotEmpty prepend="and" property="searchString">
+                (Subject LIKE '%$searchString$%'
+                or Content LIKE '%$searchString$%')
+        </isNotEmpty>
+    </select>
+
+
+	<resultMap class="kr.co.neodreams.multi_user.dto.MemoDto" id="bbsResult">
+		<result property="num" 			column="num"/>
+		<result property="subject" 		column="subject"/>
+		<result property="content"	 	column="content"/>
+		<result property="writer" 		column="writer"/>
+		<result property="reg_date" 	column="reg_date"/>
+		<result property="visited" 		column="visited"/>
+		<result property="freq" 		column="freq"/>
+		<result property="content" 		column="content"/>
+		<result property="attachList" 	column="{seq=num, freq=freq}" select="Memo#getAttatchList" />
+	</resultMap>
+	
+	<resultMap class="kr.co.neodreams.multi_user.dto.MemoDto" id="attatchResult" >
+		<result property="seq" 			column="seq"/>
+		<result property="freq" 		column="freq"/>
+		<result property="bbsid" 		column="bbsid"/>
+		<result property="filename" 	column="filename"/>
+		<result property="phy_path"		column="phy_path"/>
+	</resultMap>  
+	
+	
+    <select id="Memo#getNoticeDetail" parameterClass="java.lang.String" resultMap="bbsResult">
+        SELECT num, subject, writer, content, visited, 
+        		convert(nchar(10) , reg_date ,120 ) as reg_date, 
+        		'0' as freq
+        FROM Notice
+        where num = #num#
+    </select>
+    
+	<select id="Memo#getAttatchList" resultMap="attatchResult">
+		SELECT
+			a.seq,
+			a.freq, 
+			a.bbsid, 
+			b.filename, 
+			b.phy_path
+		FROM
+			SPLAZA_Attatch a
+		INNER JOIN SPLAZA_FILEINFO b ON a.freq = b.freq 
+		WHERE
+			a.seq = #seq#
+		<isNotNull property="freq">
+			<isNotEqual property="freq" compareValue="0" prepend="AND">
+			b.freq = #freq#
+			</isNotEqual>
+		</isNotNull>
+	</select>      
+     
+    <insert id="Memo#noticeInsert">
+		<selectKey keyProperty="num" resultClass="int">
+			SELECT COALESCE(max(num), 0)+1 FROM NOTICE
+		</selectKey>
+		INSERT INTO NOTICE (
+			num,        subject,     writer,     sosok,       pdsfile,     
+			filesize,   email,       passwd,     reg_date,    content, 
+			visited,    html,        ref,        re_step,     re_level,   
+			listnum,    dirname,     host_ip
+		) VALUES (
+			#num#,	    #subject#,   #writer#,   #sosok#,     #pdsfile#,   
+			#filesize#, #email#,     #passwd#,   getDate(),   #content#, 
+			0,          #html#,      #num#,      0,           0,          
+			#num#,      #dirname#,   #host_ip#
+		)
+	</insert>	        
+    
+	<insert id="Memo#noticeAttatchInsert" parameterClass="java.util.ArrayList">
+		INSERT INTO SPLAZA_ATTATCH(
+			FREQ,				SEQ,      BBSID
+		)VALUES
+		<iterate conjunction=",">
+		(
+			#List[].freq#,	#List[].num#,   #List[].bbsid#
+		)
+		</iterate>
+	</insert>    
+    
+	<update id="Memo#noticeHitUpdate">
+		UPDATE NOTICE
+		   SET VISITED = VISITED + 1
+		 WHERE NUM = #num#
+	</update>    
+	
+	<update id="Memo#noticeUpdate">
+		UPDATE 
+			NOTICE 
+		SET
+			subject = #subject#,
+			content = #content#
+		 WHERE NUM = #num#
+	</update>	
+	
+		
+	
+	<select id="Memo#garbageAttatch" resultClass="MemoDto">
+		SELECT
+			ISNULL(b.seq, 0) AS seq,
+			a.freq, 
+			a.filename, 
+			a.phy_path, 
+			b.bbsid
+		FROM 
+			SPLAZA_FILEINFO a LEFT JOIN SPLAZA_Attatch b ON a.freq = b.freq
+		WHERE
+			<isNotEqual property="num" compareValue="0" >
+			b.seq = #num#
+				<isNotEqual property="freq" compareValue="0" prepend="AND" >
+				a.freq = #freq#
+				</isNotEqual>
+			</isNotEqual>
+			<isEqual property="num" compareValue="0" >
+				<isNotEqual property="freq" compareValue="0" >
+					a.freq = #freq#
+				</isNotEqual>
+				<isEqual property="freq" compareValue="0" >
+				b.seq IS NULL
+				</isEqual>
+			</isEqual>
+	</select>	
+	
+	<delete id="Memo#noticeDelete">
+		DELETE FROM NOTICE WHERE num = #num#
+	</delete>
+	
+	<delete id="Memo#attatchDelete">
+		DELETE FROM SPLAZA_Attatch WHERE seq = #num# and bbsid=#bbsid#
+	</delete>
+		
+	<delete id="Memo#noticeFileDelete">
+		<isEqual property="num" compareValue="0" >
+			<isNotEqual property="freq" compareValue="0" >
+				DELETE FROM SPLAZA_FILEINFO WHERE freq = #freq#;
+			</isNotEqual>
+		</isEqual>
+		
+		<isNotEqual property="num" compareValue="0" >
+			<isEqual property="freq" compareValue="0" >
+			DELETE FROM SPLAZA_FILEINFO WHERE freq IN (SELECT freq FROM SPLAZA_Attatch WHERE seq = #num# and bbsid=#bbsid#);
+			DELETE FROM SPLAZA_Attatch WHERE seq = #num# and bbsid=#bbsid#;
+			</isEqual>
+		</isNotEqual>
+		
+		<isNotEqual property="num" compareValue="0" >
+			<isNotEqual property="freq" compareValue="0" >
+				DELETE FROM SPLAZA_FILEINFO WHERE freq = #freq#;
+				DELETE FROM SPLAZA_Attatch WHERE seq = #num# AND freq = #freq# and bbsid=#bbsid#;
+			</isNotEqual>
+		</isNotEqual>
+	</delete>		
+    
+</sqlMap>    

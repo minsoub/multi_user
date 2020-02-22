@@ -193,15 +193,15 @@
 		
 		<isNotEqual property="seq" compareValue="0" >
 			<isEqual property="freq" compareValue="0" >
-			DELETE FROM SPLAZA_FILEINFO WHERE freq IN (SELECT freq FROM SPLAZA_Attatch WHERE seq = #seq#);
-			DELETE FROM SPLAZA_Attatch WHERE seq = #seq#;
+			DELETE FROM SPLAZA_FILEINFO WHERE freq IN (SELECT freq FROM SPLAZA_Attatch WHERE seq = #seq#  and bbsid=#bbsid#);
+			DELETE FROM SPLAZA_Attatch WHERE seq = #seq#  and bbsid=#bbsid#;
 			</isEqual>
 		</isNotEqual>
 		
 		<isNotEqual property="seq" compareValue="0" >
 			<isNotEqual property="freq" compareValue="0" >
 				DELETE FROM SPLAZA_FILEINFO WHERE freq = #freq#;
-				DELETE FROM SPLAZA_Attatch WHERE seq = #seq# AND freq = #freq#;
+				DELETE FROM SPLAZA_Attatch WHERE seq = #seq# AND freq = #freq#  and bbsid=#bbsid#;
 			</isNotEqual>
 		</isNotEqual>
 	</delete>	

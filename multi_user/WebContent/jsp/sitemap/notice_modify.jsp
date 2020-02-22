@@ -25,7 +25,7 @@
 <body>
 	<div class="topMenu-bg-img-sub"></div>
 	<c:import url="/resource/common/include/topMenu.jsp" />
-	<c:set value="${menu_depth1}" var="left_depth_1"/>
+	<c:set value="12" var="left_depth_1"/>
 
 	<div id="contents" class="learn-frame-area">
 		<div class="contents-framebox" id="contents_id">
@@ -33,23 +33,23 @@
 			<div class="contents-header-framebox">
 				<div class="learn-tit-framebox">
 					<c:import url="/resource/common/include/leftMenu_01.jsp">
-						<c:param name="left_depth_1" value="${menu_depth1}"></c:param>
-						<c:param name="left_depth_2" value="${menu_depth2}"></c:param>
+				<c:param name="left_depth_1" value="12"></c:param>
+				<c:param name="left_depth_2" value="1"></c:param>
 					</c:import>
 				</div>
 			</div>
 			<!-- leftmenu end-->
-
+<c:set var="isGetAdmin" value="${sessionScope.SESS_USER_INFO['rentAdmin']}"></c:set>
 			<!--content-->
 			<div class="contents-con-framebox">
 				<div class="nav-box">
 					<div class="nav-img"><img src="/resource/images/sub/sub7_tit_img.png"></div>
 					<div class="nav-list">
-						<img src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;게시판&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">${title}</b>
+						<img src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;게시판&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">공지사항</b>
 					</div>
-					<div class="nav-title">${title}</div>
+					<div class="nav-title">공지사항</div>
 				</div>
-				<div class="sub-nav-title">${title}</div>
+				<div class="sub-nav-title">공지사항 수정</div>
 
 				<div class="basic-list">
 					
@@ -61,9 +61,9 @@
 									<div class="row-group">
 										<form id="frm" name="frm" method="post">
 											<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo}" />
-											<input type="hidden" id="bbsid"  name="bbsid" value="${bbsid}" />
-											<input type="hidden" id="seq"    name="seq" value="${resultDetail.seq }" />
-
+											<input type="hidden" id="bbsid"  name="bbsid"  value="${paging.bbsid}" />
+											<input type="hidden" id="num"    name="num"    value="${resultDetail.num}" />
+											<input type="hidden" id="html"   name="html"   value="0" />
 											<dl class="insert_ready">
 												<dt class="must-option"><label>제목</label></dt>
 												<dd style="width: 200px;"><input type="text" id="subject" name="subject" value="${resultDetail.subject}"></dd>
@@ -203,9 +203,10 @@ function goSubmit(){
 		});
 		$('#freq').val(attatch_Ids.join('|'));
 		var params = {
-				"seq" : $('#seq').val(),
+				"num" : $('#num').val(),
 				"freqs" : attatch_Ids.join('|'),
 				"bbsid" : "${bbsid}",
+				"html"  : $('#html').val(),
 				"subject" : $('#subject').val(),
 				"content" : escapeHtml($('#content').text()),
 		}
@@ -213,12 +214,12 @@ function goSubmit(){
 		if(confirm('수정하시겠습니까?')){
 			$.ajax({
 				type : 'post',
-				url : '/bbsUpdate.do',
+				url : '/memoUpdate.do',
 				dataType : 'json',
 				data : params,
 				success : function(result){
 					alert('수정되었습니다.');
-					$('#frm').attr('action', '/boardDetail.do');
+					$('#frm').attr('action', '/notice_view.do');
 					$('#frm').submit();
 				},
 				error : function(e){
@@ -342,11 +343,7 @@ function escapeHtml (string) {
 } 
 
 function goList(){
-	if ("${bbsid}" == "10020") {
-		$('#frm').attr('action', '/freeboard.do');
-	}else {
-		$('#frm').attr('action', '/qnaboard.do');
-	}
+	$('#frm').attr('action', '/notice.do');
 	$('#frm').submit();
 }
 

@@ -7,6 +7,7 @@
 <c:import url="/resource/common/include/topMenu.jsp" />
 
 <div id="contents" class="learn-frame-area">
+<c:set var="isGetAdmin" value="${sessionScope.SESS_USER_INFO['rentAdmin']}"></c:set>
 	<div class="contents-framebox" id="contents_id">
 		<!-- leftmenu -->
 		<div class="contents-header-framebox">
@@ -75,7 +76,7 @@
 									<tr>
 										<td class="no-td">${totalCnt - (paging.perPageCnt*(paging.pageNo-1)) - status.index }</td>
 										<td style="text-align: left;cursor: pointer;" onclick="javascript:funGoPageDetail('/notice_view.do?num=${item.num}');">${item.subject }</td>
-										<td class="date-td">${item.reg_Date }</td>
+										<td class="date-td">${item.reg_date }</td>
 										<td class="ref-td">${item.visited }</td>
 									</tr>
 								</c:forEach>
@@ -89,14 +90,31 @@
 				</div>		
 			</form>
 				
-			<c:import url="/resource/common/include/paging.jsp" />	
+				<c:import url="/resource/common/include/paging.jsp" />
+				<c:if test="${isGetAdmin != null}">
+				<div class="btn-zone">
+					<ul>
+						<li><input type="button" name="srchDescription" class="admin_btn" onclick="javascript:fn_Write();" value="등록"></li>
+					</ul>
+				</div>
+				</c:if>
+				
 		</div>
 		<!--content end-->
 	</div>
 </div>
 <script type="text/javascript">
 $(document).ready(function() {
-	load_fnc('0', '0', '0'); //menu script
+	load_fnc('5', '0', '0'); //menu script
 });
+
+function fn_Write()
+{
+	var f = document.frm;
+	f.target = "_self";
+	f.action = '/notice_write.do';	
+	f.submit();
+	
+}
 </script>
 <c:import url="/resource/common/include/bottom.jsp" />

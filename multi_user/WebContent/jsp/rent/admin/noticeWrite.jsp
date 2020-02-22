@@ -59,7 +59,7 @@
 									<legend>자료실</legend>
 									<div class="row-group">
 										<form id="frm" name="frm" method="post">
-											<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo }" />
+											<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo }" />											
 											<dl class="insert_ready">
 												<dt class="must-option"><label>업무</label></dt>
 												<dd style="width: 200px;">
