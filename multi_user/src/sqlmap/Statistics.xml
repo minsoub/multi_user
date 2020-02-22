@@ -13,7 +13,20 @@
           COUNT(OM_CT_FNS.SM_SEQ) AS CNT3,
           COUNT(OM_DS_CNT.SM_SEQ) AS CNT4,
           COUNT(OM_DS_CLC.SM_SEQ) AS CNT5,
-          COUNT(OM_DS_FNS.SM_SEQ) AS CNT6
+          COUNT(OM_DS_FNS.SM_SEQ) AS CNT6, 
+          
+		  COUNT(T1.RSRV_ID) AS CNT7, 
+		  COUNT(T2.RSRV_ID) AS CNT8, 
+		  COUNT(T3.RSRV_ID) AS CNT9, 
+		  
+		  COUNT(T4.SEQ) AS CNT10, 
+		  COUNT(T5.SEQ) AS CNT11, 
+		  COUNT(T6.SEQ) AS CNT12,
+
+		  COUNT(T7.SEQ) AS CNT13, 
+		  COUNT(T8.SEQ) AS CNT14, 
+		  COUNT(T9.SEQ) AS CNT15
+		            
         FROM
           tbSVC_ORDMASTER AS OM
           LEFT JOIN tbSVC_ORDMASTER AS OM_CT_CNT
@@ -44,6 +57,38 @@
             AND ( OM_DS_FNS.SM_LSTATE = '3095'
                   OR OM_DS_FNS.SM_LSTATE = '3096'
                   OR OM_DS_FNS.SM_LSTATE = '3098')
+                  
+		  LEFT JOIN TB_OA_RSRV AS T1
+		    ON OM.SM_WDATE = convert(nchar(10) , T1.REG_DTTM  ,120 ) 
+			AND T1.APRV_STATUS = 'R'
+		  LEFT JOIN TB_OA_RSRV AS T2
+		    ON OM.SM_WDATE = convert(nchar(10) , T1.REG_DTTM  ,120 ) 
+			AND T2.APRV_STATUS = 'C'
+		  LEFT JOIN TB_OA_RSRV AS T3
+		    ON OM.SM_WDATE = convert(nchar(10) , T1.REG_DTTM  ,120 ) 
+			AND T3.APRV_STATUS = 'A'
+
+		  LEFT JOIN TB_PRINT_REQ AS T4
+		    ON OM.SM_WDATE = convert(nchar(10) , T4.REG_DT  ,120 ) 
+			AND T4.APRV_STATUS = 'R'
+		  LEFT JOIN TB_PRINT_REQ AS T5
+		    ON OM.SM_WDATE = convert(nchar(10) , T5.REG_DT  ,120 ) 
+			AND T5.APRV_STATUS = 'C'
+		  LEFT JOIN TB_PRINT_REQ AS T6
+		    ON OM.SM_WDATE = convert(nchar(10) , T6.REG_DT  ,120 ) 
+			AND T6.APRV_STATUS = 'A'
+
+		  LEFT JOIN TB_PRINT_REQ AS T7
+		    ON OM.SM_WDATE = convert(nchar(10) , T7.REG_DT  ,120 ) 
+			AND T7.APRV_STATUS = 'R'
+		  LEFT JOIN TB_PRINT_REQ AS T8
+		    ON OM.SM_WDATE = convert(nchar(10) , T8.REG_DT  ,120 ) 
+			AND T8.APRV_STATUS = 'C'
+		  LEFT JOIN TB_PRINT_REQ AS T9
+		    ON OM.SM_WDATE = convert(nchar(10) , T9.REG_DT  ,120 ) 
+			AND T9.APRV_STATUS = 'A'
+			
+			                  
         WHERE (OM.SM_SVC1 = '1003' OR OM.SM_SVC1 = '1002')
             AND (OM.SM_MCCD = '1133')
         ]]>

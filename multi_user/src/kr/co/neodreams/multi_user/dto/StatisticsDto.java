@@ -12,7 +12,15 @@ public class StatisticsDto extends BasePagingDto{
     private String CNT4;
     private String CNT5;
     private String CNT6;
-    
+    private String CNT7;
+    private String CNT8;
+    private String CNT9;
+    private String CNT10;
+    private String CNT11;
+    private String CNT12;
+    private String CNT13;
+    private String CNT14;
+    private String CNT15;
     private String SM_MEMPNO;
     private String SM_SEQ;
     private String SM_NO;
@@ -32,7 +40,63 @@ public class StatisticsDto extends BasePagingDto{
 	/* 신청일 조회시  ~까지 */
 	private String SM_WDATE_TO;
 	
-    public String getYR() {
+	
+	
+    public String getCNT7() {
+		return CNT7;
+	}
+	public void setCNT7(String cNT7) {
+		CNT7 = cNT7;
+	}
+	public String getCNT8() {
+		return CNT8;
+	}
+	public void setCNT8(String cNT8) {
+		CNT8 = cNT8;
+	}
+	public String getCNT9() {
+		return CNT9;
+	}
+	public void setCNT9(String cNT9) {
+		CNT9 = cNT9;
+	}
+	public String getCNT10() {
+		return CNT10;
+	}
+	public void setCNT10(String cNT10) {
+		CNT10 = cNT10;
+	}
+	public String getCNT11() {
+		return CNT11;
+	}
+	public void setCNT11(String cNT11) {
+		CNT11 = cNT11;
+	}
+	public String getCNT12() {
+		return CNT12;
+	}
+	public void setCNT12(String cNT12) {
+		CNT12 = cNT12;
+	}
+	public String getCNT13() {
+		return CNT13;
+	}
+	public void setCNT13(String cNT13) {
+		CNT13 = cNT13;
+	}
+	public String getCNT14() {
+		return CNT14;
+	}
+	public void setCNT14(String cNT14) {
+		CNT14 = cNT14;
+	}
+	public String getCNT15() {
+		return CNT15;
+	}
+	public void setCNT15(String cNT15) {
+		CNT15 = cNT15;
+	}
+	public String getYR() {
         return YR;
     }
     public void setYR(String yR) {

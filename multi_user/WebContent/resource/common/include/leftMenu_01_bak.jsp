@@ -42,7 +42,14 @@
                     </c:choose>
                     </a>
                 </li>
-
+                <%-- <li>
+                    <a href="/kepcnRequest.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 4 }"><img alt="" src="/resource/images/sub/sub1_leftmenu_04b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub1_leftmenu_04.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li> --%>
                 <li>
                     <a href="/kepcnConferenceList.do">
                     <c:choose>
@@ -63,7 +70,77 @@
         </div>
         <!--사내방송 끝 -->
     </c:when>
- 
+    <%--
+    <c:when test="${param.left_depth_1 eq 9 }">
+        <!-- KUBE -->
+        <div>
+            <img alt="KUBE" src="/resource/images/sub/sub_title09.png" style="cursor: pointer;" onclick="javascript:location.href='/kube.do';">
+        </div>
+        <div class="lnb">
+            <ul>
+                <li class="lnb_sub_li">
+                	<c:choose>	
+                    	<c:when test="${param.left_depth_2 eq 1 }">
+                    		<a class="selected" href="/kube.do">KUBE 홈</a>
+                    	</c:when>
+                        <c:otherwise>
+                        	<a href="/kube.do">KUBE 홈</a>
+                        </c:otherwise>
+                    </c:choose>
+                </li>
+                <c:set var="tmp_p_code_seq" value=""></c:set>
+                <c:forEach var="kubeLeftMenu" items="${kubeLeftMenu}" varStatus="status">
+                	<c:if test="${kubeLeftMenu.p_code_seq == 0 && kubeLeftMenu.sub_cnt > 0}">
+                		<c:if test="${status.index != 0}">
+                				<c:if test="${tmp_p_code_seq != '' && tmp_p_code_seq != kubeLeftMenu.p_code_seq}"> 
+			                			</ul>
+			                	</c:if> 
+                			</li>
+                		</c:if>
+                	</c:if>
+                	<c:if test="${kubeLeftMenu.p_code_seq == 0 && kubeLeftMenu.sub_cnt > 0}">
+	                	<li class="lnb_sub_li"> 
+	                		<c:if test="${param.left_depth_2 eq kubeLeftMenu.code_seq + 1}">
+	                			<a href="javascript:;" class="selected" onclick="javascript:funGoKubeVideoList(this);">${kubeLeftMenu.code_desc }</a>
+	                		</c:if>          
+	                		<c:if test="${param.left_depth_2 ne kubeLeftMenu.code_seq + 1}">
+	                			<a href="javascript:;" onclick="javascript:funGoKubeVideoList(this);">${kubeLeftMenu.code_desc }</a>
+	                		</c:if>
+	                </c:if>
+	                 
+	                <c:if test="${kubeLeftMenu.p_code_seq != 0}">
+	                	<c:if test="${tmp_p_code_seq != kubeLeftMenu.p_code_seq}">
+		                	<c:if test="${param.left_depth_2 eq kubeLeftMenu.p_code_seq + 1 }">
+						            <ul style="display: inline-block;">
+		            		</c:if>
+							<c:if test="${param.left_depth_2 ne kubeLeftMenu.p_code_seq + 1}">
+						            <ul style="display: none;">
+		            		</c:if>
+		            	</c:if>
+						<li class="side-nav_kube" onclick="javascript:location.href= $(this).find('a').attr('href');"><a href="/kube/channel/${kubeLeftMenu.link_url}/${cha:seqEncode(kubeLeftMenu.p_code_seq)}/${cha:seqEncode(kubeLeftMenu.code_seq)}">${kubeLeftMenu.sub_code_desc}</a></li>
+						<c:set var="tmp_p_code_seq" value="${kubeLeftMenu.p_code_seq}"></c:set>
+	                </c:if>
+	                <c:if test="${status.last }">
+	                			</ul>
+                		</li>
+	                </c:if>
+                </c:forEach>
+            </ul>
+        </div>
+        <div class="mov_qa">
+           <a href="/videoWrite.do"><img alt="" src="/resource/images/sub/banner_kube01.png"></a>
+           <a href="/kube/mypage/bookmarkList.do"><img alt="" src="/resource/images/sub/banner_kube02.png" style="margin-top:10px;"></a>
+           <c:if test="${sessionScope.SESS_USER_INFO['kubeAdmin'] != null && sessionScope.SESS_USER_INFO['kubeAdmin'] != ''}">
+           		<a href="/kubeMainMgmt.do"><img alt="" src="/resource/images/sub/banner_kube03.png" style="margin-top:10px;"></a>
+           </c:if>
+           <a href="/kube/channel/weekly"><img alt="" src="/resource/images/sub/banner_kube04.png" style="margin-top:10px;"></a>
+           <a href="/kube/channel/recently"><img alt="" src="/resource/images/sub/banner_kube07.png" style="margin-top:10px;"></a>
+           <a href="/kube/channel/top"><img alt="" src="/resource/images/sub/banner_kube05.png" style="margin-top:10px;"></a>
+           <img alt="" src="/resource/images/sub/banner_kube06.png" style="cursor: pointer; margin-top:10px" onclick="">
+       </div>
+        <!--KUBE 끝 --> 
+    </c:when>
+    --%>
     
     <c:when test="${param.left_depth_1 eq 2 }">
     <c:set var="isGetAdmin" value="${sessionScope.SESS_USER_INFO['rentAdmin']}"></c:set>
@@ -109,6 +186,16 @@
                     </a>
                 </li>
                 
+                <!-- 업무자료실 -->
+                <!-- li>
+                    <a href="/admin/noticeList.do">
+                    <c:choose>
+                    	<c:when test="${param.left_depth_2 eq 3 }"><img alt="업무 자료실" src="/resource/images/sub/sub2_leftmenu_06b.png"></c:when>
+                    	<c:otherwise><img alt="업무 자료실" src="/resource/images/sub/sub2_leftmenu_06.png"></c:otherwise>
+                	</c:choose>
+                	</a>
+                </li  -->
+                
                 <!-- 플로터출력 (IT플라자)  -->
                 <li>
                     <a href="/printlist.do">
@@ -137,7 +224,48 @@
                     	<c:otherwise><img alt="OA 교육장" src="/resource/images/sub/sub2_leftmenu_05.png"></c:otherwise>
                 	</c:choose>
                 	</a>
-                </li>                   
+                </li>   
+                
+                               
+                                 
+            <!--     
+                <li>
+                    <a href="/contentsRequest.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub2_leftmenu_02b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub2_leftmenu_02.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <li>
+                    <a href="/contentsProgress.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 3 }"><img alt="" src="/resource/images/sub/sub2_leftmenu_03b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub2_leftmenu_03.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                
+                <c:if test="${isGetAdmin != null}">
+                <li>
+                    <a href="/contentsImgBrdList.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 4 }"><img alt="이미지 자료실" src="/resource/images/sub/sub2_leftmenu_04b.png"></c:when>
+                        <c:otherwise><img alt="이미지 자료실" src="/resource/images/sub/sub2_leftmenu_04.png"></c:otherwise>
+                    </c:choose>
+                    <c:choose>
+                    <c:when test="${param.left_depth_2 eq 5 }">
+                        <li class="active"><a href="/admin/noticeList.do"><img alt="업무 자료실" src="/resource/images/sub/sub2_leftmenu_05b.png"></a></li>
+                    </c:when>
+                    <c:otherwise>
+                        <li><a href="/admin/noticeList.do"><img alt="업무 자료실" src="/resource/images/sub/sub2_leftmenu_05.png"></a></li>
+                    </c:otherwise>
+                	</c:choose>
+                    </a>
+                </li>
+                </c:if>
+             -->
+             
              
             </ul>                   
         </div>
@@ -275,7 +403,34 @@
         </div>
         </c:if>
         <!--장비대여 끝 -->
-    </c:when>    
+    </c:when>   
+    
+	<c:when test="${param.left_depth_1 eq 13 }">
+	<!--  S/W라이센스    -->
+        <div>
+            <img alt="S/W라이센스" src="/resource/images/sub/sub_title05.png">
+        </div>	
+        <div>
+            <ul>
+                <li>
+                    <a href="/swlicense.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub5_leftmenu_01b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub5_leftmenu_01.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <li>
+                    <a href="/freeboard.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub5_leftmenu_02b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub5_leftmenu_02.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+            </ul>
+        </div>                
+	</c:when>    
     
 	<c:when test="${param.left_depth_1 eq 11 }">
 	<!--  다운로드    -->
@@ -371,7 +526,121 @@
         </div>                
 	</c:when>
 	
- 
+    
+    <c:when test="${param.left_depth_1 eq 8 }">
+        <!-- 장비대여 -->
+        <div>
+            <img alt="마이페이지" src="/resource/images/sub/sub_title04.png">
+        </div>
+        <div>
+            <ul>
+                <li>
+                    <a href="/displayBoardInfo.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_01b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_01.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <li>
+                    <a href="/displayBoardRequest.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_02b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_02.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <li>
+                    <a href="/displayBoardRequest.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 3 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_03b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_03.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li> 
+                <li>
+                    <a href="/displayBoardRequest.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 4 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_04b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_04.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>                
+                <li>
+                    <a href="/displayBoardRequest.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 5 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_05b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_05.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>                 
+                <li>
+                    <a href="/displayBoardProgress.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 6 }"><img alt="" src="/resource/images/sub/sub4_leftmenu_06b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub4_leftmenu_06.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!--전광판게시 끝 -->
+    </c:when>
+    <c:when test="${param.left_depth_1 eq 9 }">
+    	<!-- 행사신청 -->
+        <div>
+            <img alt="행사신청" src="/resource/images/sub/sub_title10.png">
+        </div>
+        <div>
+            <ul>
+                <li>
+                    <a href="/promote/promoteInfo.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub10_leftmenu_01b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub10_leftmenu_01.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <li>
+                    <a href="/promote/promoteRequest.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub10_leftmenu_02b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub10_leftmenu_02.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <li>
+                    <a href="/promote/promoteProgress.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 3 }"><img alt="" src="/resource/images/sub/sub10_leftmenu_03b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub10_leftmenu_03.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <c:forEach var="admInfoList" items="${sessionScope.SESS_ADMIN_INFO}">
+                	<c:if test="${admInfoList.adm_gubun == 1}">
+                		<li>
+		                    <a href="/promote/promoteMgmt.do">
+		                    <c:choose>
+		                        <c:when test="${param.left_depth_2 eq 4 }"><img alt="" src="/resource/images/sub/sub10_leftmenu_04b.png"></c:when>
+		                        <c:otherwise><img alt="" src="/resource/images/sub/sub10_leftmenu_04.png"></c:otherwise>
+		                    </c:choose>
+		                    </a>
+		                </li>
+                		<li>
+		                    <a href="/promote/promoteAdmin.do">
+		                    <c:choose>
+		                        <c:when test="${param.left_depth_2 eq 5 }"><img alt="" src="/resource/images/sub/sub10_leftmenu_05b.png"></c:when>
+		                        <c:otherwise><img alt="" src="/resource/images/sub/sub10_leftmenu_05.png"></c:otherwise>
+		                    </c:choose>
+		                    </a>
+		                </li>
+                	</c:if>
+                </c:forEach>
+            </ul>
+        </div>
+        <!--행사신청 끝 -->
+    </c:when>
     <c:when test="${param.left_depth_1 eq 4 }">
         <!-- 마이페이지-->
         <div>
@@ -431,7 +700,60 @@
         </div>
         <!--마이페이지 끝 -->
     </c:when>
-
+    <c:when test="${param.left_depth_1 eq 5 }">
+        <!-- 전력수급현황 -->
+        <div>
+            <img alt="전력수급현황" src="/resource/images/sub/sub_title05.png">
+        </div>
+        <div>
+            <ul>
+                <li>
+                    <a href="/powerStatus.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub5_leftmenu_01b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub5_leftmenu_01.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <li>
+                    <a href="/businessLocation.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub5_leftmenu_02b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub5_leftmenu_02.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!--전력수급현황 끝 -->
+    </c:when>
+    <c:when test="${param.left_depth_1 eq 6 }">
+        <!-- 맞춤형디스플레이 -->
+        <div>
+            <img alt="맞춤형디스플레이" src="/resource/images/sub/sub_title06.png">
+        </div>
+        <div>
+            <ul>
+                <li>
+                    <a href="/scheduling.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub6_leftmenu_01b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub6_leftmenu_01.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <li>
+                    <a href="/businessStatus.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub6_leftmenu_02b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub6_leftmenu_02.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!--맞춤형디스플레이 끝 -->
+    </c:when>
     <c:when test="${param.left_depth_1 eq 7 }">
         <!-- 멀티미디어센터 -->
         <div>
@@ -460,7 +782,34 @@
         <!--멀티미디어센터 끝 -->
     </c:when>
 
-
+    
+    <c:when test="${param.left_depth_1 eq 19 }">
+        <!-- 전력수급현황 -->
+        <div>
+            <img alt="미세먼지 현황" src="/resource/images/sub/sub_title11.png">
+        </div>
+        <div>
+            <ul>
+                <li>
+                    <a href="/dustLocation.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub11_leftmenu_01b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub11_leftmenu_01.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                 <li>
+                    <a href="/dustLocation1024.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub11_leftmenu_02b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub11_leftmenu_02.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!--전력수급현황 끝 -->
+    </c:when>
     <c:otherwise></c:otherwise>
 </c:choose>
 

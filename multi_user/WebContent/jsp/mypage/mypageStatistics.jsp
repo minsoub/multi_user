@@ -13,7 +13,7 @@
 		<div class="learn-tit-framebox">
 			<c:import url="/resource/common/include/leftMenu_01.jsp">
 				<c:param name="left_depth_1" value="4"></c:param>
-				<c:param name="left_depth_2" value="4"></c:param>
+				<c:param name="left_depth_2" value="6"></c:param>
 			</c:import>
 		</div> 
 		</div>
@@ -65,6 +65,9 @@
 							<th scope="col" rowspan="2" width="18%;"></th>
 							<th class="lb_b" colspan="3">컨텐츠 제작</th>
 							<th class="lb_b" colspan="3">전광판 게시</th>
+							<th class="lb_b" colspan="3">출력요청</th>
+							<th class="lb_b" colspan="3">사진촬영</th>
+							<th class="lb_b" colspan="3">OA교육장</th>
 						</tr>
 						<tr>
 							<th scope="col" class="l_b">신청건</th>
@@ -73,6 +76,15 @@
 							<th class="l_b" scope="col">신청건</th>
 							<th scope="col">취소건</th>
 							<th scope="col">완료건</th>
+							<th class="l_b" scope="col">신청건</th>
+							<th scope="col">취소건</th>
+							<th scope="col">완료건</th>
+							<th class="l_b" scope="col">신청건</th>
+							<th scope="col">취소건</th>
+							<th scope="col">완료건</th>
+							<th class="l_b" scope="col">신청건</th>
+							<th scope="col">취소건</th>
+							<th scope="col">완료건</th>																					
 						</tr>
 						</thead>
 						<tbody class="ac">
@@ -83,15 +95,22 @@
                             <c:set var = "sum5" value = "0" />
                             <c:set var = "sum6" value = "0" />
                             
-                            <c:forEach items="${applicationList}"
-                                var="item" varStatus="status">
+							<c:set var = "sum7" value = "0" />
+                            <c:set var = "sum8" value = "0" />
+                            <c:set var = "sum9" value = "0" />
+                            <c:set var = "sum10" value = "0" />
+                            <c:set var = "sum11" value = "0" />
+                            <c:set var = "sum12" value = "0" />
+                            <c:set var = "sum13" value = "0" />
+                            <c:set var = "sum14" value = "0" />
+                            <c:set var = "sum15" value = "0" />
+                                                        
+                            
+                            <c:forEach items="${applicationList}" var="item" varStatus="status">
     							<tr>
     							<td scope="row" style="font-size: 0.98em;font-weight: 500;">
-                                    <fmt:parseDate value="${item.YR}${item.MTH}"
-                                    var="YR_MTH" pattern="yyyyMM" />
-                                    <fmt:formatDate
-                                                value="${YR_MTH}"
-                                                pattern="yyyy년 MM월" />
+                                    <fmt:parseDate value="${item.YR}${item.MTH}" var="YR_MTH" pattern="yyyyMM" />
+                                    <fmt:formatDate value="${YR_MTH}" pattern="yyyy년 MM월" />
                                 </td>
                                 
     							<td style="font-weight: 600;" class="l_b"><p class="t_1">${item.CNT1}</p></td>
@@ -111,11 +130,38 @@
                                 
     							<td style="font-weight: 600;"><p class="t_2">${item.CNT6}</p></td>
                                 <c:set var= "sum6" value="${sum6 + item.CNT6}"/>
+                                
+    							<td style="font-weight: 600;" class="l_b"><p class="t_2">${item.CNT7}</p></td>
+                                <c:set var= "sum7" value="${sum7 + item.CNT7}"/>
+                                
+    							<td style="font-weight: 600;"><p class="t_2">${item.CNT8}</p></td>
+                                <c:set var= "sum8" value="${sum8 + item.CNT8}"/>
+                                
+    							<td style="font-weight: 600;"><p class="t_2">${item.CNT9}</p></td>
+                                <c:set var= "sum9" value="${sum9 + item.CNT9}"/>                                                                                                
+                                
+    							<td style="font-weight: 600;" class="l_b"><p class="t_2">${item.CNT10}</p></td>
+                                <c:set var= "sum10" value="${sum10 + item.CNT10}"/>
+                                
+    							<td style="font-weight: 600;"><p class="t_2">${item.CNT11}</p></td>
+                                <c:set var= "sum11" value="${sum11 + item.CNT11}"/>
+                                
+    							<td style="font-weight: 600;"><p class="t_2">${item.CNT12}</p></td>
+                                <c:set var= "sum12" value="${sum12 + item.CNT12}"/> 
+                                
+    							<td style="font-weight: 600;" class="l_b"><p class="t_2">${item.CNT13}</p></td>
+                                <c:set var= "sum13" value="${sum13 + item.CNT13}"/>
+                                
+    							<td style="font-weight: 600;"><p class="t_2">${item.CNT14}</p></td>
+                                <c:set var= "sum14" value="${sum14 + item.CNT14}"/>
+                                
+    							<td style="font-weight: 600;"><p class="t_2">${item.CNT15}</p></td>
+                                <c:set var= "sum15" value="${sum15 + item.CNT15}"/>                                                                 
     							</tr>
                             </c:forEach>
 							<c:if test="${fn:length(applicationList) == 0}">
 	                             <tr>
-	                                 <td colspan="7">검색 결과가 없습니다</td>
+	                                 <td colspan="16">검색 결과가 없습니다</td>
 	                             </tr>
                         	</c:if>
 						
@@ -127,6 +173,18 @@
     						<td class="b_b l_b" style="font-size: 0.98em;font-weight: 600;"><p class="tb_1"><c:out value="${sum4}"/></p></td>
     						<td class="b_b" style="font-size: 0.98em;font-weight: 600;"><font style="font-size: 15px;"><c:out value="${sum5}"/></font></td>
     						<td class="b_b" style="font-size: 0.98em;font-weight: 600;"><p class="tb_2"><c:out value="${sum6}"/></p></td>
+    						
+    						<td class="b_b l_b" style="font-size: 0.98em;font-weight: 600;"><p class="tb_1"><c:out value="${sum7}"/></p></td>
+    						<td class="b_b" style="font-size: 0.98em;font-weight: 600;"><font style="font-size: 15px;"><c:out value="${sum8}"/></font></td>
+    						<td class="b_b" style="font-size: 0.98em;font-weight: 600;"><p class="tb_2"><c:out value="${sum9}"/></p></td>
+    						
+    						<td class="b_b l_b" style="font-size: 0.98em;font-weight: 600;"><p class="tb_1"><c:out value="${sum10}"/></p></td>
+    						<td class="b_b" style="font-size: 0.98em;font-weight: 600;"><font style="font-size: 15px;"><c:out value="${sum11}"/></font></td>
+    						<td class="b_b" style="font-size: 0.98em;font-weight: 600;"><p class="tb_2"><c:out value="${sum12}"/></p></td>
+    						
+    						<td class="b_b l_b" style="font-size: 0.98em;font-weight: 600;"><p class="tb_1"><c:out value="${sum13}"/></p></td>
+    						<td class="b_b" style="font-size: 0.98em;font-weight: 600;"><font style="font-size: 15px;"><c:out value="${sum14}"/></font></td>
+    						<td class="b_b" style="font-size: 0.98em;font-weight: 600;"><p class="tb_2"><c:out value="${sum15}"/></p></td>    						    						    						
     						</tr>          
 						</tbody>
 					</table>
@@ -138,7 +196,7 @@
 </div>
 <script type="text/javascript">
 $(document).ready(function() {
-	load_fnc('7', '0', '0'); //menu script
+	load_fnc('6', '0', '0'); //menu script
     $("#s1").datepicker();
     $("#s2").datepicker();
 });
