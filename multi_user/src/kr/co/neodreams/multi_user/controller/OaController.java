@@ -31,6 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.neodreams.multi_user.base.controller.BaseController;
 import kr.co.neodreams.multi_user.common.CommonUtil;
+import kr.co.neodreams.multi_user.common.Constants;
 import kr.co.neodreams.multi_user.common.StringUtil;
 import kr.co.neodreams.multi_user.common.mail.MailUtil;
 import kr.co.neodreams.multi_user.dto.BoardDto;
@@ -285,7 +286,7 @@ public class OaController extends BaseController{
 					// title : OA교육장 이용신청
 					// content : year + "년 " + month + "월 " + day + "일 " + time + "시 ~ "+(time + j)+"시<br><br>" + subject.replaceAll("\n", "<br>");
 					Address[] toAddrs = new Address[1];
-					InternetAddress address = new InternetAddress("minsoub@gmail.com");		// 받는 사람 (관리자)
+					InternetAddress address = new InternetAddress(Constants.ADMIN_EMAIL);		// 받는 사람 (관리자)
 					toAddrs[0] = address;
 					String mailSubject = "OA교육장 이용신청";
 					String mailContent = year + "년 " + month + "월 " + day + "일 " + time + "시 ~ "+(time + j)+"시<br><br>" + oaDto.getSubject().replaceAll("\n", "<br>");
@@ -413,13 +414,13 @@ public class OaController extends BaseController{
 			// title : OA교육장 이용신청
 			// content : year + "년 " + month + "월 " + day + "일 " + time + "시 ~ "+(time + j)+"시<br><br>" + subject.replaceAll("\n", "<br>");
 			Address[] toAddrs = new Address[1];
-			InternetAddress address = new InternetAddress("minsoub@gmail.com");		// 받는 사람 (작성자) 
+			InternetAddress address = new InternetAddress(SESS_EMPNO + "@kepco.co.kr");		// 받는 사람 (작성자) 
 			toAddrs[0] = address;
 			String mailSubject = "OA교육장 이용신청[승인완료]";
 			String mailContent = year + "년 " + month + "월 " + day + "일 " + time + "시 ~ "+(time + j)+"시<br><br>" + oaDto.getSubject().replaceAll("\n", "<br>");
 				   mailContent += "승인일자 : " + time1;
 			
-			String mailFrom = SESS_EMPNO + "@kepco.co.kr";		// 보내는 사람 ( 관리자)
+			String mailFrom = Constants.ADMIN_EMAIL; 		// 보내는 사람 ( 관리자)
 			
 			MailUtil.sendMail(toAddrs, mailFrom, mailSubject, mailContent);		
 			

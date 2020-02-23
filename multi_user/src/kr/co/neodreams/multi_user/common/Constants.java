@@ -57,7 +57,7 @@ public class Constants {
     // 20200204 공통게시판 ASP파일 경로 추가
     public static final String COMMON_UPLOAD_ASP_CALL = KUBE_UPLOAD_ASP_IP + "/interface/kube/common_upload_write.asp";
     public static final String COMMON_DOWNLOAD_ASP_CALL = KUBE_UPLOAD_ASP_IP + "/interface/kube/common_download.asp";    
-    
+    public static final String ADMIN_EMAIL = "minsoub@gmail.com";
     
     public static final int SMS_PORT = 13139; 
     public static final String SMS_HOST = "220.126.231.120";
