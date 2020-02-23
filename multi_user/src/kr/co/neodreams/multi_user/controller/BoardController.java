@@ -369,7 +369,7 @@ public class BoardController extends BaseController{
 			
 			int totalCnt = 0;
 			commonDto.setBbsid("10027");		// 윈도우 10 
-
+			commonDto.setCateg("1");
 			noticeList = boardService.getSelectBoardList(commonDto);
 			totalCnt = boardService.getSelectBoardListCnt(commonDto);
 			
@@ -644,6 +644,7 @@ public class BoardController extends BaseController{
 		{
 			mv.addObject("menu_depth2", "6");
 			mv.addObject("title", "윈도우 10");
+			mv.addObject("categ", boardDto.getCateg());
 		}
 		
 		BoardDto dto = boardService.getSelectBoardDetail(boardDto);

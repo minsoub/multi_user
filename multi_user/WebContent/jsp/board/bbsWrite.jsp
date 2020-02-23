@@ -81,7 +81,7 @@
 											</dl  -->
 											<dl class="insert_ready">
 												<dt class="must-option"><label>제목</label></dt>
-												<dd style="width: 200px;"><input type="text" id="subject" name="subject" value=""></dd>
+												<dd style="width: 500px;"><input type="text" id="subject" name="subject" value="" style="width: 500px;"></dd>
 											</dl>
 											<dl class="insert_ready">
 												<dt class="must-option"><label>내용</label></dt>
@@ -321,16 +321,34 @@ var entityMap = {
 		'"': '&quot;', 
 		"'": '&#39;', 
 		'/': '&#x2F;', 
-		'`': '&#x60;', 
-		'=': '&#x3D;',
-		' ' : '&nbsp;',
-		'\n' : '&#10;'
+		'`': '&#x60;' 
+	//	'=': '&#x3D;',
+	//	' ' : '&nbsp;',
+	//	'\n' : '&#10;',
+	//	'\r' : '&#10;',
+	//	'[' : '&#91;',
+	//	']' : '&#93;'
 }; 
 
-function escapeHtml (string) {
-	return String(string).replace(/[&<>"'`=\/\s\\r\\n]/g, function fromEntityMap (s) {
-		return entityMap[s]; 
-	}); 
+function escapeHtml (string) {  
+	console.log(string);
+	var data;
+    if (typeof(string)!="string") return string;
+    data =  string      
+        .replace(/[\\]/g, '\\\\')
+        .replace(/[\/]/g, '\\/')
+        .replace(/[\b]/g, '\\b')
+        .replace(/[\f]/g, '\\f')
+        .replace(/[\n]/g, '\\n')
+        .replace(/[\r]/g, '\\r')
+        .replace(/[\t]/g, '\\t')
+        .replace(/[\"]/g, '\\"')
+        .replace(/\\'/g, "\\'"); 
+    console.log(data);
+    return data;
+	//return String(string).replace(/[&<>"'`=\/\s\\r\\n]/g, function fromEntityMap (s) {
+	//	return entityMap[s]; 
+	//}); 
 } 
 
 function goList(){

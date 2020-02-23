@@ -89,6 +89,9 @@
         <![CDATA[
                 YEAR ( WTIME) > 2014
         ]]>
+        <isNotEmpty prepend="and" property="categ">
+                categ = #categ#
+        </isNotEmpty>           
         <isNotEmpty prepend="and" property="searchString">
                 (Subject LIKE '%$searchString$%'
                 or Content LIKE '%$searchString$%')

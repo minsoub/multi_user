@@ -1,6 +1,6 @@
 <%@page import="kr.co.neodreams.multi_user.common.Constants"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<jsp:useBean id="commonUtil" class="kr.co.neodreams.multi_user.common.CommonUtil" />
+<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/resource/common/include/common.jsp"%>
 
 <c:import url="/resource/common/include/meta.jsp" />
@@ -71,15 +71,18 @@
 										<input type="hidden" id="seq" name="seq" value="${boardInfo.seq }">
 										<input type="hidden" id="freq" name="freq" value="${boardInfo.freq }">
 										<input type="hidden" id="pageNo" name="pageNo" value="${paging.pageNo }" />
+										<input type="hidden" id="categ" name="categ" value="${categ}">
 										<dl class="insert_ready">
 											<dt class="must-option"><label>제목</label></dt>
-											<dd style="width: 200px;">${boardInfo.subject }</dd>
+											<dd style="width: 500px;">${boardInfo.subject }</dd>
 										</dl>
+										<c:set var="content" value="${commonUtil.toJS(boardInfo.content)}" />
 										<dl class="insert_ready">
 											<dt class="must-option"><label>내용</label></dt>
 											<dd>
 												<div style="with:800pt; heigth:600px; table-layout:fixed; word-break:break-all;">
-												<pre style="white-space: pre-line;word-wrap: break-word;">${boardInfo.content}</pre>
+												<!-- pre style="white-space: pre-line;word-wrap: break-word;">${boardInfo.content}</pre  -->
+												${content}
 												</div>												
 											</dd>
 										</dl>

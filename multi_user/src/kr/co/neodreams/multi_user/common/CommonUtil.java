@@ -714,4 +714,25 @@ public class CommonUtil {
             return fileInfoList;
         }
 
+        
+        public static String toJS(String str) {
+        	System.err.println(str); 	
+        	String data = str.replaceAll("\\\\n\\\\n", "<br>");
+        	 data = data.replaceAll("\\\\n", "<br>");
+        	System.err.println(data);
+        	data = data.replaceAll("\\\\/", "/");
+        	System.err.println(data);
+        	
+        	return data;
+        }
+        public static String toHTML(String str) {
+        	System.err.println(str); 	
+        	String data = str.replaceAll("\\\\n\\\\n", "\n");
+        	// data = data.replaceAll("\\\\n", "\n");
+        	System.err.println(data);
+        	data = data.replaceAll("\\\\/", "/");
+        	System.err.println(data);
+        	
+        	return data;
+        }        
 }

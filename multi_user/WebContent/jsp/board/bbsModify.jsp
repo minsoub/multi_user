@@ -1,4 +1,5 @@
 <%@page import="kr.co.neodreams.multi_user.common.Constants"%>
+<jsp:useBean id="commonUtil" class="kr.co.neodreams.multi_user.common.CommonUtil" />
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="/resource/common/include/common.jsp"%>
@@ -76,8 +77,9 @@
 											</dl>
 											<dl class="insert_ready">
 												<dt class="must-option"><label>내용</label></dt>
+												<c:set var="content" value="${commonUtil.toHTML(resultDetail.content)}" />
 												<dd>
-													<textarea class="textarea-style" rows="10" cols="88" id="content" name="content" style="width: 618px;"><c:out value="${resultDetail.content}" escapeXml="false" /></textarea>
+													<textarea class="textarea-style" rows="10" cols="88" id="content" name="content" style="width: 618px;"><c:out value="${content}"/></textarea>
 												</dd>
 											</dl>
 										</form>
@@ -342,9 +344,24 @@ var entityMap = {
 }; 
 
 function escapeHtml (string) {
-	return String(string).replace(/[&<>"'`=\/\s\\r\\n]/g, function fromEntityMap (s) {
-		return entityMap[s]; 
-	}); 
+	console.log(string);
+	var data;
+    if (typeof(string)!="string") return string;
+    data =  string      
+        .replace(/[\\]/g, '\\\\')
+        .replace(/[\/]/g, '\\/')
+        .replace(/[\b]/g, '\\b')
+        .replace(/[\f]/g, '\\f')
+        .replace(/[\n]/g, '\\n')
+        .replace(/[\r]/g, '\\r')
+        .replace(/[\t]/g, '\\t')
+        .replace(/[\"]/g, '\\"')
+        .replace(/\\'/g, "\\'"); 
+    console.log(data);
+    return data;
+	//return String(string).replace(/[&<>"'`=\/\s\\r\\n]/g, function fromEntityMap (s) {
+	//	return entityMap[s]; 
+	//}); 
 } 
 
 function goList(){
