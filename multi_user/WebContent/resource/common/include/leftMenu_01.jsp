@@ -460,7 +460,35 @@
         <!--멀티미디어센터 끝 -->
     </c:when>
 
-
+    <c:when test="${param.left_depth_1 eq 14 }">
+        <!-- 전력수급현황 -->
+        <div>
+            <img alt="전력수급현황" src="/resource/images/sub/sub_title11.png">
+        </div>
+        <div>
+            <ul>
+            
+                <li>
+                    <a href="/powerStatus.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub11_leftmenu_02b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub11_leftmenu_02.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+                <li>
+                    <a href="/dustLocation.do">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub11_leftmenu_01b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub11_leftmenu_01.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!--전력수급현황 끝 -->
+    </c:when>
+    
     <c:otherwise></c:otherwise>
 </c:choose>
 

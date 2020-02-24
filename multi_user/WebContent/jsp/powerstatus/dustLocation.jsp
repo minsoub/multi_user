@@ -14,8 +14,8 @@
 		<div class="learn-tit-framebox">
 		<div class="learn-tit-framebox">
 			<c:import url="/resource/common/include/leftMenu_01.jsp">
-				<c:param name="left_depth_1" value="11"></c:param>
-				<c:param name="left_depth_2" value="1"></c:param>
+				<c:param name="left_depth_1" value="14"></c:param>
+				<c:param name="left_depth_2" value="2"></c:param>
 			</c:import>
 		</div> 
 		</div> 
@@ -27,7 +27,7 @@
 			<div class="nav-box">
 				<div class="nav-img"><img alt="" src="/resource/images/sub/sub5_tit_img.png"></div>
 				<div class="nav-list">
-					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;미세먼지 현황&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">사업소별 현황(1920 * 1080)</b>
+					<img alt="" src="/resource/images/sub/icon_home.png">&nbsp;HOME&nbsp;&nbsp;>&nbsp;&nbsp;부가서비스&nbsp;&nbsp;>&nbsp;&nbsp;<b style="color:#000000;">미세먼지 현황</b>
 				</div>
 				<div class="nav-title">사업소별 현황 (1920 * 1080)</div>
 				<div class="nav_title_sub">사업소를 선택하시면 해당 사업소의 미세먼지 현황을 확인할 수 있습니다.</div>
@@ -48,7 +48,7 @@
 </div>
 <script type="text/javascript">
 $(document).ready(function() {
-	load_fnc('5', '0', '0'); //menu script
+	load_fnc('7', '0', '0'); //menu script
 });
 </script>
 <c:import url="/resource/common/include/bottom.jsp" />

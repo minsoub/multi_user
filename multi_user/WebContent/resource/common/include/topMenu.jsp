@@ -83,6 +83,15 @@
 						</ul>
 					</li>    
 					
+					<li id="topmenu7"><a href="/publicsw.do">부가서비스</a>
+						<ul>
+							<li class="menu-on"><a href="/kube.do" target="_blank">KUBE</a></li>
+							<li><a href="/powerStatus.do">전력수급현황</a></li>
+							<li><a href="/dustLocation.do">미세먼지현황</a></li>
+							<li><a href="http://band.kepco.co.kr/share">파워밴드</a></li>
+						</ul>
+					</li> 					
+					
 					<li id="topmenu5"><a href="/notice.do">게시판</a>
 						<ul>
 							<li class="menu-on"><a href="/notice.do">공지사항</a></li>

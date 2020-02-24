@@ -1,5 +1,8 @@
 eclipse.preferences.version=1
 encoding//WebContent/GMPlayer=UTF-8
+encoding//WebContent/WEB-INF/config/dustLocation.json=UTF-8
+encoding//WebContent/WEB-INF/config/dustLocation_1024.json=UTF-8
+encoding//WebContent/WEB-INF/config/powerLocation.json=UTF-8
 encoding//WebContent/jsp/contents/contentsDetail.jsp=UTF-8
 encoding//WebContent/jsp/popup/media_02.jsp=UTF-8
 encoding//WebContent/jsp/test2.jsp=UTF-8

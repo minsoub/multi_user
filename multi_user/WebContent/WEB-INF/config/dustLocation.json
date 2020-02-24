@@ -1,6 +1,6 @@
 {
 	"dustLocation": [
-		{ "name" : "?†ÑÍµ?", 
+		{ "name" : "Î≥∏ÏÇ¨", 
           "dept_code" : "", 
           "url" : "/kepco/headoffice.do",
           "location_code" : "",
@@ -8,7 +8,7 @@
           "sort" : "1"
         },
         
-        { "name" : "Î≥∏ÏÇ¨", 
+        { "name" : "ÎÇòÏ£º", 
           "dept_code" : "", 
           "url" : "/PM/naju.do",
           "location_code" : "",
@@ -16,7 +16,7 @@
           "sort" : "1"
         },
         
-         { "name" : "?Ñú?ö∏", 
+         { "name" : "ÏÑúÏö∏", 
           "dept_code" : "", 
           "url" : "/PM/seoul.do",
           "location_code" : "",
@@ -25,7 +25,7 @@
         },
         
         
-        { "name" : "?Ç®?Ñú?ö∏", 
+        { "name" : "ÎÇ®ÏÑúÏö∏", 
           "dept_code" : "", 
           "url" : "/PM/namseoul.do",
           "location_code" : "",
@@ -34,7 +34,7 @@
         },
         
         
-        { "name" : "?ù∏Ï≤?", 
+        { "name" : "Ïù∏Ï≤ú", 
           "dept_code" : "", 
           "url" : "/PM/incheon.do",
           "location_code" : "",
@@ -43,7 +43,7 @@
         },
         
         
-        { "name" : "Í≤ΩÍ∏∞Î∂ÅÎ?", 
+        { "name" : "Í≤ΩÍ∏∞Î∂Å", 
           "dept_code" : "", 
           "url" : "/PM/gyeonggibuk.do",
           "location_code" : "",
@@ -51,7 +51,7 @@
           "sort" : "1"
         },
         
-        { "name" : "Í≤ΩÍ∏∞", 
+        { "name" : "Í≤ΩÍ∏∞ÎèÑ", 
           "dept_code" : "", 
           "url" : "/kepco/gyeonggi.do",
           "location_code" : "",
@@ -78,7 +78,7 @@
         },
         
         
-        { "name" : "???†Ñ", 
+        { "name" : "ÎåÄÏ†Ñ", 
           "dept_code" : "", 
           "url" : "/kepco/daejeon.do",
           "location_code" : "",
@@ -87,7 +87,7 @@
         },
         
         
-        { "name" : "?†ÑÎ∂?", 
+        { "name" : "Ï†ÑÎ∂Å", 
           "dept_code" : "", 
           "url" : "/kepco/jeonbuk.do",
           "location_code" : "",
@@ -105,7 +105,7 @@
         },
         
                 
-        { "name" : "??Íµ?", 
+        { "name" : "ÎåÄÍµ¨", 
           "dept_code" : "", 
           "url" : "/kepco/daegu.do",
           "location_code" : "",
@@ -123,7 +123,7 @@
         },
         
          
-        { "name" : "Î∂??Ç∞", 
+        { "name" : "Î∂ÄÏÇ∞", 
           "dept_code" : "", 
           "url" : "/kepco/busan.do",
           "location_code" : "",
@@ -141,7 +141,7 @@
         },
              
             
-        { "name" : "?†úÏ£?", 
+        { "name" : "Ï†úÏ£º", 
           "dept_code" : "", 
           "url" : "/PM/jeju.do",
           "location_code" : "",
@@ -150,7 +150,7 @@
         },
          
         
-        { "name" : "Í≤ΩÏù∏Í±¥ÏÑ§", 
+        { "name" : "Í≤ΩÏù∏", 
           "dept_code" : "", 
           "url" : "/PM/gyeongin.do",
           "location_code" : "",
@@ -159,7 +159,7 @@
         },
          
         
-        { "name" : "Ï§ëÎ?Í±¥ÏÑ§", 
+        { "name" : "Ï§ëÎ∂Ä", 
           "dept_code" : "", 
           "url" : "/PM/joongbu.do",
           "location_code" : "",
@@ -168,7 +168,7 @@
         },
               
         
-        { "name" : "?Ç®Î∂?Í±¥ÏÑ§", 
+        { "name" : "ÎÇ®Î∂Ä", 
           "dept_code" : "", 
           "url" : "/PM/nambu.do",
           "location_code" : "",
