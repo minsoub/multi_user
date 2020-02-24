@@ -14,8 +14,8 @@ public class Constants {
     public static String localIP = "220.126.231.124";
     public static String callPowerWebUrl = "192.168.100.140:8180";
     public static String callCustom_displayWebUrl = "192.168.100.140";
-    //public static final String WEBAPP_ROOT = "E:\\workspace\\neodreams\\multi_user";
-	public static final String WEBAPP_ROOT = "C:\\DevProject\\JavaWorkspace\\.git\\multi_user\\multi_user";  // "D:\\workspace\\multi_user";
+    public static final String WEBAPP_ROOT = "E:\\web_project\\multi_user2";
+	//public static final String WEBAPP_ROOT = "C:\\DevProject\\JavaWorkspace\\.git\\multi_user\\multi_user";  // "D:\\workspace\\multi_user";
 	public static String custom_displayWebUrlPage = callCustom_displayWebUrl+File.separator+"/weekly_report.asp";
 	public static String getQueryXml = "E:/workspace/neodreams/multi_user/WebContent/WEB-INF/config/query_local.xml";
     public static String VOD_POPUP = "220.126.231.124:8088/fc/interfaces/movieinfoGM.asp";
