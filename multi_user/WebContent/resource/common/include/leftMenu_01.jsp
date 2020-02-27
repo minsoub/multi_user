@@ -487,7 +487,7 @@
                 <li>
                     <a href="http://band.kepco.co.kr/share">
                     <c:choose>
-                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub10_leftmenu_04b.png"></c:when>
+                        <c:when test="${param.left_depth_2 eq 3 }"><img alt="" src="/resource/images/sub/sub10_leftmenu_04b.png"></c:when>
                         <c:otherwise><img alt="" src="/resource/images/sub/sub10_leftmenu_04.png"></c:otherwise>
                     </c:choose>
                     </a>
