@@ -24,7 +24,11 @@
 					<li><img alt="" src="/resource/images/img_04.png"></li>
 				</ul>
 				<ul>
-					<li>
+					<li><a href="/printlist.do"><img src="/resource/images/img_09.png" alt="플로터 출력"></a></li>
+					<li><a href="/photolist.do"><img src="/resource/images/img_10.png" alt="사진촬영"></a></li>
+					<li><a href="/oalist.do"><img src="/resource/images/img_11.png" alt="OA 교육장"></a></li>
+						
+					<!-- li>
 						<div id="main_menu_box1">
 							<div id="main_menu_sub1">
 								<ul id="main_menu_sub_ul1">
@@ -56,9 +60,9 @@
 								<li><a href="/businessLocation.do"><img alt="" src="/resource/images/img_05_2.png"></a></li>
 							</ul>
 						</div>
-					</li>
-					<li>
+					</li  -->
 					
+					<li>					
 						<div id="main_menu_sub3">
 							<img alt="" src="/resource/images/img_06.png">
 							<ul>

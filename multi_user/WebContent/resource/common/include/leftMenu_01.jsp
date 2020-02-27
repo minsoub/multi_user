@@ -463,7 +463,7 @@
     <c:when test="${param.left_depth_1 eq 14 }">
         <!-- 전력수급현황 -->
         <div>
-            <img alt="전력수급현황" src="/resource/images/sub/sub_title10.png">
+            <img alt="전력수급현황" src="/resource/images/sub/sub_title_10.png">
         </div>
         <div>
             <ul>

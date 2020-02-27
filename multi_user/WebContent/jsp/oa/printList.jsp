@@ -144,7 +144,7 @@
 			<c:if test="${isGetAdmin != null}">
 			<div class="filebox">
 				<label class="imgSty fl">
-					<img alt="" src="/resource/images/icon_exel.png" style="width: 20%"> 처리내용 다운로드
+					<a href="javascript:ExcelDownload();"><img alt="" src="/resource/images/icon_exel.png" style="width: 20%"> 처리내용 다운로드</a>
 				</label>
 			</div>			
 			</c:if>
@@ -152,6 +152,7 @@
 		<!--content end-->
 	</div>
 </div>
+<script type="text/javascript" src="/resource/common/js/jquery.fileDownload.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
 	load_fnc('2', '0', '0'); //menu script
@@ -210,6 +211,31 @@ function ReqList()
 	//f.pageNo.value = "1";
 	f.action = '/printlist.do';	
 	f.submit();	
+}
+ 
+function ExcelDownload()
+{
+	var xlsDown = true;
+	if(xlsDown){
+		xlsDown = false;
+		
+		$('#frm').attr('action','/printExcelDownload.do').attr('method', 'post').attr('target', 'ifrm').submit();
+		
+		$.fileDownload($("#frm").prop('action'),{
+			httpMethod: "POST",  
+			data:jQuery("#frm").serialize(),   
+			successCallback: function (url) {
+				xlsDown = true;
+			},
+			failCallback: function(responesHtml, url){
+				alert('다운로드 오류 발생. 관리자에게 문의 하시기 바랍니다.');
+				xlsDown = true;
+			}
+		}); 
+	}else{ 
+		alert('다운로드 진행 중 입니다.\n데이터 양이 많을수록 엑셀 처리 속도가 지연됩니다.(약 50건/초)\n화면 이동시 진행중인 다운로드는 취소됩니다.');
+	}
+	
 }
 </script>
 <c:import url="/resource/common/include/bottom.jsp" />

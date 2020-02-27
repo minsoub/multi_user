@@ -1,6 +1,7 @@
 package kr.co.neodreams.multi_user.controller;
 
 import java.io.File;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,6 +34,8 @@ import org.springframework.web.servlet.ModelAndView;
 import kr.co.neodreams.multi_user.base.controller.BaseController;
 import kr.co.neodreams.multi_user.common.CommonUtil;
 import kr.co.neodreams.multi_user.common.Constants;
+import kr.co.neodreams.multi_user.common.DateUtil;
+import kr.co.neodreams.multi_user.common.ExcelUtil;
 import kr.co.neodreams.multi_user.common.StringUtil;
 import kr.co.neodreams.multi_user.common.mail.MailUtil;
 import kr.co.neodreams.multi_user.dto.BoardDto;
@@ -501,6 +505,111 @@ public class OaController extends BaseController{
 	} 
 	
 	/**
+	 * 플로터 출력 처리내역을 엑셀로 다운로드 받는다.
+	 * 
+	 * @param commonDto
+	 * @param result
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/printExcelDownload.do")
+	public @ResponseBody byte[] printExcelDownload(PrintReqDto commonDto, BindingResult result, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		response.setHeader("Set-Cookie", "fileDownload=true); path=/");
+		
+		int totalCnt = 0;
+		commonDto.setBbsid("10028");		// 플로터출력
+		commonDto.setReg_id("");            // mypage에서 활용함(검색조건으로)
+		System.out.println("sts1 : " + commonDto.getSts1());
+		System.out.println("sts2 : " + commonDto.getSts2());
+		System.out.println("sts3 : " + commonDto.getSts3());
+		System.out.println("sts4 : " + commonDto.getSts4());
+		System.out.println("sts5 : " + commonDto.getSts5());
+		
+		// 검색 조건에서 출력 타입
+		if (!CommonUtil.isNull(commonDto.getSts2()).equals("") || !CommonUtil.isNull(commonDto.getSts3()).equals("") || 
+				!CommonUtil.isNull(commonDto.getSts4()).equals("") || !CommonUtil.isNull(commonDto.getSts5()).equals(""))
+		{
+			List<String> arrList = new ArrayList<String>();
+			if (!CommonUtil.isNull(commonDto.getSts2()).equals(""))
+				arrList.add("'"+commonDto.getSts2()+"'");
+			if (!CommonUtil.isNull(commonDto.getSts3()).equals(""))
+				arrList.add("'"+commonDto.getSts3()+"'");
+			if (!CommonUtil.isNull(commonDto.getSts4()).equals(""))
+				arrList.add("'"+commonDto.getSts4()+"'");
+			if (!CommonUtil.isNull(commonDto.getSts5()).equals(""))
+				arrList.add("'"+commonDto.getSts5()+"'");
+
+			commonDto.setStsList(arrList);
+		}else {
+			commonDto.setSts1("ALL");   // default 검색 조건
+			List<String> arrList = new ArrayList<String>();
+			commonDto.setStsList(arrList);
+		}
+		
+		List<PrintReqDto> exList = prtService.getPrintList(commonDto);
+		totalCnt = prtService.getPrintListCnt(commonDto);
+		// Excel 세팅
+		List<Object> header = new ArrayList<Object>();
+		List<List<Object>> data = new ArrayList<List<Object>>();
+		
+		String[] keyVal = {"번호", "제목", "출력종류", "신청자", "요청일", "완료일", "상태"};
+		String tmpDateTime = "";
+		
+		try {
+			// Row 생성  Loop
+			for (int i=0; i<keyVal.length; i++) header.add(keyVal[i]);
+			
+			for (int r=0; r<exList.size(); r++)
+			{
+				PrintReqDto map = exList.get(r);
+				
+				List<Object> obj = new ArrayList<Object>();
+				// ${totalCnt - (paging.perPageCnt*(paging.pageNo-1)) - status.index }
+				obj.add(String.valueOf( r+1 ) );  // 순번
+				obj.add(map.getSubject());
+				obj.add(map.getReq_type_nm());
+				obj.add(map.getReg_nm());
+				obj.add(map.getPrt_req_dt());
+				obj.add(map.getAprv_dt() == null ? "" : map.getAprv_dt());
+				obj.add(map.getAprv_status_nm());
+				
+				data.add(obj);
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		ExcelUtil excel = new ExcelUtil(header ,data);
+		excel.setSheetName("sheet1");
+		excel.setWidth(6000);
+		
+		byte[] bytes = excel.makeExcel();
+		
+        String userAgent = request.getHeader("User-Agent");
+        boolean br = userAgent.indexOf("Chrome") > -1;
+        
+        String fileName = "플로터출력처리내역_" + DateUtil.getCurrentDateTime();
+        String docName =""; 
+        
+        if(br){
+        	docName = new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
+        } else {
+        	docName = URLEncoder.encode(fileName,"UTF-8").replaceAll("\\+", "%20");
+        }
+		
+		response.setHeader("Content-Disposition", "attachment; filename="+docName+".xlsx");
+		response.setContentLength(bytes.length);
+		response.setContentType("application/vnd.ms-excel");
+		response.setHeader("Pragma", "no-cache");		
+		response.setHeader("Cache-Control", "private");
+		response.setHeader("Expires", "0");
+		
+		return bytes;
+	}
+	
+	/**
 	 * 플로터 출력 요청 폼 
 	 * 
 	 * @param commonDto
@@ -819,6 +928,110 @@ public class OaController extends BaseController{
 		return mv;
 	} 
 	
+	
+	/**
+	 * 사진촬영 출력 처리내역을 엑셀로 다운로드 받는다.
+	 * 
+	 * @param commonDto
+	 * @param result
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/photoExcelDownload.do")
+	public @ResponseBody byte[] photoExcelDownload(PhotoReqDto commonDto, BindingResult result, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		response.setHeader("Set-Cookie", "fileDownload=true); path=/");
+		
+		int totalCnt = 0;
+		commonDto.setBbsid("10029");		// 사진촬영
+		commonDto.setReg_id("");            // mypage에서 활용함(검색조건으로)
+		System.out.println("sts1 : " + commonDto.getSts1());
+		System.out.println("sts2 : " + commonDto.getSts2());
+		System.out.println("sts3 : " + commonDto.getSts3());
+		System.out.println("sts4 : " + commonDto.getSts4());
+		System.out.println("sts5 : " + commonDto.getSts5());
+		
+		// 검색 조건에서 출력 타입
+		if (!CommonUtil.isNull(commonDto.getSts2()).equals("") || !CommonUtil.isNull(commonDto.getSts3()).equals("") || 
+				!CommonUtil.isNull(commonDto.getSts4()).equals("") || !CommonUtil.isNull(commonDto.getSts5()).equals(""))
+		{
+			List<String> arrList = new ArrayList<String>();
+			if (!CommonUtil.isNull(commonDto.getSts2()).equals(""))
+				arrList.add("'"+commonDto.getSts2()+"'");
+			if (!CommonUtil.isNull(commonDto.getSts3()).equals(""))
+				arrList.add("'"+commonDto.getSts3()+"'");
+			if (!CommonUtil.isNull(commonDto.getSts4()).equals(""))
+				arrList.add("'"+commonDto.getSts4()+"'");
+			if (!CommonUtil.isNull(commonDto.getSts5()).equals(""))
+				arrList.add("'"+commonDto.getSts5()+"'");
+
+			commonDto.setStsList(arrList);
+		}else {
+			commonDto.setSts1("ALL");   // default 검색 조건
+			List<String> arrList = new ArrayList<String>();
+			commonDto.setStsList(arrList);
+		}
+		
+		List<PhotoReqDto> exList = prtService.getPhotoList(commonDto);
+		// Excel 세팅
+		List<Object> header = new ArrayList<Object>();
+		List<List<Object>> data = new ArrayList<List<Object>>();
+		
+		String[] keyVal = {"번호", "제목", "사진종류", "신청자", "요청일", "완료일", "상태"};
+		String tmpDateTime = "";
+		
+		try {
+			// Row 생성  Loop
+			for (int i=0; i<keyVal.length; i++) header.add(keyVal[i]);
+			
+			for (int r=0; r<exList.size(); r++)
+			{
+				PhotoReqDto map = exList.get(r);
+				
+				List<Object> obj = new ArrayList<Object>();
+				// ${totalCnt - (paging.perPageCnt*(paging.pageNo-1)) - status.index }
+				obj.add(String.valueOf( r+1 ) );  // 순번
+				obj.add(map.getSubject());
+				obj.add(map.getReq_type_nm());
+				obj.add(map.getReg_nm());
+				obj.add(map.getPrt_req_dt());
+				obj.add(map.getAprv_dt() == null ? "" : map.getAprv_dt());
+				obj.add(map.getAprv_status_nm());
+				
+				data.add(obj);
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		ExcelUtil excel = new ExcelUtil(header ,data);
+		excel.setSheetName("sheet1");
+		excel.setWidth(6000);
+		
+		byte[] bytes = excel.makeExcel();
+		
+        String userAgent = request.getHeader("User-Agent");
+        boolean br = userAgent.indexOf("Chrome") > -1;
+        
+        String fileName = "사진촬영처리내역_" + DateUtil.getCurrentDateTime();
+        String docName =""; 
+        
+        if(br){
+        	docName = new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
+        } else {
+        	docName = URLEncoder.encode(fileName,"UTF-8").replaceAll("\\+", "%20");
+        }
+		
+		response.setHeader("Content-Disposition", "attachment; filename="+docName+".xlsx");
+		response.setContentLength(bytes.length);
+		response.setContentType("application/vnd.ms-excel");
+		response.setHeader("Pragma", "no-cache");		
+		response.setHeader("Cache-Control", "private");
+		response.setHeader("Expires", "0");
+		
+		return bytes;
+	}	
 	/**
 	 * 사진촬영 작성 폼을 보여준다. 
 	 * 

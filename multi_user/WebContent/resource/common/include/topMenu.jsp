@@ -83,7 +83,7 @@
 						</ul>
 					</li>    
 					
-					<li id="topmenu7"><a href="/publicsw.do">부가서비스</a>
+					<li id="topmenu7"><a href="/powerStatus.do">부가서비스</a>
 						<ul>
 							<li class="menu-on"><a href="/kube.do" target="_blank">KUBE</a></li>
 							<li><a href="/powerStatus.do">전력수급현황</a></li>
