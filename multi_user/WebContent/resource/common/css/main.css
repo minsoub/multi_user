@@ -458,7 +458,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ddeef4', end
 #main_menu_sub4 ul{position: absolute; top:90px ;left:20px;}
 #main_menu_sub4 ul>li{margin-bottom: 10px;}
 #main_menu_sub4 #main_menu_sub_ul3{left:18px;}
-#main_menu_sub4 #main_menu_sub_ul3 li{margin-bottom: 10px;font-family:돋음,Dotum;font-size: 12px;}
+#main_menu_sub4 #main_menu_sub_ul3 li{margin-bottom:6px;font-family:돋음,Dotum;font-size: 12px;}
 #main_menu_sub4 #main_menu_sub_ul3 li span{color:#929292;}
 
 /*HOME > 사내방송 > KEP-CN NEWS*/

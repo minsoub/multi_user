@@ -463,7 +463,7 @@
     <c:when test="${param.left_depth_1 eq 14 }">
         <!-- 전력수급현황 -->
         <div>
-            <img alt="전력수급현황" src="/resource/images/sub/sub_title11.png">
+            <img alt="전력수급현황" src="/resource/images/sub/sub_title10.png">
         </div>
         <div>
             <ul>
@@ -471,19 +471,27 @@
                 <li>
                     <a href="/powerStatus.do">
                     <c:choose>
-                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub11_leftmenu_02b.png"></c:when>
-                        <c:otherwise><img alt="" src="/resource/images/sub/sub11_leftmenu_02.png"></c:otherwise>
+                        <c:when test="${param.left_depth_2 eq 1 }"><img alt="" src="/resource/images/sub/sub10_leftmenu_02b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub10_leftmenu_02.png"></c:otherwise>
                     </c:choose>
                     </a>
                 </li>
                 <li>
                     <a href="/dustLocation.do">
                     <c:choose>
-                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub11_leftmenu_01b.png"></c:when>
-                        <c:otherwise><img alt="" src="/resource/images/sub/sub11_leftmenu_01.png"></c:otherwise>
+                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub10_leftmenu_03b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub10_leftmenu_03.png"></c:otherwise>
                     </c:choose>
                     </a>
                 </li>
+                <li>
+                    <a href="http://band.kepco.co.kr/share">
+                    <c:choose>
+                        <c:when test="${param.left_depth_2 eq 2 }"><img alt="" src="/resource/images/sub/sub10_leftmenu_04b.png"></c:when>
+                        <c:otherwise><img alt="" src="/resource/images/sub/sub10_leftmenu_04.png"></c:otherwise>
+                    </c:choose>
+                    </a>
+                </li>                
             </ul>
         </div>
         <!--전력수급현황 끝 -->
