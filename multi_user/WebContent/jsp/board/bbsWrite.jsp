@@ -142,7 +142,8 @@ $(document).ready(function(){
 	$(document).on('change', 'input[name="uploadFile"]', function(event){
 		var ua = window.navigator.userAgent;
 		var rowIdx = $(this).closest('dd').index();
-		if(navigator.appName == 'Netscape' && ua.indexOf('Trident/7.0') != -1){
+
+		if(navigator.appName == 'Netscape') && ua.indexOf('Trident/7.0') != -1){
 			var file = $(this).prop("files")[0];
 		
 			if(file != null){
@@ -171,6 +172,7 @@ $(document).ready(function(){
 				    complete: function(xhr) {
 				    },
 				    error: function(e){
+				    	console.log(e);
 				    	alert('업로드 중 오류가 발생했습니다\n새로고침 후 다시 진행 하시기 바랍니다' + e);
 				    	location.replace(location.href);
 				    }
