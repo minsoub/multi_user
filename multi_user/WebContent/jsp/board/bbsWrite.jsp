@@ -143,7 +143,7 @@ $(document).ready(function(){
 		var ua = window.navigator.userAgent;
 		var rowIdx = $(this).closest('dd').index();
 
-		if(navigator.appName == 'Netscape') && ua.indexOf('Trident/7.0') != -1){
+		if(navigator.appName == 'Netscape'  && ua.indexOf('Trident/7.0') != -1){
 			var file = $(this).prop("files")[0];
 		
 			if(file != null){
